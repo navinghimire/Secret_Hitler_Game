@@ -1,0 +1,73 @@
+body {
+}
+:root {
+    --fas_light: #db86a2;
+    --fas_dark: #552f47;
+    --lib_light: #12eaea;
+    --lib_dark: #136074;
+    --dark: #28112B;
+    --light: #f7ffe0;
+}
+h1 {
+    color: var(--lib_dark);
+}
+
+.liberal {
+    background-color: var(--lib_light);
+    height: 500px;
+    border: solid 20px var(--lib_dark);
+}
+.fascist {
+    background-color: var(--fas_light);
+    height: 500px;
+    border: solid 20px var(--fas_dark);
+}
+.jumbo {
+    text-align: center;
+    /* border: solid 1px red; */
+    font-size: 50px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bolder;
+    opacity: .5;
+}
+
+.card{
+    width: 200px;
+    height: 300px;
+    border: solid 1px var(--lib_dark);
+    border-radius: 5px;
+    margin: 5px;
+}
+.cards{
+    display: flex;
+
+}
+.players {
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    flex-direction: column;
+    
+}
+.player {
+    border: solid 5px var(--dark);
+    background-color: white;
+    border-radius: 50%;
+    width: 100px;
+    height:100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    margin-bottom: 10px;
+
+}
+.player>h1{
+    font-size: 100px;
+}
+.president {
+    background-color: goldenrod;
+}
+.chancellor {
+    background-color: silver;
+}
