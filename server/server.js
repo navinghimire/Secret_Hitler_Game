@@ -1,3 +1,4 @@
+const {MAX_PLAYERS, MIN_PLAYERS} = require('./constants');
 const { on } = require('nodemon');
 
 // set options for cors policy
@@ -14,11 +15,18 @@ const io = require('socket.io')(options);
 
 let states = {};
 let gameRooms = {};
-
+let hostID = {};
 io.on('connection',client => {
     client.emit('init');
     client.on('newgame',handleNewGame);
     client.on('joingame', handleJoinGame);
+    client.on('gamestarted', handleStartGame);
+    function handleStartGame() {
+        // initialize the public state
+        // initialize internal game state
+        
+    }
+
     function handleNewGame(alias) {
         
         // validate alias server side
@@ -26,7 +34,8 @@ io.on('connection',client => {
             client.emit('noalias');
             return;
         }
-        
+        // set the player creating the new game as host
+
         // create a new room id
         const roomName = makeid(5);
         
@@ -35,13 +44,14 @@ io.on('connection',client => {
         gameRooms[client.id] = roomName;
         
 
-
+        hostID[roomName] = client.id;
+        
         // have the client join the room
         client.join(roomName);
         
         // update the state of the player 
         
-        // add state to states 
+        // add state to states  
         states[roomName] = initGameState();
         
         addPlayer(alias, roomName, client.id);
@@ -54,16 +64,18 @@ io.on('connection',client => {
         
         
         console.log('Client '+  client.id + ' created the room(' + roomName +')' );
-
         
+       
+
     }
+
     function handleJoinGame(msg) {
         
         const roomName = JSON.parse(msg).gameCode;
         const alias = JSON.parse(msg).alias;
         const cID = client.id;  
         
-        console.log(client)
+        // console.log(client)
         if (!isValidRoom) {
             console.log(gameRooms,roomName);
             client.emit('unknownroom');
@@ -80,7 +92,16 @@ io.on('connection',client => {
         addPlayer(alias, roomName, client.id);
         // console.log(state);
         io.to(roomName).emit('gamestate',JSON.stringify(states[roomName]))
+        
+        // when 3rd player joins the game we know we can start the game
+
+
         console.log('Client '+  client.id + ' joined the room(' + roomName +')' );
+
+        if (states[roomName].players.length === MIN_PLAYERS) {
+            io.to(hostID[roomName]).emit('canstartgame');
+        }
+
     }
 
     function isValidRoom(roomName){
@@ -109,6 +130,8 @@ io.on('connection',client => {
                 states[room].players.splice(removeIndex,1);
             }
         }
+
+
         io.in(room).emit('gamestate',JSON.stringify(states[room]))
         client.to(room).emit('clientdisconnect',client.id);
     }

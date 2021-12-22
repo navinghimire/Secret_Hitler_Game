@@ -52,10 +52,8 @@ h1 {
 .player {
     border: solid 5px var(--dark);
     background-color: white;
-    border-radius: 50%;
-    width: 100px;
-    height:100px;
     display: flex;
+    height:80px;
     justify-content: center;
     align-items: center;
     margin-left: 10px;
