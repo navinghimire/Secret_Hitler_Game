@@ -26,7 +26,15 @@ class Game {
         }
         return temp;
     }
-
+    setRandomPresident() {
+        if (this.players.length === 0) return;
+        
+        const pIndex = Math.floor(Math.random() * this.numPlayers);
+        console.log(pIndex);
+        console.log(this.players);
+        this.players[pIndex].role = 'president';
+        this.president = this.players[pIndex];
+    }
 
 
     getRandomPolicyDeck(libCount, fasCount) {
@@ -50,9 +58,9 @@ class Game {
 
 class Player {
     constructor(alias, role, id) {
+        this.id = id;
         this.alias = alias;
         this.role = role;
-        this.id = id;
     }
 
 }

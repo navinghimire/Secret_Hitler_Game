@@ -82,9 +82,9 @@ function handleClientDisconnect(id) {
 
 
 function handleCanStartGame() {
-    socket.emit('startgame');
+    // socket.emit('startgame');
     createAlert('We now have enough player. You can now start the game.','positive');
-    
+    startGameBtn.classList.add('d-block');
     // alert("I now can start game");
 }
 function handleNoAlias() {
@@ -144,13 +144,13 @@ function renderState(state) {
     }
     failedPresidencyDisplay.innerText= state.failed_presidency;
     
-    if (state.players.length >= MIN_PLAYERS) {
-        startGameBtn.disabled = false;
-        startGameBtn.classList.add('btn-success');            
-        startGameBtn.classList.remove('btn-secondary');
-    } else {
-        startGameBtn.disabled = true;
-    }
+    // if (state.players.length >= MIN_PLAYERS) {
+    //     startGameBtn.disabled = false;
+    //     startGameBtn.classList.add('btn-success');            
+    //     startGameBtn.classList.remove('btn-secondary');
+    // } else {
+    //     startGameBtn.disabled = true;
+    // }
 
 }
 

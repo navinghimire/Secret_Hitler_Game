@@ -1,7 +1,7 @@
 const {MAX_PLAYERS, MIN_PLAYERS} = require('./constants');
 const { on } = require('nodemon');
 const { Game, Player } = require('./game');
-
+const { makeid } = require('./utils');
 // set options for cors policy
 const options = {
     cors: {
@@ -79,9 +79,11 @@ io.on('connection',client => {
         // create a new room id
         const roomName = makeid(5);
         
-        let game = new Game(3, client.id);
+        let game = new Game(0, client.id);
         let player = new Player(alias,null,client.id);
         game.addPlayer(player)
+        game.setRandomPresident();
+        
         console.log(game);
     
         console.log(game.drawFromPile(3));
@@ -153,7 +155,6 @@ io.on('connection',client => {
 
     }
     function isValidRoom(roomName){
-        console.log(io.sockets.adapter.rooms, roomName);
         return (io.sockets.adapter.rooms.has(roomName));
     }
     function handleDisconnect() {
@@ -203,18 +204,3 @@ io.on('connection',client => {
     }
     
     io.listen(3000);
-    
-    function initGameState() {
-        return publicGameState;
-    
-    
-}
-function makeid(length) {
-    const characters = '1234567890';
-    const charlen = characters.length;
-    let myid = ''; 
-    for(let i = 0; i < length; i++) {
-      myid += characters.charAt(Math.floor(Math.random()* charlen));
-    }
-    return myid;
-}
