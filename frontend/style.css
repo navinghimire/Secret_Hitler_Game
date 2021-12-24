@@ -8,9 +8,7 @@ body {
     --dark: #28112B;
     --light: #f7ffe0;
 }
-h1 {
-    color: var(--lib_dark);
-}
+
 
 .liberal {
     background-color: var(--lib_light);
@@ -46,9 +44,11 @@ h1 {
     display: flex;
     justify-content: left;
     align-items: left;
-    flex-direction: column;
-    
+    flex-direction: row;
+
 }
+
+
 .player {
     border: solid 5px var(--dark);
     background-color: white;

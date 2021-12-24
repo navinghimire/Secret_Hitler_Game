@@ -9,66 +9,103 @@
         <title>Secret Hitler</title>
     </head>
     <body>
-        
-        <div class="container-fluid">
-            <h1>Secret Hitler <span id='gameCode'></span></h1>
-            <hr />
-   
-            <div class="container" id ='menuScreen'>
-                <form action="" id="joinForm"></form> </form>
-                    <input type="text" id = 'hostPlayerAlias' placeholder="Your Alias">
-                    <button id='newGameBtn'>Host new Game</button>
-                    <h1>OR</h1>
-                    <input type="text" id ='joinGameCode' placeholder="Game Code">
-                    <input type="text" id='joinGameAlias' placeholder="Choose alias">
-                    <button type="submit" id='joinGameBtn'>Join Game</button>
-                </form>
-                
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <!-- <img src="..." class="rounded me-2" alt="..."> -->
+                <strong class="me-auto">Bootstrap</strong>
+                <small>11 mins ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                Hello, world! This is a toast message.
+              </div>
             </div>
-            <hr />
-            <div class="row">
-                <div class="col-2" id='playerScreen'>
-                        <h2>Players</h2>
-                        <hr/>
-                        <button class="btn btn-secondary btn-lg" id = 'startGameBtn'>Start Game</button>
-                        <div class="players" id="players_slot">
-                            <!-- <div class="player">
-                                <h5>NG</h5>
-                            </div> -->
-                        </div>
+          </div>
 
+        <div class="container">
+            <!-- <h1>Secret Hitler <span id='gameCode'></span></h1> -->
+            <div class="border w-25 bg-light d-flex container justify-content-center align-items-center">
+                
+                <h1 id="gameCode" class="fw-1"></h1>
+            </div>
+
+            <div class="container w-50" id ='menuScreen'>
+                <div class="row" id="alertDiv"></div>
+                <div class="row border p-2">
+                    <form>
+                        <div class="mb-3">
+                          <label for="hostPlayerAlias" class="form-label">Your Alias</label>
+                          <input type="text" class="form-control" id="hostPlayerAlias">
+                        </div>
+    
+                        <button type='button' class="btn btn-success w-100" id ='newGameBtn'>Host New Game</button>
+                      </form>
                 </div>
-                <div class="col-10"  id="gameScreen">
+                <div class="row text-center">
+                    <h1>OR</h1>
+                </div>
+                <div class="row border p-2">
+                    <form>
+                        <div class="mb-3">
+                            <label for="joinGameCode" class="form-label">Game Code</label>
+                            <input type="text" class="form-control" id="joinGameCode" >
+                            <label for="joinGameAlias" class="form-label">Your Alias</label>
+                            <input type="text" class="form-control" id="joinGameAlias">
+                        </div>
+    
+                        <button  type='button'  class="btn btn-primary w-100" id ="joinGameBtn">Join Existing Game</button>
+                      </form>
+                </div>
+             
+                    
+                </div>
+                <!-- <form action="" id="joinForm"></form> </form>
+                <input type="text" id = 'hostPlayerAlias' placeholder="Your Alias">
+                <button id='newGameBtn'>Host new Game</button>
+                <h1>OR</h1>
+                <input type="text" id ='joinGameCode' placeholder="Game Code">
+                <input type="text" id='joinGameAlias' placeholder="Choose alias">
+                <button type="submit" id='joinGameBtn'>Join Game</button>
+            </form> -->
+  
+            <div class="row" id='playerScreen'>
+                <hr />
+                <h2>Players</h2>
+                <hr/>
+                <div class="players" id="players_slot">
+                    
+                </div>
+                <div class="row">
+
+                    <button class="m-3 btn btn-secondary btn-sm" id = 'startGameBtn'>Start Game</button>
+                </div>
+
+            </div>
+      
+            <div class="row">
+
+                <div class="col"  id="gameScreen">
+                    <hr />
                         <div class="liberal" >
                             <h1 class="jumbo">Liberal</h1>
                             <div class="cards" id="liberal_cards">
-                                <!-- <div class="card">
-                                    <h5>Liberal Article</h5>
-                                </div> -->
-                            </div>
-                            
+                            </div>  
                         </div>
                         <div class="fascist">
                             <h1 class="jumbo">Fascist</h1>
                             <div class="cards" id="fascist_cards">
-                                <!-- <div class="card">
-                                    <h5>Fascist Article</h5>
-                                </div> -->
                             </div>
                         </div>
                         <h3>Failed Elections Counter: <span id="failed_presidency">0</span></h3>
                         <hr/>
                 </div>
             </div>
-        
 
-
+        </div>
 
 
     </div>
-
-
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
