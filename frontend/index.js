@@ -23,7 +23,7 @@ startGameBtn.addEventListener('click', startGame);
 const socket = io('http://localhost:3000');   
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 10;
-
+let playerName = null;
 
 gameScreen.style.display = 'none';
 playerScreen.style.display = 'none';
@@ -45,7 +45,8 @@ var toastLiveExample = document.getElementById('liveToast')
 function createAlert(text, type, time=2000) {
 
     var toast = new bootstrap.Toast(toastLiveExample)
-
+    let body = document.getElementById('toast-text');
+    body.innerText = text;
     toast.show()
     // let div = document.createElement('div');
     // div.classList.add('alert');
@@ -82,7 +83,7 @@ function handleClientDisconnect(id) {
 
 function handleCanStartGame() {
     socket.emit('startgame');
-    createAlert('As a host, you can now start the game','positive');
+    createAlert('We now have enough player. You can now start the game.','positive');
     
     // alert("I now can start game");
 }
@@ -97,7 +98,7 @@ function handleUnknowGame() {
 
 function handleGameCode(gameCode) {
     gameCodeDisplay.innerHTML = gameCode;
-    createAlert('Have your friends join the came using the code ' + gameCode, 'positive');
+    createAlert('Have your friends join the game using the code ' + gameCode, 'positive');
     menuScreen.style.display = 'none';
 }
 
@@ -232,5 +233,5 @@ function startGame(){
     alert("Game is now started");
     gameScreen.style.display='block';
     // gameScreen.style.opacity = 1;
-
 }
+

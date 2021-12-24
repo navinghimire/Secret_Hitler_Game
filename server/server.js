@@ -1,5 +1,7 @@
 const {MAX_PLAYERS, MIN_PLAYERS} = require('./constants');
 const { on } = require('nodemon');
+const { Game, Player } = require('./game');
+
 // set options for cors policy
 const options = {
     cors: {
@@ -22,12 +24,9 @@ io.on('connection',client => {
     client.on('joingame', handleJoinGame);
     client.on('startgame', handleStartGame);
     function handleStartGame() {
+
         // initialize the public state
         // initialize internal game state
-
-        
-        
-        
         const roomName = gameRooms[client.id];
         let state = states[roomName]
         let internalState = internalStates[roomName];
@@ -37,8 +36,7 @@ io.on('connection',client => {
             return
         }
 
-        // console.log(client.id);
-        // console.log(gameRooms);
+        
         const numPlayers = states[roomName].players.length;
 
 
@@ -51,15 +49,13 @@ io.on('connection',client => {
 
 
         io.to(roomName).emit('gamestate',JSON.stringify(states[roomName]))
-
-        
     }
 
     function handleNewGame(alias) {
 
         let state = {
             players: [],
-        num_lib_pol_passed: 0,
+            num_lib_pol_passed: 0,
         num_fas_pol_passed: 0,
         draw_pile: [],
         discard_pile: [],
@@ -72,17 +68,25 @@ io.on('connection',client => {
             fascists: [],
         };
         
-    
+        
         // validate alias server side
         if (alias === '') {
             client.emit('noalias');
             return;
         }
         // set the player creating the new game as host
-
+        
         // create a new room id
         const roomName = makeid(5);
         
+        let game = new Game(3, client.id);
+        let player = new Player(alias,null,client.id);
+        game.addPlayer(player)
+        console.log(game);
+    
+        console.log(game.drawFromPile(3));
+        console.log(game);
+    
         // map client id to the room for easy look for client's room
 
         gameRooms[client.id] = roomName;
@@ -100,6 +104,7 @@ io.on('connection',client => {
         internalStates[roomName] = internalState;
         console.log(states);
         addPlayer(alias, roomName, client.id);
+
         
         // send the gamecode to the client
         client.emit('gamecode', roomName);
@@ -113,7 +118,6 @@ io.on('connection',client => {
        
 
     }
-
     function handleJoinGame(msg) {
         
         const roomName = JSON.parse(msg).gameCode;
@@ -148,13 +152,10 @@ io.on('connection',client => {
         }
 
     }
-
     function isValidRoom(roomName){
         console.log(io.sockets.adapter.rooms, roomName);
         return (io.sockets.adapter.rooms.has(roomName));
     }
-
-    
     function handleDisconnect() {
         // how do i want to handle player disconnecting
         // - need to change the state and emit change state so that browser can render the change
@@ -208,9 +209,6 @@ io.on('connection',client => {
     
     
 }
-
-
-
 function makeid(length) {
     const characters = '1234567890';
     const charlen = characters.length;
