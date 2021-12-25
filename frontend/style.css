@@ -8,8 +8,6 @@ body {
     --dark: #28112B;
     --light: #f7ffe0;
 }
-
-
 .liberal {
     background-color: var(--lib_light);
     height: 500px;
@@ -50,15 +48,7 @@ body {
 
 
 .player {
-    border: solid 5px var(--dark);
-    background-color: white;
-    display: flex;
-    height:80px;
-    justify-content: center;
-    align-items: center;
-    margin-left: 10px;
-    margin-bottom: 10px;
-
+  border-radius: 10%;
 }
 .player>h1{
     font-size: 100px;

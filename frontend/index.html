@@ -25,12 +25,9 @@
 
         <div class="container">
             <!-- <h1>Secret Hitler <span id='gameCode'></span></h1> -->
-            <div class="border w-25 bg-light d-flex container justify-content-center align-items-center">
-                
-                <h1 id="gameCode" class="fw-1"></h1>
-            </div>
 
-            <div class="container w-50" id ='menuScreen'>
+
+            <div class="container w-50 mt-5" id ='menuScreen'>
                 <div class="row" id="alertDiv"></div>
                 <div class="row border p-2">
                     <form>
@@ -70,35 +67,60 @@
             </form> -->
   
             <div class="row" id='playerScreen'>
-                <hr />
-                <h2>Players</h2>
+                <div class="row">
+                    <hr />
+                    <div class="col-6">
+                        <h3>Players <span id ='numPlayersDisplay'class="badge bg-secondary"></h3>
+
+                    </div>
+                    <div class="col-6 float-right border">
+                        <h3></span><span id="gameCode" class="pl-5 "></span></h3>
+                    </div>
                 <hr/>
+                </div>
+
                 <div class="players" id="players_slot">
                     
                 </div>
                 <div class="row">
-
-                    <button class="m-3 btn btn-secondary btn-sm d-none" id = 'startGameBtn'>Start Game</button>
+                    <button class="m-3 btn btn-success btn-sm" id = 'startGameBtn'>Start Game</button>
                 </div>
 
             </div>
       
             <div class="row">
-
-                <div class="col"  id="gameScreen">
+                
+                <div class="col-10"  id="gameScreen">
                     <hr />
-                        <div class="liberal" >
-                            <h1 class="jumbo">Liberal</h1>
-                            <div class="cards" id="liberal_cards">
-                            </div>  
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-10">
+                                <div class="liberal" >
+                                    <h1 class="jumbo">Liberal</h1>
+                                    <div class="cards" id="liberal_cards">
+                                    </div>  
+                                </div>
+                            </div>
+                            <div class="col-2 " id='drawPile'>
+                                Draw Pile
+                            </div>
                         </div>
-                        <div class="fascist">
-                            <h1 class="jumbo">Fascist</h1>
-                            <div class="cards" id="fascist_cards">
+                        <div class="row">
+                            <div class="col-10">
+                                <div class="fascist">
+                                    <h1 class="jumbo">Fascist</h1>
+                                    <div class="cards" id="fascist_cards">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-2" id='discardPile'>
+                                DiscardPile
                             </div>
                         </div>
                         <h3>Failed Elections Counter: <span id="failed_presidency">0</span></h3>
-                        <hr/>
+                        <hr/> 
+                    </div>
                 </div>
             </div>
 
@@ -109,6 +131,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
     <script src="index.js"></script>
 </body>
 </html>

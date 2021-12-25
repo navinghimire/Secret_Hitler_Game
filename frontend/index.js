@@ -16,6 +16,9 @@ let joinGameCodeElem = document.getElementById('joinGameCode');
 let joinGameAliasElem = document.getElementById('joinGameAlias');
 let startGameBtn = document.getElementById('startGameBtn');
 let alertDiv = document.getElementById('alertDiv');
+let numPlayersElem = document.getElementById('numPlayersDisplay');
+let drawPile = document.getElementById('drawPile');
+let discardPile = document.getElementById('discardPile');
 newGameBtn.addEventListener('click', handleNewGameBtn); 
 joinGameBtn.addEventListener('click',handleJoinGameBtn);
 startGameBtn.addEventListener('click', startGame);
@@ -23,7 +26,14 @@ startGameBtn.addEventListener('click', startGame);
 const socket = io('http://localhost:3000');   
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 10;
-let playerName = null;
+// let player = {
+//     name: null,
+//     id: null,
+//     role: null,
+// }
+let playerRoles;
+let playerId;
+let gameState;
 
 gameScreen.style.display = 'none';
 playerScreen.style.display = 'none';
@@ -38,9 +48,18 @@ socket.on('newplayerjoined', playerName => {createAlert(playerName + ' has joine
 socket.on('clientdisconnect', handleClientDisconnect);
 socket.on('canstartgame', handleCanStartGame);
 socket.on('notenoughplayers', minPlayers => createAlert('Not enough players. Need ' + minPlayers, 'negative'));
-
-
+socket.on('notallowed', () => createAlert('You are not allwed to do this')) ;
+socket.on('gamestarted', handleGameStarted);
+socket.on('playerrolesassigned',handlePlayerRoles);
+socket.on('playerid', pid => playerId = pid);
 var toastLiveExample = document.getElementById('liveToast')
+
+function handlePlayerRoles(msg) {
+    // player.role = msg.role;
+    // console.log(player);
+    playerRoles = JSON.parse(msg);
+
+}
 
 function createAlert(text, type, time=2000) {
 
@@ -74,6 +93,11 @@ function createAlert(text, type, time=2000) {
     // }, time);
 }
 
+function handleGameStarted() {
+
+    gameScreen.style.display='block';
+}
+
 function handleClientDisconnect(id) {
 
     createAlert('Player left the room.', 'negtaive');
@@ -83,8 +107,10 @@ function handleClientDisconnect(id) {
 
 function handleCanStartGame() {
     // socket.emit('startgame');
-    createAlert('We now have enough player. You can now start the game.','positive');
+    createAlert('We now have enough players. You can start the game.','positive');
+    startGameBtn.classList.remove('d-none');
     startGameBtn.classList.add('d-block');
+
     // alert("I now can start game");
 }
 function handleNoAlias() {
@@ -104,6 +130,8 @@ function handleGameCode(gameCode) {
 
 function handleGameState(state){
     state = JSON.parse(state);
+    console.log(state);
+    gameState = state;
     // menuScreen.style.opacity = 0;
     // gameScreen.style.opacity = 1;
     // playerScreen.style.display = 'block';
@@ -113,10 +141,6 @@ function handleGameState(state){
 }
 
 function handleInit(state) {
-    // renderState(JSON.parse(state));
-    startGameBtn.disabled = true;
-    // gameScreen.style.opacity = 0;
-    // playerScreen.style.display = 'none';
     
 }
 
@@ -144,14 +168,22 @@ function renderState(state) {
     }
     failedPresidencyDisplay.innerText= state.failed_presidency;
     
-    // if (state.players.length >= MIN_PLAYERS) {
-    //     startGameBtn.disabled = false;
-    //     startGameBtn.classList.add('btn-success');            
-    //     startGameBtn.classList.remove('btn-secondary');
-    // } else {
-    //     startGameBtn.disabled = true;
-    // }
+    if (state.players.length >= MIN_PLAYERS) {
+        numPlayersElem.classList.add('bg-success');
+        numPlayersElem.classList.remove('bg-danger');
+        
+    } else {
+        numPlayersElem.classList.add('bg-danger');
+        numPlayersElem.classList.remove('bg-success');
+    }
 
+
+
+    drawPile.innerText = gameState.drawPileCardCount;
+    discardPile.innerText = gameState.discardPileCardCount;
+
+    numPlayersElem.innerText = gameState.numPlayers;
+    console.log(gameState);
 }
 
 // prepare dom for new gamestate
@@ -160,26 +192,62 @@ function resetElements() {
     fascistStack.innerHTML = '';
     liberalStack.innerHTML = '';
     failedPresidencyDisplay.innerText = '0';
+    startGameBtn.classList.add('d-none');
+    startGameBtn.classList.remove('d-block');
 }
 
 
 
-function createPlayerElement(player){
+
+function createPlayerElement(p){
 
     let playerDiv = document.createElement('div');
     let playerName = document.createElement('div');
     
-    playerDiv.classList.add('alert','alert-info','border','m-2');
+    playerDiv.classList.add('border','m-1','player');
     playerName.classList.add('card-body')
-    playerDiv.id = player.id;
-    if (player.role === 'president') {
-        playerDiv.classList.add('president');
-        
-    } else if (player.role === 'chancellor') {
-        playerDiv.classList.add('chancellor');
-    } 
+    playerDiv.id = p.id;
+    // if (p.role) {
+    //     playerDiv.classList.add(p.role);
+    //     let roleTag = document.createElement('p');
+    //     roleTag.innerText = p.role;
+    //     playerDiv.appendChild(roleTag);
+    // }
     playerDiv.appendChild(playerName);
-    playerName.innerHTML=player.alias;
+
+    // if (p.id === player.id){
+    //     if (player.role) {
+    //         if (player.role === 'liberal') {
+    //             playerDiv.classList.add('bg-success','text-white');
+    //         } else if (player.role === 'fascist') {
+    //             playerDiv.classList.add('bg-warning','text-white');
+    //         } else if (player.role === 'hitler') {
+    //             playerDiv.classList.add('bg-danger', 'text-white');
+    //         }
+    //     }
+    // }
+    // if(p.id === player.id) {
+    //     playerDiv.classList.add('border-dark','border-5');
+    // }
+    if (playerRoles && (p.id in playerRoles)){
+        if (playerRoles[p.id] === 'liberal') {
+            playerDiv.classList.add('bg-success','text-white');
+        } else if (playerRoles[p.id] === 'fascist') {
+            playerDiv.classList.add('bg-warning','text-white');
+        } else if (playerRoles[p.id] === 'hitler') {
+            playerDiv.classList.add('bg-danger', 'text-white');
+        }
+    }
+    if (playerId && (playerId === p.id)) {
+        playerDiv.classList.add('border-dark','border-5');
+    } 
+
+    console.log('Start Here');
+    // console.log(p.id, player.id);
+    console.log(playerRoles);
+    console.log(playerDiv);
+    console.log('end here');
+    playerName.innerHTML=p.alias;
     
     playersSlot.appendChild(playerDiv);
     
@@ -227,11 +295,12 @@ function handleJoinGameBtn() {
         gameCode: gameCode,
         alias: alias,
     }
+    // player.name = alias;
     socket.emit('joingame', JSON.stringify(msg));
 }
 function startGame(){
     alert("Game is now started");
-    gameScreen.style.display='block';
+    socket.emit('startgame');
     // gameScreen.style.opacity = 1;
 }
 
