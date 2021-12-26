@@ -1,6 +1,14 @@
+const {IN_PROGRESS, 
+    WAITING,
+    POWER_KILL,
+    POWER_KILL_VETO,
+    POWER_EXAMINE_MEMBERSHIP,
+    POWER_EXAMINE_TOP_3,
+    POWER_PICK_PRESIDENT } = require('./constants') ;
+
 class Game {
     constructor(roomName,hostId) {
-        this.numPlayers = 0;
+        this.numPlayers = 9;
         this.roomName = roomName;
         this.players = []
         this.hostId = hostId;
@@ -14,6 +22,9 @@ class Game {
         this.fascists = [];
         this.hitler = null;
         this.failed_presidency = 0;
+        this.game_state = WAITING;
+        this.num_lib_pol_to_win = 4;
+        this.num_fas_pol_to_win = 6;
     } 
     addPlayer(player) {
         this.players.push(player);
@@ -26,7 +37,31 @@ class Game {
         return this.discard_pile.length;
     }
 
+    get fascistPresidentialPower(){
+        if (this.numPlayers === 5 || this.numPlayers === 6) {
+            return ({
+                3: POWER_EXAMINE_TOP_3,
+                4: POWER_KILL,
+                5: POWER_KILL_VETO,
+            });
+        } else if (this.numPlayers === 7 || this.numPlayers === 8) {
+            return ({
+                2: POWER_EXAMINE_MEMBERSHIP,
+                3: POWER_PICK_PRESIDENT,
+                4: POWER_KILL,
+                5: POWER_KILL_VETO,
+            });
 
+        } else if (this.numPlayers === 9 || this.numPlayers === 10) {
+            return({
+                1: POWER_EXAMINE_MEMBERSHIP,
+                2: POWER_EXAMINE_MEMBERSHIP,
+                3: POWER_PICK_PRESIDENT,
+                4: POWER_KILL,
+                5: POWER_KILL_VETO,
+            });
+        }
+    }
 
     drawFromPile(numCards) {
         let temp = [];
@@ -68,7 +103,7 @@ class Game {
             }
         }
 
-        console.log(this.liberals, this.fascists, this.hitler)
+        // console.log(this.liberals, this.fascists, this.hitler)
 
         // get liberals and fascists counts depending on the number of players
 
@@ -106,7 +141,7 @@ class Game {
         }
         if (removeIndex) {
             this.players.splice(removeIndex,1);
-            console.log('player removed!',this.players,removeIndex)
+            // console.log('player removed!',this.players,removeIndex)
         }
         this.numPlayers -= 1;
     }
@@ -129,6 +164,7 @@ class Game {
     }
 
     get gameState() {
+        console.log(this.fascistPresidentialPower);
         return JSON.stringify({
             numPlayers: this.numPlayers,
             players: this.players,
@@ -137,6 +173,9 @@ class Game {
             failed_presidency: this.failed_presidency,
             drawPileCardCount: this.drawPileCardCount,
             discardPileCardCount: this.discardPileCardCount,
+            num_lib_pol_to_win: this.num_lib_pol_to_win,
+            num_fas_pol_to_win: this.num_fas_pol_to_win,
+            power: this.fascistPresidentialPower,
         });
     }
 

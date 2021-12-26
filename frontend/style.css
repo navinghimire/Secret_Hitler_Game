@@ -9,34 +9,64 @@ body {
     --light: #f7ffe0;
 }
 .liberal {
-    background-color: var(--lib_light);
+    /* background-color: var(--lib_light);
     height: 500px;
-    border: solid 20px var(--lib_dark);
+    border: solid 20px var(--lib_dark); */
 }
 .fascist {
-    background-color: var(--fas_light);
+    /* background-color: var(--fas_light);
     height: 500px;
-    border: solid 20px var(--fas_dark);
+    border: solid 20px var(--fas_dark); */
 }
 .jumbo {
-    text-align: center;
-    /* border: solid 1px red; */
-    font-size: 50px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    font-weight: bolder;
-    opacity: .5;
+
 }
 
 .card{
-    width: 200px;
-    height: 300px;
+    width: 150px;
+    height: 200px;
     border: solid 1px var(--lib_dark);
     border-radius: 5px;
-    margin: 5px;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 9px 11px 16px -4px rgba(0,0,0,0.53);
 }
+.card-placeholder{
+    width: 120px;
+    height: 150px;
+    border: dashed 2px var(--lib_dark);
+    border-radius: 5px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 10px;
+    background-color: gainsboro;
+}
+.card-placeholder p {
+    
+    font-size: 8px;
+    font-weight: 100;
+}
+.cards .card h5 {
+    opacity: 0.9;
+    font-weight: 200;
+}
+.liberal .cards .card {
+    background-color: darkseagreen;
+    color: white;
+    
+}
+.fascist .cards .card {
+    background-color: var(--fas_light);
+    color: white;
+}
+
 .cards{
     display: flex;
-
+    border-radius: 5px;
 }
 .players {
     display: flex;

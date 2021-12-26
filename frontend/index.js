@@ -19,13 +19,24 @@ let alertDiv = document.getElementById('alertDiv');
 let numPlayersElem = document.getElementById('numPlayersDisplay');
 let drawPile = document.getElementById('drawPile');
 let discardPile = document.getElementById('discardPile');
+
+let numLibPolDisplay = document.getElementById('numLibPolicies');
+let numFasPolDisplay = document.getElementById('numFasPolicies');
+
+
 newGameBtn.addEventListener('click', handleNewGameBtn); 
 joinGameBtn.addEventListener('click',handleJoinGameBtn);
 startGameBtn.addEventListener('click', startGame);
 
 const socket = io('http://localhost:3000');   
-const MIN_PLAYERS = 2;
+const MIN_PLAYERS = 5;
 const MAX_PLAYERS = 10;
+const POWER_EXAMINE_TOP_3 = 'examine_top_3';
+const POWER_KILL = 'kill';
+const POWER_KILL_VETO = 'kill_veto';
+const POWER_PICK_PRESIDENT = 'pick_president';
+const POWER_EXAMINE_MEMBERSHIP = 'examine_membership';
+
 // let player = {
 //     name: null,
 //     id: null,
@@ -35,7 +46,7 @@ let playerRoles;
 let playerId;
 let gameState;
 
-gameScreen.style.display = 'none';
+// gameScreen.style.display = 'none';
 playerScreen.style.display = 'none';
 
 // listen and hadle events from server
@@ -44,14 +55,15 @@ socket.on('gamecode', handleGameCode);
 socket.on('gamestate', handleGameState);
 socket.on('unknownroom', handleUnknowGame);
 socket.on('noalias', handleNoAlias);
-socket.on('newplayerjoined', playerName => {createAlert(playerName + ' has joined the game','neutral')});
+socket.on('newplayerjoined', playerName => {createAlert(playerName + ' has joined the game','bg-success')});
 socket.on('clientdisconnect', handleClientDisconnect);
 socket.on('canstartgame', handleCanStartGame);
-socket.on('notenoughplayers', minPlayers => createAlert('Not enough players. Need ' + minPlayers, 'negative'));
-socket.on('notallowed', () => createAlert('You are not allwed to do this')) ;
+socket.on('notenoughplayers', minPlayers => createAlert('Not enough players. Need ' + minPlayers, 'bg-info'));
+socket.on('notallowed', () => createAlert('You are not allwed to do this', 'bg-danger')) ;
 socket.on('gamestarted', handleGameStarted);
 socket.on('playerrolesassigned',handlePlayerRoles);
 socket.on('playerid', pid => playerId = pid);
+socket.on('inprogress', () => createAlert('Game already in progress', 'bg-danger'));
 var toastLiveExample = document.getElementById('liveToast')
 
 function handlePlayerRoles(msg) {
@@ -66,7 +78,8 @@ function createAlert(text, type, time=2000) {
     var toast = new bootstrap.Toast(toastLiveExample)
     let body = document.getElementById('toast-text');
     body.innerText = text;
-    toast.show()
+
+
     // let div = document.createElement('div');
     // div.classList.add('alert');
     // div.innerText = text;
@@ -157,15 +170,18 @@ function renderState(state) {
         createPlayerElement(player);
     }
     
-    // create and add fascist card elements
-    for (let i = 0; i<state.num_fas_pol_passed; i++) {
-        createCardElement('fascist');
-    }
+    // // create and add fascist card elements
+    // for (let i = 0; i<state.num_fas_pol_passed; i++) {
+    //     createCardElement('fascist',i+1);
+    // }
     
-    // create and add liberal card elements
-    for (let i = 0; i<state.num_lib_pol_passed; i++) {
-        createCardElement('liberal');
-    }
+    // // create and add liberal card elements
+    // for (let i = 0; i<state.num_lib_pol_passed; i++) {
+    //     createCardElement('liberal',i+1);
+    // }
+
+
+    createPolicyPlaceholder();
     failedPresidencyDisplay.innerText= state.failed_presidency;
     
     if (state.players.length >= MIN_PLAYERS) {
@@ -176,7 +192,8 @@ function renderState(state) {
         numPlayersElem.classList.add('bg-danger');
         numPlayersElem.classList.remove('bg-success');
     }
-
+    numLibPolDisplay.innerText = gameState.num_lib_pol_passed;
+    numFasPolDisplay.innerText = gameState.num_fas_pol_passed;
 
 
     drawPile.innerText = gameState.drawPileCardCount;
@@ -184,6 +201,16 @@ function renderState(state) {
 
     numPlayersElem.innerText = gameState.numPlayers;
     console.log(gameState);
+}
+function createPolicyPlaceholder() {
+    for (let i = 0; i<gameState.num_fas_pol_to_win; i++) {
+        createCardElement('fascist',i+1);
+    }
+    
+    for (let i = 0; i<gameState.num_lib_pol_to_win; i++) {
+        createCardElement('liberal',i+1);
+    }
+
 }
 
 // prepare dom for new gamestate
@@ -258,15 +285,37 @@ function removePlayerElement(id) {
     playerElem.remove();
 }
 
-function createCardElement(type) {
+// function createCardElement(type) {
+//     let cardDiv = document.createElement('div');
+
+//     let cardTypeElement = document.createElement('h5');
+//     cardDiv.classList.add('card');
+//     if (type === 'fascist') {
+//         cardTypeElement.innerHTML='Fascist Article';
+//     } else if (type === 'liberal') {
+//         cardTypeElement.innerHTML='Liberal Article';
+//     }
+//     cardDiv.appendChild(cardTypeElement);
+    
+//     if (type === 'fascist') {
+//         fascistStack.appendChild(cardDiv);
+        
+//     } else if (type === 'liberal') {
+//         liberalStack.appendChild(cardDiv);
+//     }
+// }
+function createCardElement(type, pos) {
     let cardDiv = document.createElement('div');
-    let cardTypeElement = document.createElement('h5');
-    cardDiv.classList.add('card');
-    if (type === 'fascist') {
-        cardTypeElement.innerHTML='Fascist Article';
-    } else if (type === 'liberal') {
-        cardTypeElement.innerHTML='Liberal Article';
+    cardDiv.id = type + pos;
+    cardDiv.classList.add('card-placeholder');
+    console.log(gameState,gameState.power);
+    let cardTypeElement = document.createElement('p');
+    if (pos in gameState.power && type==='fascist') {
+        cardDiv.classList.add(gameState.power[pos]);
+        cardTypeElement.innerText = gameState.power[pos];
     }
+    // console.log(gameState.power);
+
     cardDiv.appendChild(cardTypeElement);
     
     if (type === 'fascist') {
@@ -275,7 +324,9 @@ function createCardElement(type) {
     } else if (type === 'liberal') {
         liberalStack.appendChild(cardDiv);
     }
+
 }
+
 
 
 

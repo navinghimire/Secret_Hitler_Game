@@ -1,4 +1,4 @@
-const {MAX_PLAYERS, MIN_PLAYERS} = require('./constants');
+const {MAX_PLAYERS, MIN_PLAYERS, WAITING, IN_PROGRESS} = require('./constants');
 const { on } = require('nodemon');
 const { Game, Player } = require('./game');
 const { makeid } = require('./utils');
@@ -27,21 +27,21 @@ io.on('connection',client => {
 
     function handleStartGame() {
 
-        if (client.id !== hostID){ 
+        const roomId = gameRooms[client.id];
+        if (client.id !== hostID[roomId]){ 
             client.emit('notallowed');
         }    
         // initialize the public state
         // initialize internal game state
-        const roomId = gameRooms[client.id];
-        let state = gameStates[roomId]
+        let state = gameStates[roomId];
 
         if (state.numPlayers < MIN_PLAYERS) {
             client.emit('notenoughplayers', MIN_PLAYERS);
-            return
+            return;
         }
-
+        state.game_state = IN_PROGRESS;
         state.setRandomPresident();
-        console.log(state);
+        // console.log(state);
         state.assignPlayerRoles();
         
 
@@ -148,6 +148,12 @@ io.on('connection',client => {
             client.emit('unknownroom');
             return;
         }
+        console.log(gameStates[roomId]);
+
+        if (gameStates[roomId].game_state === IN_PROGRESS) {
+            client.emit('inprogress');
+            return;
+        }
         if (roomId === '') {
             client.emit('noalias')
             return ;
@@ -189,7 +195,7 @@ io.on('connection',client => {
         gameStates[roomId].removePlayer(client.id);
         // remove current player from the game
 
-        console.log(gameStates[roomId]);
+        // console.log(gameStates[roomId]);
 
         io.in(roomId).emit('gamestate',gameStates[roomId].gameState);
         client.to(roomId).emit('clientdisconnect',client.id);
