@@ -22,6 +22,27 @@ body {
 
 }
 
+
+.player:hover {
+    border: solid 10px red;
+}
+
+.chancellorSlot {
+    border: dashed 2px grey;
+    width: 150px;
+    background-color: gainsboro;
+    height: 100px;
+    float: right;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.chancellorSlot p {
+    opacity: .3;
+    font-size: .8rem;
+}
 .card{
     width: 150px;
     height: 200px;

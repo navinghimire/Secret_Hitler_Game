@@ -64,8 +64,20 @@ socket.on('gamestarted', handleGameStarted);
 socket.on('playerrolesassigned',handlePlayerRoles);
 socket.on('playerid', pid => playerId = pid);
 socket.on('inprogress', () => createAlert('Game already in progress', 'bg-danger'));
+socket.on('presidentpicked', president => createAlert(JSON.parse(president).alias + ' was choosen President at random'));
+socket.on('pickchancellor', handlePickChancellor);
 var toastLiveExample = document.getElementById('liveToast')
 
+
+function handlePickChancellor() {
+    createAlert('Pick a chancellor');
+    alert("Please pick a chancellor");
+    let chancellorDiv = document.createElement('div');
+    chancellorDiv.classList.add('chancellorSlot');
+    chancellorDiv.innerText = 'PICK CHANCELLOR';
+    playersSlot.appendChild(chancellorDiv);
+
+}
 function handlePlayerRoles(msg) {
     // player.role = msg.role;
     // console.log(player);
@@ -222,7 +234,9 @@ function resetElements() {
     startGameBtn.classList.add('d-none');
     startGameBtn.classList.remove('d-block');
 }
-
+function testFunction() {
+    
+}
 
 
 
@@ -233,7 +247,7 @@ function createPlayerElement(p){
     
     playerDiv.classList.add('border','m-1','player');
     playerName.classList.add('card-body')
-    playerDiv.id = p.id;
+    playerName.id = p.id;
     // if (p.role) {
     //     playerDiv.classList.add(p.role);
     //     let roleTag = document.createElement('p');
@@ -275,10 +289,13 @@ function createPlayerElement(p){
     console.log(playerDiv);
     console.log('end here');
     playerName.innerHTML=p.alias;
-    
+    playerDiv.addEventListener('click', handlePlayerClick);
     playersSlot.appendChild(playerDiv);
     
     
+}
+function handlePlayerClick(e) {
+    console.log(e.target.id);
 }
 function removePlayerElement(id) {
     let playerElem = document.getElementById(id);

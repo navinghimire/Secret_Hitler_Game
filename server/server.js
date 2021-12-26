@@ -40,11 +40,12 @@ io.on('connection',client => {
             return;
         }
         state.game_state = IN_PROGRESS;
-        state.setRandomPresident();
+        
+        
         // console.log(state);
         state.assignPlayerRoles();
         
-
+        
         for(let player of state.liberals) {
             let role={};
             role[player.id] ='liberal'; 
@@ -69,7 +70,16 @@ io.on('connection',client => {
             }
             io.to(player.id).emit('playerrolesassigned',JSON.stringify(roles));
         }
-
+        state.setRandomPresident();
+        io.in(roomId).emit('presidentpicked', JSON.stringify(state.president));
+        
+        io.to(state.president.id).emit('pickchancellor');
+        // president now picks the chancelor
+        // give 10 seconds to do that if not (pick chancellor in random)
+        //      get president 
+        //      emit pickchancellor message
+        //          // validate if the player can be chancellor
+        // emit chancellorpicked message
 
         
 
