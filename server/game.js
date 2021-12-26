@@ -8,7 +8,7 @@ const {IN_PROGRESS,
 
 class Game {
     constructor(roomName,hostId) {
-        this.numPlayers = 9;
+        this.numPlayers = 0;
         this.roomName = roomName;
         this.players = []
         this.hostId = hostId;
@@ -60,6 +60,8 @@ class Game {
                 4: POWER_KILL,
                 5: POWER_KILL_VETO,
             });
+        } else {
+            return ({});
         }
     }
 
