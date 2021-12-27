@@ -21,10 +21,18 @@ body {
 .jumbo {
 
 }
-
+.player .selected {
+    background-color: palegreen;
+}
 
 .player:hover {
     border: solid 10px red;
+}
+.vote .col-6 .btn {
+    width: 100%;
+    height: 200px;  
+    font-size: 100px;
+    font-weight: 100;      
 }
 
 .chancellorSlot {
@@ -71,6 +79,8 @@ body {
     font-size: 8px;
     font-weight: 100;
 }
+
+
 .cards .card h5 {
     opacity: 0.9;
     font-weight: 200;
@@ -94,19 +104,41 @@ body {
     justify-content: left;
     align-items: left;
     flex-direction: row;
+    
+}
+.player h5 {
 
 }
 
 
 .player {
-  border-radius: 10%;
+    border-radius: 10px;
+    height: 200px;
+    width: 150px;
 }
 .player>h1{
     font-size: 100px;
 }
+.roles {
+    position: absolute;
+    top:10;
+    left: 10;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
 .president {
-    background-color: goldenrod;
+    background-color: gold;
+    color: black;
+    border: solid 2px darkgoldenrod;
 }
 .chancellor {
     background-color: silver;
+    color: black;
+    border: solid 2px grey;
+
+}
+
+.player:hover {
+    cursor: move;
 }

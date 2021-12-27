@@ -19,12 +19,63 @@ let gameStates = {};
 let internalStates = {};
 let gameRooms = {};
 let hostID = {};
+let vote = {};
 io.on('connection',client => {
     client.emit('init');
     client.on('newgame',handleNewGame);
     client.on('joingame', handleJoinGame);
     client.on('startgame', handleStartGame);
+    client.on('chancellorselected', handleChancellorSelected);
+    client.on('voted', handleVoted);
 
+    function handleVoted(res) {
+        res = JSON.parse(res);
+        console.log(res);
+        // if (isValidRoom(gameRooms[client.id])) {
+        //     return;
+        // }
+
+        let roomId = gameRooms[client.id];
+        let state = gameStates[roomId];
+        
+        if (res === 'yes') {
+            state.votes[client.id] = res; 
+        } else {
+            state.votes[client.id] = 'no';
+        }
+        console.log(state.votes);
+        if (state.hasEveryOneVoted()){
+            io.in(roomId).emit('everyonevoted');
+            if(state.isChancellorElected()) {
+                console.log('yay');
+                console.log(state.chancellor_elect);
+                state.electChancellor(state.chancellor_elect);
+                io.in(roomId).emit('chancellorelected', JSON.stringify(state.chancellor));
+
+            } else {
+                state.votes = {}
+                state.failed_presidency += 1;
+                io.in(roomId).emit('failedpresidency');
+                state.electPresident(state.nextPresident);
+                io.in(roomId).emit('presidentpicked', JSON.stringify(state.president));
+                io.to(state.president.id).emit('pickchancellor');
+            }
+            io.to(roomId).emit('gamestate',JSON.stringify(state.gameState));
+        }
+    }
+    function handleChancellorSelected(playerId) {
+        console.log('Chancellor id ' + playerId);
+        let roomId = gameRooms[client.id];
+        let state = gameStates[roomId];
+        if(client.id !== state.president.id) {
+            return;
+        }
+        state.chancellor_elect = state.getPlayerFromId(playerId);
+        console.log('chancellor elect below ')
+        console.log(state.chancellor_elect);
+        io.in(roomId).emit('votechancellor', playerId);
+        // state.electChancelllor(state.getPlayerFromId())
+    }
     function handleStartGame() {
 
         const roomId = gameRooms[client.id];
@@ -62,7 +113,7 @@ io.on('connection',client => {
             roles[player.id] = 'fascist';
         }
         for(let player of state.fascists) {
-            if (state.hitler.id === player.id) {
+            if (state.hitler.id === player.id && state.numPlayers >= 7 ) {
                 let role={};
                 role[player.id] ='hitler'; 
                 io.to(state.hitler.id).emit('playerrolesassigned',JSON.stringify(role));
@@ -71,9 +122,13 @@ io.on('connection',client => {
             io.to(player.id).emit('playerrolesassigned',JSON.stringify(roles));
         }
         state.setRandomPresident();
+
         io.in(roomId).emit('presidentpicked', JSON.stringify(state.president));
         
         io.to(state.president.id).emit('pickchancellor');
+
+
+
         // president now picks the chancelor
         // give 10 seconds to do that if not (pick chancellor in random)
         //      get president 
@@ -81,19 +136,23 @@ io.on('connection',client => {
         //          // validate if the player can be chancellor
         // emit chancellorpicked message
 
-        
-
-
+        let time = 10;
+        const interval = setInterval(() => {
+            io.to(client.id).emit('countdown',time--);
+            if (time < 0) {
+                clearInterval(interval);
+            }
+        },1000);
+       
 
 
         // states[roomName].players[randomHitlerIndex].role = 'hitler';
         // console.log(in37070
 
 
-        io.to(roomId).emit('gamestate',state.gameState);
+        io.to(roomId).emit('gamestate',JSON.stringify(state.gameState));
         io.to(roomId).emit('gamestarted');
     }
-
     function handleNewGame(alias) {
 
         
@@ -110,6 +169,9 @@ io.on('connection',client => {
         let game = new Game(roomId, client.id);
         let player = new Player(alias,null,client.id);
         game.addPlayer(player)
+
+
+
         let state = game.gameState;
 
         // console.log(game);
@@ -138,7 +200,7 @@ io.on('connection',client => {
         client.emit('gamecode', roomId);
         
         // now the state of the room has changed emit the changes to the client
-        client.emit('gamestate', gameStates[roomId].gameState);
+        client.emit('gamestate', JSON.stringify(gameStates[roomId].gameState));
         
         
         console.log('Client '+  client.id + ' created the room(' + roomId +')' );
@@ -174,9 +236,9 @@ io.on('connection',client => {
         
         client.join(roomId);
         io.to(client.id).emit('playerid', client.id);
-        io.to(client.id).emit('gamecode', roomId);
+        io.to(client.id).emit('gamecode', JSON.stringify(roomId));
         // console.log(state);
-        io.to(roomId).emit('gamestate',gameStates[roomId].gameState);
+        io.to(roomId).emit('gamestate',JSON.stringify(gameStates[roomId].gameState));
         client.to(roomId).emit('newplayerjoined',alias);
         // when 3rd player joins the game we know we can start the game
 
@@ -207,10 +269,15 @@ io.on('connection',client => {
 
         // console.log(gameStates[roomId]);
 
-        io.in(roomId).emit('gamestate',gameStates[roomId].gameState);
-        client.to(roomId).emit('clientdisconnect',client.id);
+        io.in(roomId).emit('gamestate',JSON.stringify(gameStates[roomId].gameState));
+        client.to(roomId).emit('clientdisconnect',JSON.stringify(client.id));
     }
     
+    
+
+
+
+
     client.on('disconnect', handleDisconnect);
         
     });

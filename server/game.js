@@ -4,7 +4,10 @@ const {IN_PROGRESS,
     POWER_KILL_VETO,
     POWER_EXAMINE_MEMBERSHIP,
     POWER_EXAMINE_TOP_3,
-    POWER_PICK_PRESIDENT } = require('./constants') ;
+    POWER_PICK_PRESIDENT,
+    SESSION_ELECTION_PRESIDENT,
+    SESSION_ELECTION_CHANCELLOR,
+    SESSION_ELECTION_VOTING, } = require('./constants') ;
 
 class Game {
     constructor(roomName,hostId) {
@@ -23,13 +26,54 @@ class Game {
         this.hitler = null;
         this.failed_presidency = 0;
         this.game_state = WAITING;
-        this.num_lib_pol_to_win = 4;
+        this.num_lib_pol_to_win = 5;
         this.num_fas_pol_to_win = 6;
+        this.pastPresidents = [];
+        this.pastChancellors = [];
+        this.chancellor_elect = null;
+        this.votes = {};
     } 
     addPlayer(player) {
         this.players.push(player);
         this.numPlayers += 1;
     }
+    getPlayerFromId(id) {
+        for(let player of this.players ) {
+            console.log(player, player.id, id);
+            if (player.id === id) {
+                return player;
+            }
+        }
+        return null;
+    }
+    getPlayerId(player) {
+        for(let i = 0; i < this.numPlayers; i++) {
+            if (this.players[i].id === player.id) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    electChancellor(player) {
+        if (this.chancellor) {
+            this.chancellor.role = null;
+        }
+        player.role = 'chancellor';
+        this.chancellor = player;
+        this.pastChancellors.push(player);
+    };
+
+    electPresident(player) {
+        if (this.president) {
+            this.president.role = null;
+        }
+        player.role = 'president';
+        this.president = player
+        this.pastPresidents.push(player);
+        console.log('Current President index', this.getPlayerId(this.president));
+    }
+
     get drawPileCardCount() {
         return this.draw_pile.length;
     }
@@ -79,15 +123,37 @@ class Game {
         const pIndex = Math.floor(Math.random() * this.numPlayers);
         // console.log(pIndex);
         // console.log(this.players);
-        this.players[pIndex].role = 'president';
-        this.president = this.players[pIndex];
+        this.electPresident(this.players[pIndex]);
+
     }
+    hasEveryOneVoted() {
+        console.log(Object.keys(this.votes).length, this.numPlayers);
+        if (Object.keys(this.votes).length === this.numPlayers) {
+            return true;
+        }
+        return false;
+    }
+    isChancellorElected() {
+        console.log(this.votes);
+        let yesCount = 0;
+        for(let id in this.votes) {
+            console.log(id);
+            if (this.votes[id] === 'yes') {
+                yesCount += 1;
+            }
+        }
+        let verdict = (yesCount/this.numPlayers >= 0.5)?true:false;
+        console.log(verdict, yesCount/this.numPlayers);
+        return verdict;
+    }
+
     assignPlayerRoles() {
 
         // assign random player as hitler
         let randomIndex = Math.floor(Math.random() * this.numPlayers);
         this.fascists.push(this.players[randomIndex]);
         this.hitler = this.players[randomIndex];
+
 
         let s = new Set();
         while(s.size < this.fascistCount-1) {
@@ -164,10 +230,16 @@ class Game {
         }
         return returnArray;
     }
-
+    get nextPresident() {
+        let currentIndex = this.getPlayerId(this.president);
+        if (currentIndex >= this.numPlayers -1) {
+            return this.players[0];
+        } 
+        return this.players[currentIndex+1];
+    }
     get gameState() {
         console.log(this.fascistPresidentialPower);
-        return JSON.stringify({
+        return {
             numPlayers: this.numPlayers,
             players: this.players,
             num_lib_pol_passed: this.num_lib_pol_passed,
@@ -178,7 +250,9 @@ class Game {
             num_lib_pol_to_win: this.num_lib_pol_to_win,
             num_fas_pol_to_win: this.num_fas_pol_to_win,
             power: this.fascistPresidentialPower,
-        });
+            previousPresidents: this.previousPresidents,
+            previousChnacellors: this.previousChnacellors,
+        };
     }
 
 }

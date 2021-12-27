@@ -83,7 +83,7 @@
                     
                 </div>
                 <div class="row">
-                    <button class="m-3 btn btn-success btn-sm" id = 'startGameBtn'>Start Game</button>
+                    <button class="m-3 btn btn-success btn-sm col-auto" id = 'startGameBtn'>Start Game</button>
                 </div>
 
             </div>
@@ -92,7 +92,14 @@
                     <p>DRAG & DROP YOUR CHANCELLOR PICK</p>
                 </div>
             </div>
-      
+            <div class="row vote d-none" id='voteD'>
+                <div class="col-6 d-flex">
+                    <button type='button' class='btn btn-success' onclick="handleVote('yes')">JA!</button>
+                </div>
+                <div class="col-6">
+                    <button type='button' class='btn btn-danger' onclick="handleVote('no')">NEIN!</button>
+                </div>
+            </div>
             <div class="row">
                 
                 <div class="col-10"  id="gameScreen">
