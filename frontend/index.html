@@ -28,6 +28,8 @@
 
 
             <div class="container w-50 mt-5" id ='menuScreen'>
+
+
                 <div class="row" id="alertDiv"></div>
                 <div class="row border p-2">
                     <form>
@@ -83,7 +85,7 @@
                     
                 </div>
                 <div class="row">
-                    <button class="m-3 btn btn-success btn-sm col-auto" id = 'startGameBtn'>Start Game</button>
+                    <button class="m-3 btn btn-lg btn-success col-auto" id = 'startGameBtn'>Start Game</button>
                 </div>
 
             </div>
@@ -92,14 +94,27 @@
                     <p>DRAG & DROP YOUR CHANCELLOR PICK</p>
                 </div>
             </div>
-            <div class="row vote d-none" id='voteD'>
-                <div class="col-6 d-flex">
-                    <button type='button' class='btn btn-success' onclick="handleVote('yes')">JA!</button>
-                </div>
-                <div class="col-6">
-                    <button type='button' class='btn btn-danger' onclick="handleVote('no')">NEIN!</button>
+            <div class="row">
+                <div class="col-12">
+                    <div class="vote border p-2 d-block" id='voteD'>
+                        <div class="timer">
+                            <p class='border' id='timerText'>10</p>
+                        </div>
+                        <div class="row w-100">
+                            <h5>Do you accept <span id='chancellorElect'></span> as your new chancellor?</h5>
+                        </div>
+                        <div class="row" >
+                            <div class="col-6">
+                                <button type='button' class='btn btn-success' onclick="handleVote('yes')">YES!</button>
+                            </div>
+                            <div class="col-6">
+                                <button type='button' class='btn btn-danger' onclick="handleVote('no')">NO!</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="row">
                 
                 <div class="col-10"  id="gameScreen">

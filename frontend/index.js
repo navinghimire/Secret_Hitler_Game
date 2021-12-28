@@ -1,4 +1,3 @@
-
 let canvas, ctx;
 let liberalStack = document.getElementById('liberal_cards');
 let fascistStack = document.getElementById('fascist_cards');
@@ -67,7 +66,10 @@ socket.on('playerid', pid => playerId = pid);
 socket.on('inprogress', () => createAlert('Game already in progress', 'bg-danger'));
 socket.on('presidentpicked', president => createAlert(JSON.parse(president).alias + ' is the president now.'));
 socket.on('pickchancellor', handlePickChancellor);
-socket.on('countdown', time => gameCodeDisplay.innerText = time);
+socket.on('someonevoted', handleSomeOneVoted);
+socket.on('countdown', time => {
+    document.getElementById('timerText').innerText = time;
+});
 socket.on('votechancellor', handleVoteChancellor);
 socket.on('everyonevoted',() => createAlert('Everyone has voted'));
 socket.on('failedpresidency', () => { createAlert('Presidency failed, electing next president.')})
@@ -75,17 +77,33 @@ socket.on('chancellorelected', chancellor => {
     chancellor = JSON.parse(chancellor);
     createAlert(chancellor.alias + ' is our new chancellor');
 });  
+socket.on('chancellorpicked', chancellorElect => {
+    chancellorElect = JSON.parse(chancellorElect);
+    createAlert(chancellorElect.alias + ' was choosen as chancellor candidate');
+});  
+
+function handleSomeOneVoted(votes) {
+    votes = JSON.parse(votes);
+
+    // let newElement = document.getElementById(votes);
+    // let newDiv = document.createElement('p');
+    // newDiv.innerHTML = votes[vote];
+    // newElement.appendChild(newDiv);
+}
+
 
 var toastLiveExample = document.getElementById('liveToast')
 
-function handleVoteChancellor(playerId) {
+function handleVoteChancellor(player) {
+    let chancellorElect = JSON.parse(player);
     voteDisplay.classList.remove('d-none');
-    voteDisplay.classList.add('d-flex');
+    voteDisplay.classList.add('d-block');
+    document.getElementById('chancellorElect').innerText = chancellorElect.alias;
     
 }
 function handleVote(res) {
     alert(res);
-    voteDisplay.classList.remove('d-flex');
+    voteDisplay.classList.remove('d-block');
     voteDisplay.classList.add('d-none');
     socket.emit('voted', JSON.stringify(res));
 
@@ -152,7 +170,7 @@ function handleCanStartGame() {
     // socket.emit('startgame');
     createAlert('We now have enough players. You can start the game.','positive');
     startGameBtn.classList.remove('d-none');
-    startGameBtn.classList.add('d-block');
+    startGameBtn.classList.add('d-flex');
     
     // alert("I now can start game");
 }
@@ -392,7 +410,6 @@ function handleJoinGameBtn() {
     socket.emit('joingame', JSON.stringify(msg));
 }
 function startGame(){
-    alert("Game is now started");
     socket.emit('startgame');
 }
 

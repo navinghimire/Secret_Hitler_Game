@@ -18,9 +18,27 @@ body {
     height: 500px;
     border: solid 20px var(--fas_dark); */
 }
-.jumbo {
+.timer{
+    position: relative;
+    width: 100%;
+    margin:0px;
+    padding:0px;
+}
+.timer p {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    /* background: linear-gradient(#9adada,#22a1a1); */
+    z-index: 1;
+    background-color: white;
+    color: grey;
+    text-align: center;
+    border-radius: 50%;
+    top: -25px;
+    right:0px;
 
 }
+
 .player .selected {
     background-color: palegreen;
 }
@@ -28,10 +46,10 @@ body {
 .player:hover {
     border: solid 10px red;
 }
-.vote .col-6 .btn {
+.vote .row .col-6 .btn {
+    height:100px;  
     width: 100%;
-    height: 200px;  
-    font-size: 100px;
+    font-size: 50px;
     font-weight: 100;      
 }
 
@@ -106,26 +124,21 @@ body {
     flex-direction: row;
     
 }
-.player h5 {
-
-}
-
 
 .player {
     border-radius: 10px;
     height: 200px;
     width: 150px;
+
 }
 .player>h1{
     font-size: 100px;
 }
+
 .roles {
-    position: absolute;
-    top:10;
-    left: 10;
+    border-radius: 50%;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
 }
 .president {
     background-color: gold;
@@ -140,5 +153,6 @@ body {
 }
 
 .player:hover {
+    border: solid 6px red;
     cursor: move;
 }

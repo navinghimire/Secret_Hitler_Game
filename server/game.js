@@ -37,6 +37,20 @@ class Game {
         this.players.push(player);
         this.numPlayers += 1;
     }
+    removePlayer(playerIndex) {
+        // find the player in that state
+        let removeIndex = null;
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].id === playerIndex) {
+                removeIndex = i;
+            }
+        }
+        if (removeIndex) {
+            this.players.splice(removeIndex,1);
+            // console.log('player removed!',this.players,removeIndex)
+        }
+        this.numPlayers -= 1;
+    }
     getPlayerFromId(id) {
         for(let player of this.players ) {
             console.log(player, player.id, id);
@@ -54,7 +68,6 @@ class Game {
         }
         return null;
     }
-
     electChancellor(player) {
         if (this.chancellor) {
             this.chancellor.role = null;
@@ -62,8 +75,7 @@ class Game {
         player.role = 'chancellor';
         this.chancellor = player;
         this.pastChancellors.push(player);
-    };
-
+    }
     electPresident(player) {
         if (this.president) {
             this.president.role = null;
@@ -72,41 +84,6 @@ class Game {
         this.president = player
         this.pastPresidents.push(player);
         console.log('Current President index', this.getPlayerId(this.president));
-    }
-
-    get drawPileCardCount() {
-        return this.draw_pile.length;
-    }
-    get discardPileCardCount() {
-        return this.discard_pile.length;
-    }
-
-    get fascistPresidentialPower(){
-        if (this.numPlayers === 5 || this.numPlayers === 6) {
-            return ({
-                3: POWER_EXAMINE_TOP_3,
-                4: POWER_KILL,
-                5: POWER_KILL_VETO,
-            });
-        } else if (this.numPlayers === 7 || this.numPlayers === 8) {
-            return ({
-                2: POWER_EXAMINE_MEMBERSHIP,
-                3: POWER_PICK_PRESIDENT,
-                4: POWER_KILL,
-                5: POWER_KILL_VETO,
-            });
-
-        } else if (this.numPlayers === 9 || this.numPlayers === 10) {
-            return({
-                1: POWER_EXAMINE_MEMBERSHIP,
-                2: POWER_EXAMINE_MEMBERSHIP,
-                3: POWER_PICK_PRESIDENT,
-                4: POWER_KILL,
-                5: POWER_KILL_VETO,
-            });
-        } else {
-            return ({});
-        }
     }
 
     drawFromPile(numCards) {
@@ -146,7 +123,6 @@ class Game {
         console.log(verdict, yesCount/this.numPlayers);
         return verdict;
     }
-
     assignPlayerRoles() {
 
         // assign random player as hitler
@@ -180,40 +156,6 @@ class Game {
         // assign fascists
     }
 
-    get fascistCount() {
-        switch(this.numPlayers) {
-            case 5:
-                return 2;
-            case 6:
-                return 2;
-            case 7:
-                return 3;
-            case 8:
-                return 3;
-            case 9:
-                return 4;
-            case 10: 
-                return 4;
-            default:
-                return null;
-        }
-    } 
-
-    removePlayer(playerIndex) {
-        // find the player in that state
-        let removeIndex = null;
-        for (let i = 0; i < this.players.length; i++) {
-            if (this.players[i].id === playerIndex) {
-                removeIndex = i;
-            }
-        }
-        if (removeIndex) {
-            this.players.splice(removeIndex,1);
-            // console.log('player removed!',this.players,removeIndex)
-        }
-        this.numPlayers -= 1;
-    }
-
     getRandomPolicyDeck(libCount, fasCount) {
         let s = new Set();
         while(s.size <= libCount) {
@@ -230,6 +172,9 @@ class Game {
         }
         return returnArray;
     }
+
+ 
+
     get nextPresident() {
         let currentIndex = this.getPlayerId(this.president);
         if (currentIndex >= this.numPlayers -1) {
@@ -254,6 +199,57 @@ class Game {
             previousChnacellors: this.previousChnacellors,
         };
     }
+    get drawPileCardCount() {
+        return this.draw_pile.length;
+    }
+    get discardPileCardCount() {
+        return this.discard_pile.length;
+    }
+    get fascistPresidentialPower(){
+        if (this.numPlayers === 5 || this.numPlayers === 6) {
+            return ({
+                3: POWER_EXAMINE_TOP_3,
+                4: POWER_KILL,
+                5: POWER_KILL_VETO,
+            });
+        } else if (this.numPlayers === 7 || this.numPlayers === 8) {
+            return ({
+                2: POWER_EXAMINE_MEMBERSHIP,
+                3: POWER_PICK_PRESIDENT,
+                4: POWER_KILL,
+                5: POWER_KILL_VETO,
+            });
+
+        } else if (this.numPlayers === 9 || this.numPlayers === 10) {
+            return({
+                1: POWER_EXAMINE_MEMBERSHIP,
+                2: POWER_EXAMINE_MEMBERSHIP,
+                3: POWER_PICK_PRESIDENT,
+                4: POWER_KILL,
+                5: POWER_KILL_VETO,
+            });
+        } else {
+            return ({});
+        }
+    }
+    get fascistCount() {
+        switch(this.numPlayers) {
+            case 5:
+                return 2;
+            case 6:
+                return 2;
+            case 7:
+                return 3;
+            case 8:
+                return 3;
+            case 9:
+                return 4;
+            case 10: 
+                return 4;
+            default:
+                return null;
+        }
+    } 
 
 }
 

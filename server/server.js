@@ -28,6 +28,29 @@ io.on('connection',client => {
     client.on('chancellorselected', handleChancellorSelected);
     client.on('voted', handleVoted);
 
+    function initMode() {
+        // if first game elect president at random
+    }
+    function electionMode() {
+        // get next president
+        // president elects chancellor
+        // players vote on chancellor
+        // if passes -> legislation mode {we have chancellor and president}
+        // if failed 
+            //(if failed presidency is >== 3) 
+                // legislation mode involves picking a policy at random
+            // otherwise
+                // elect next player as president, game mode goes to election
+
+    }
+    function legislationMode() {
+        // president picks 3 cards from the drawpile, discards one and gives to chancellor
+        // chancellor discards one and passes the remaing policy
+        // game goes to election mode until winner or loser
+    }
+    
+
+
     function handleVoted(res) {
         res = JSON.parse(res);
         console.log(res);
@@ -43,6 +66,8 @@ io.on('connection',client => {
         } else {
             state.votes[client.id] = 'no';
         }
+        io.in(roomId).emit('someonevoted' , JSON.stringify(state.votes));
+
         console.log(state.votes);
         if (state.hasEveryOneVoted()){
             io.in(roomId).emit('everyonevoted');
@@ -64,16 +89,39 @@ io.on('connection',client => {
         }
     }
     function handleChancellorSelected(playerId) {
-        console.log('Chancellor id ' + playerId);
         let roomId = gameRooms[client.id];
+        if (!isValidRoom(roomId)) {
+            return;
+        }
         let state = gameStates[roomId];
+        if(!state.president) {
+            return;
+        }
         if(client.id !== state.president.id) {
             return;
         }
+        // let everyone excep someone who selected know who the chancellor elect is
+        
         state.chancellor_elect = state.getPlayerFromId(playerId);
+        
+        client.to(roomId).emit('chancellorpicked', JSON.stringify(state.chancellor_elect));
+
         console.log('chancellor elect below ')
         console.log(state.chancellor_elect);
-        io.in(roomId).emit('votechancellor', playerId);
+        io.in(roomId).emit('votechancellor', JSON.stringify(state.chancellor_elect));
+
+        let time = 10;
+        const interval = setInterval(() => {
+            io.in(roomId).emit('countdown',time--);
+            if (time < 0) {
+                clearInterval(interval);
+            }
+        },1000);
+        setTimeout(() => {
+            
+
+        }, time*1000)
+
         // state.electChancelllor(state.getPlayerFromId())
     }
     function handleStartGame() {
@@ -136,13 +184,6 @@ io.on('connection',client => {
         //          // validate if the player can be chancellor
         // emit chancellorpicked message
 
-        let time = 10;
-        const interval = setInterval(() => {
-            io.to(client.id).emit('countdown',time--);
-            if (time < 0) {
-                clearInterval(interval);
-            }
-        },1000);
        
 
 
@@ -272,7 +313,7 @@ io.on('connection',client => {
         io.in(roomId).emit('gamestate',JSON.stringify(gameStates[roomId].gameState));
         client.to(roomId).emit('clientdisconnect',JSON.stringify(client.id));
     }
-    
+
     
 
 
