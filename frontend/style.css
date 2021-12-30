@@ -9,14 +9,10 @@ body {
     --light: #f7ffe0;
 }
 .liberal {
-    /* background-color: var(--lib_light);
-    height: 500px;
-    border: solid 20px var(--lib_dark); */
+
 }
 .fascist {
-    /* background-color: var(--fas_light);
-    height: 500px;
-    border: solid 20px var(--fas_dark); */
+    
 }
 .timer{
     position: relative;
@@ -28,7 +24,6 @@ body {
     position: absolute;
     width: 30px;
     height: 30px;
-    /* background: linear-gradient(#9adada,#22a1a1); */
     z-index: 1;
     background-color: white;
     color: grey;
@@ -38,7 +33,7 @@ body {
     right:0px;
 
 }
-#drawnCards .btn{
+#drawnCards btn{
     height: 100px;
 }
 
@@ -184,7 +179,5 @@ body {
     display: flex;
     border-radius: 5px;
 }
-
-
 
 

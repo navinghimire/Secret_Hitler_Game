@@ -49,6 +49,7 @@ let gameState;
 let countdown = 0;
 let selectedPlayer = null;
 // gameScreen.style.display = 'none';
+
 playerScreen.style.display = 'none';
 
 // listen and hadle events from server
@@ -85,6 +86,10 @@ socket.on('chancellorpicked', chancellorElect => {
     createAlert(chancellorElect.alias + ' was choosen as chancellor candidate');
 });  
 let policiesOnHand;
+hideElement('gameScreen');
+hideElement('dragAndDrop');
+
+
 function handleSomeOneVoted(votes) {
     votes = JSON.parse(votes);
 
@@ -94,8 +99,7 @@ function handleSomeOneVoted(votes) {
     // newElement.appendChild(newDiv);
 }
 function handleDiscardOne(policies) {
-    drawnCardDisplay.classList.add('d-block')
-    drawnCardDisplay.classList.remove('d-none');
+    showElement('drawnCardsDisplay');
 
     policies = JSON.parse(policies);
     policiesOnHand = policies;
@@ -123,8 +127,7 @@ function discardCard(id) {
     console.log(policiesOnHand);
     displayElem.innerHTML = '';
     
-    drawnCardDisplay.classList.add('d-none');
-    drawnCardDisplay.classList.remove('d-block');
+    hideElement('drawnCardsDisplay');
 
     socket.emit('onediscarded', JSON.stringify(policiesOnHand));
     
@@ -132,16 +135,27 @@ function discardCard(id) {
 
 var toastLiveExample = document.getElementById('liveToast')
 
+
+function hideElement(id) {
+    let elem = document.getElementById(id);
+    elem.classList.remove('d-block');
+    elem.classList.add('d-none');
+}
+
+function showElement(id) {
+    let elem = document.getElementById(id);
+    elem.classList.add('d-block');
+    elem.classList.remove('d-none');
+}
+
 function handleVoteChancellor(player) {
     let chancellorElect = JSON.parse(player);
-    voteDisplay.classList.remove('d-none');
-    voteDisplay.classList.add('d-block');
+    showElement('voteD');
     document.getElementById('chancellorElect').innerText = chancellorElect.alias;
     
 }
 function handleVote(res) {
-    voteDisplay.classList.remove('d-block');
-    voteDisplay.classList.add('d-none');
+    hideElement('voteD');
     socket.emit('voted', JSON.stringify(res));
 
 }
@@ -189,8 +203,8 @@ function createAlert(text, type, time=2000) {
 }
 
 function handleGameStarted() {
-    gameScreen.classList.add('d-block');
-
+    showElement('gameScreen');
+    hideElement('gameCodeBlock');
 }
 
 function handleClientDisconnect(id) {
@@ -203,8 +217,8 @@ function handleClientDisconnect(id) {
 function handleCanStartGame() {
     // socket.emit('startgame');
     createAlert('We now have enough players. You can start the game.','positive');
-    startGameBtn.classList.remove('d-none');
-    startGameBtn.classList.add('d-flex');
+    showElement('startGameBtn');
+
     
     // alert("I now can start game");
 }
@@ -220,17 +234,15 @@ function handleGameCode(gameCode) {
     gameCode = JSON.parse(gameCode);
     gameCodeDisplay.innerHTML = gameCode;
     createAlert('Have your friends join the game using the code ' + gameCode, 'positive');
-    menuScreen.style.display = 'none';
+    hideElement('menuScreen');
 }
 
 function handleGameState(state){
     
     state = JSON.parse(state);
     gameState = state;
-    // menuScreen.style.opacity = 0;
-    // gameScreen.style.opacity = 1;
-    // playerScreen.style.display = 'block';
-    playerScreen.style.display = 'block';
+    showElement('playerScreen');
+    showElement('gameScreen');
     console.log(gameState);
     renderState(state);
 }
@@ -308,12 +320,9 @@ function resetElements() {
     fascistStack.innerHTML = '';
     liberalStack.innerHTML = '';
     failedPresidencyDisplay.innerText = '0';
-    startGameBtn.classList.add('d-none');
-    startGameBtn.classList.remove('d-block');
+    hideElement('startGameBtn');
 }
-function testFunction() {
-    
-}
+
 
 
 function createPlayerElement(p){

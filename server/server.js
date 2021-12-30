@@ -270,7 +270,7 @@ io.on('connection',client => {
         io.to(client.id).emit('playerid', client.id);
         
         // send the gamecode to the client
-        client.emit('gamecode', roomId);
+        client.emit('gamecode', JSON.stringify(roomId));
         
         // now the state of the room has changed emit the changes to the client
         client.emit('gamestate', JSON.stringify(gameStates[roomId].gameState));

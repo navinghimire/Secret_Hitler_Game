@@ -2,7 +2,7 @@ module.exports = {
     makeid,
 };
 function makeid(length) {
-    const characters = '1234567890';
+    const characters = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const charlen = characters.length;
     let myid = ''; 
     for(let i = 0; i < length; i++) {
