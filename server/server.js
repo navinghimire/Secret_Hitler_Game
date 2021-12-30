@@ -30,9 +30,30 @@ io.on('connection',client => {
     client.on('onediscarded', handleOneDiscarded);
 
     function handleOneDiscarded(discarded) {
-        discardCard = JSON.parse(discardCard);
-        console.log(discardCard);
-        client.to(game.president.id).emit()
+
+        let roomId = gameRooms[client.id];
+        let state = gameStates[roomId];
+        
+        discardCard = JSON.parse(discarded);
+        // pass the policy
+        if (discardCard.length <= 1) {
+            console.log(discarded)
+            let cardtoPass = discardCard[0];
+            state.passArticle(cardtoPass);
+            
+            // exercise presidential power if there is one;
+
+            if (state.isTherePresidentialPower()) {
+                console.log('This is the presidential power ' + state.isTherePresidentialPower());
+            } else {
+                console.log('No presidential power');
+            }
+            
+            
+            io.to(roomId).emit('gamestate',JSON.stringify(state.gameState));
+            return;
+        }
+         client.to(state.chancellor.id).emit('discardone',JSON.stringify(discardCard));
     }
     function initMode() {
         // if first game elect president at random

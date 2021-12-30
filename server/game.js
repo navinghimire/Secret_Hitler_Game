@@ -15,8 +15,8 @@ class Game {
         this.roomName = roomName;
         this.players = []
         this.hostId = hostId;
-        this.num_fas_pol_passed = 0;
-        this.num_lib_pol_passed = 0;
+        this.num_fas_pol_passed = 2;
+        this.num_lib_pol_passed = 1;
         this.draw_pile = this.getRandomPolicyDeck(6,11);
         this.discard_pile = [];
         this.president = null;
@@ -85,7 +85,13 @@ class Game {
         this.pastPresidents.push(player);
         console.log('Current President index', this.getPlayerId(this.president));
     }
-
+    passArticle(article) {
+        if (article === 'fascist') {
+            this.num_fas_pol_passed += 1;
+        } else if (article === 'liberal') {
+            this.num_lib_pol_passed += 1;
+        } 
+    }
     drawFromPile(numCards) {
         let temp = [];
         for (let i = 0; i< numCards; i++) {
@@ -94,6 +100,33 @@ class Game {
         }
         return temp;
     }
+    isTherePresidentialPower() {
+        // let partyMembership = this.getPartyMembership(this.president.id);
+        // if (partyMembership !== 'fascist') {
+        //     return false;
+        // }
+        let power = this.fascistPresidentialPower;
+        if (this.num_fas_pol_passed in power) {
+            return power[this.num_fas_pol_passed];
+        }
+        return false;
+    }
+
+    getPartyMembership(id) {
+        for(let player of this.fascists) {
+            if (player.id === id) {
+                return 'fascist';
+            }
+        }
+        for(let player of this.liberals) {
+            if (player.id === id) {
+                return 'liberal';
+            }  
+        }
+    }
+
+
+
     setRandomPresident() {
         if (this.players.length === 0) return;
         

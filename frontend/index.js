@@ -16,6 +16,8 @@ let joinGameAliasElem = document.getElementById('joinGameAlias');
 let startGameBtn = document.getElementById('startGameBtn');
 let alertDiv = document.getElementById('alertDiv');
 let numPlayersElem = document.getElementById('numPlayersDisplay');
+let drawnCardDisplay = document.getElementById('drawnCardsDisplay');
+let displayElem = document.getElementById('drawnCards');
 // let drawPile = document.getElementById('drawPile');
 // let discardPile = document.getElementById('discardPile');
 
@@ -92,10 +94,14 @@ function handleSomeOneVoted(votes) {
     // newElement.appendChild(newDiv);
 }
 function handleDiscardOne(policies) {
+    drawnCardDisplay.classList.add('d-block')
+    drawnCardDisplay.classList.remove('d-none');
+
     policies = JSON.parse(policies);
     policiesOnHand = policies;
     console.log(policiesOnHand);
-    let displayElem = document.getElementById('drawnCards');
+    
+    displayElem.innerHTML = '';
     for(let i = 0; i < policies.length; i++) {
         let policy = policies[i];
         let policyBtn = document.createElement('div');
@@ -109,10 +115,19 @@ function handleDiscardOne(policies) {
         displayElem.appendChild(policyBtn);
     }
 }
+
 function discardCard(id) {
     let remaining = policiesOnHand.splice(id,1);
+    
+
     console.log(policiesOnHand);
+    displayElem.innerHTML = '';
+    
+    drawnCardDisplay.classList.add('d-none');
+    drawnCardDisplay.classList.remove('d-block');
+
     socket.emit('onediscarded', JSON.stringify(policiesOnHand));
+    
 }
 
 var toastLiveExample = document.getElementById('liveToast')
@@ -131,10 +146,7 @@ function handleVote(res) {
 
 }
 function handlePickChancellor() {
-    createAlert('Pick a chancellor');
-    
-
-    
+    createAlert('Pick a chancellor');    
 }
 function handlePlayerRoles(msg) {
 
@@ -212,13 +224,14 @@ function handleGameCode(gameCode) {
 }
 
 function handleGameState(state){
+    
     state = JSON.parse(state);
     gameState = state;
     // menuScreen.style.opacity = 0;
     // gameScreen.style.opacity = 1;
     // playerScreen.style.display = 'block';
     playerScreen.style.display = 'block';
-    
+    console.log(gameState);
     renderState(state);
 }
 
@@ -242,6 +255,17 @@ function renderState(state) {
 
 
     createPolicyPlaceholder();
+
+    for(let i = 0; i< gameState.num_fas_pol_passed; i++) {
+        let elem = document.getElementById('fascist'+(i+1));
+        elem.classList.add('bg-danger');
+    } 
+    for(let i = 0; i< gameState.num_lib_pol_passed; i++) {
+        let elem = document.getElementById('liberal'+(i+1));
+        elem.classList.add('bg-success');
+    } 
+    
+
     failedPresidencyDisplay.innerText= state.failed_presidency;
     
     if (state.players.length >= MIN_PLAYERS) {
@@ -255,6 +279,7 @@ function renderState(state) {
     numLibPolDisplay.innerText = gameState.num_lib_pol_passed;
     numFasPolDisplay.innerText = gameState.num_fas_pol_passed;
 
+    
 
     // drawPile.innerText = gameState.drawPileCardCount;
     // discardPile.innerText = gameState.discardPileCardCount;
@@ -300,28 +325,9 @@ function createPlayerElement(p){
     
     playerDiv.classList.add('border','m-1','player', 'd-flex','align-items-center', 'justify-content-center','flex-row');
     playerDiv.id = p.id;
-    // if (p.role) {
-    //     playerDiv.classList.add(p.role);
-    //     let roleTag = document.createElement('p');
-    //     roleTag.innerText = p.role;
-    //     playerDiv.appendChild(roleTag);
-    // }
+
     playerDiv.appendChild(playerName);
 
-    // if (p.id === player.id){
-    //     if (player.role) {
-    //         if (player.role === 'liberal') {
-    //             playerDiv.classList.add('bg-success','text-white');
-    //         } else if (player.role === 'fascist') {
-    //             playerDiv.classList.add('bg-warning','text-white');
-    //         } else if (player.role === 'hitler') {
-    //             playerDiv.classList.add('bg-danger', 'text-white');
-    //         }
-    //     }
-    // }
-    // if(p.id === player.id) {
-    //     playerDiv.classList.add('border-dark','border-5');
-    // }
     if (playerRoles && (p.id in playerRoles)){
         if (playerRoles[p.id] === 'liberal') {
             playerDiv.classList.add('bg-success','text-white');
@@ -364,25 +370,7 @@ function removePlayerElement(id) {
     playerElem.remove();
 }
 
-// function createCardElement(type) {
-//     let cardDiv = document.createElement('div');
 
-//     let cardTypeElement = document.createElement('h5');
-//     cardDiv.classList.add('card');
-//     if (type === 'fascist') {
-//         cardTypeElement.innerHTML='Fascist Article';
-//     } else if (type === 'liberal') {
-//         cardTypeElement.innerHTML='Liberal Article';
-//     }
-//     cardDiv.appendChild(cardTypeElement);
-    
-//     if (type === 'fascist') {
-//         fascistStack.appendChild(cardDiv);
-        
-//     } else if (type === 'liberal') {
-//         liberalStack.appendChild(cardDiv);
-//     }
-// }
 function createCardElement(type, pos) {
     let cardDiv = document.createElement('div');
     cardDiv.id = type + pos;
