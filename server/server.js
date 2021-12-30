@@ -27,7 +27,13 @@ io.on('connection',client => {
     client.on('startgame', handleStartGame);
     client.on('chancellorselected', handleChancellorSelected);
     client.on('voted', handleVoted);
+    client.on('onediscarded', handleOneDiscarded);
 
+    function handleOneDiscarded(discarded) {
+        discardCard = JSON.parse(discardCard);
+        console.log(discardCard);
+        client.to(game.president.id).emit()
+    }
     function initMode() {
         // if first game elect president at random
     }
@@ -76,6 +82,11 @@ io.on('connection',client => {
                 console.log(state.chancellor_elect);
                 state.electChancellor(state.chancellor_elect);
                 io.in(roomId).emit('chancellorelected', JSON.stringify(state.chancellor));
+
+                // legislation 
+                //have the president pick one card
+                client.to(state.president.id).emit('discardone', JSON.stringify(state.drawFromPile(3)))
+
 
             } else {
                 state.votes = {}
@@ -324,4 +335,9 @@ io.on('connection',client => {
     });
     
     
+
+
+
+
+
     io.listen(3000);

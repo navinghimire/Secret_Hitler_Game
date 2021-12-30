@@ -16,8 +16,8 @@ let joinGameAliasElem = document.getElementById('joinGameAlias');
 let startGameBtn = document.getElementById('startGameBtn');
 let alertDiv = document.getElementById('alertDiv');
 let numPlayersElem = document.getElementById('numPlayersDisplay');
-let drawPile = document.getElementById('drawPile');
-let discardPile = document.getElementById('discardPile');
+// let drawPile = document.getElementById('drawPile');
+// let discardPile = document.getElementById('discardPile');
 
 let numLibPolDisplay = document.getElementById('numLibPolicies');
 let numFasPolDisplay = document.getElementById('numFasPolicies');
@@ -67,6 +67,7 @@ socket.on('inprogress', () => createAlert('Game already in progress', 'bg-danger
 socket.on('presidentpicked', president => createAlert(JSON.parse(president).alias + ' is the president now.'));
 socket.on('pickchancellor', handlePickChancellor);
 socket.on('someonevoted', handleSomeOneVoted);
+socket.on('discardone',handleDiscardOne);
 socket.on('countdown', time => {
     document.getElementById('timerText').innerText = time;
 });
@@ -81,7 +82,7 @@ socket.on('chancellorpicked', chancellorElect => {
     chancellorElect = JSON.parse(chancellorElect);
     createAlert(chancellorElect.alias + ' was choosen as chancellor candidate');
 });  
-
+let policiesOnHand;
 function handleSomeOneVoted(votes) {
     votes = JSON.parse(votes);
 
@@ -90,7 +91,29 @@ function handleSomeOneVoted(votes) {
     // newDiv.innerHTML = votes[vote];
     // newElement.appendChild(newDiv);
 }
-
+function handleDiscardOne(policies) {
+    policies = JSON.parse(policies);
+    policiesOnHand = policies;
+    console.log(policiesOnHand);
+    let displayElem = document.getElementById('drawnCards');
+    for(let i = 0; i < policies.length; i++) {
+        let policy = policies[i];
+        let policyBtn = document.createElement('div');
+        policyBtn.classList.add('col-1');
+        let btn = document.createElement('button');
+        btn.classList.add('col-auto','btn',policy==='liberal'?'btn-success':'btn-danger');
+        btn.id = i;
+        btn.innerText = policy + ' article';
+        btn.onclick = function() { discardCard.call(this, i)};
+        policyBtn.appendChild(btn);
+        displayElem.appendChild(policyBtn);
+    }
+}
+function discardCard(id) {
+    let remaining = policiesOnHand.splice(id,1);
+    console.log(policiesOnHand);
+    socket.emit('onediscarded', JSON.stringify(policiesOnHand));
+}
 
 var toastLiveExample = document.getElementById('liveToast')
 
@@ -102,7 +125,6 @@ function handleVoteChancellor(player) {
     
 }
 function handleVote(res) {
-    alert(res);
     voteDisplay.classList.remove('d-block');
     voteDisplay.classList.add('d-none');
     socket.emit('voted', JSON.stringify(res));
@@ -155,8 +177,8 @@ function createAlert(text, type, time=2000) {
 }
 
 function handleGameStarted() {
+    gameScreen.classList.add('d-block');
 
-    gameScreen.style.display='block';
 }
 
 function handleClientDisconnect(id) {
@@ -180,7 +202,6 @@ function handleNoAlias() {
 function handleUnknowGame() {
     createAlert("Game Room not available",'negative');
 }
-
 
 
 function handleGameCode(gameCode) {
@@ -218,15 +239,6 @@ function renderState(state) {
         createPlayerElement(player);
     }
     
-    // // create and add fascist card elements
-    // for (let i = 0; i<state.num_fas_pol_passed; i++) {
-    //     createCardElement('fascist',i+1);
-    // }
-    
-    // // create and add liberal card elements
-    // for (let i = 0; i<state.num_lib_pol_passed; i++) {
-    //     createCardElement('liberal',i+1);
-    // }
 
 
     createPolicyPlaceholder();
@@ -244,12 +256,16 @@ function renderState(state) {
     numFasPolDisplay.innerText = gameState.num_fas_pol_passed;
 
 
-    drawPile.innerText = gameState.drawPileCardCount;
-    discardPile.innerText = gameState.discardPileCardCount;
+    // drawPile.innerText = gameState.drawPileCardCount;
+    // discardPile.innerText = gameState.discardPileCardCount;
 
     numPlayersElem.innerText = gameState.numPlayers;
 
 }
+function init(){
+
+}
+
 function createPolicyPlaceholder() {
     for (let i = 0; i<gameState.num_fas_pol_to_win; i++) {
         createCardElement('fascist',i+1);

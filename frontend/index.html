@@ -23,9 +23,22 @@
             </div>
           </div>
 
-        <div class="container">
+        <div class="container-fluid">
             <!-- <h1>Secret Hitler <span id='gameCode'></span></h1> -->
-
+            <!-- <div class="player liberal">
+                <div class="container h-100">
+                    <div class="row h-75 position-relative p-2 playerName">
+                        <p>Navin</p>
+                        <div class="circle position-absolute justify-content-center align-items-center d-flex">
+                            <h1>LIBERAL</h1>
+                        </div>
+                    </div>
+                    <div class="row playerRole h-25 w-100 border-danger border d-flex ">
+                        <p>President</p>
+                    </div>
+                </div>
+            </div> -->
+            
 
             <div class="container w-50 mt-5" id ='menuScreen'>
 
@@ -95,8 +108,8 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
-                    <div class="vote border p-2 d-block" id='voteD'>
+                <div class="col-12 d-none"  id='voteD'>
+                    <div class="vote border p-2 d-block">
                         <div class="timer">
                             <p class='border' id='timerText'>10</p>
                         </div>
@@ -104,22 +117,36 @@
                             <h5>Do you accept <span id='chancellorElect'></span> as your new chancellor?</h5>
                         </div>
                         <div class="row" >
-                            <div class="col-6">
+                            <div class="col-3">
                                 <button type='button' class='btn btn-success' onclick="handleVote('yes')">YES!</button>
                             </div>
-                            <div class="col-6">
+                            <div class="col-3">
                                 <button type='button' class='btn btn-danger' onclick="handleVote('no')">NO!</button>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-12 d-block"  id='drawnCardsDisplay'>
+                        <div class="border p-2 d-block">
+                            <div class="row w-100">
+                                <h5>Please discard one card from below</h5>
+                            </div>
+                            <div class="row" id='drawnCards'>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="row">
                 
-                <div class="col-10"  id="gameScreen">
+                <div class="col"  id="gameScreen">
                     <hr />
-                    <div class="container">
+                    <div>
                         <div class="row">
                             <div class="col-10">
                                 <div class="liberal" >
@@ -128,22 +155,15 @@
                                     </div>  
                                 </div>
                             </div>
-                            <div class="col-2 " id='drawPile'>
-                                Draw Pile
-                            </div>
                         </div>
                         <br/>
                         <div class="row">
-                            <div class="col-10">
+                            <div class="col">
                                 <div class="fascist">
                                     <h3 class="jumbo">Fascist Policies <span class ="badge bg-danger" id="numFasPolicies">0</span></h3>
                                     <div class="cards border border-danger" id="fascist_cards">
                                     </div>
                                 </div>
-
-                            </div>
-                            <div class="col-2" id='discardPile'>
-                                DiscardPile
                             </div>
                         </div>
                         <p>Failed Elections Counter: <span id="failed_presidency">0</span></p>

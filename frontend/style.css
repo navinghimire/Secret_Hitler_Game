@@ -38,18 +38,85 @@ body {
     right:0px;
 
 }
+#drawnCards .btn{
+    height: 100px;
+}
+
+.players {
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    flex-direction: row;
+    
+}
 
 .player .selected {
     background-color: palegreen;
 }
 
 .player:hover {
-    border: solid 10px red;
+    box-shadow: 9px 11px 16px -4px rgba(0,0,0,0.53);
+    cursor: move;
 }
-.vote .row .col-6 .btn {
+.player {
+    border-radius: 10px;
+    height: 150px;
+    width: 150px;
+    overflow: hidden;
+
+}
+.player .circle {
+    height: 100%;
+    width: 30px;
+    background-color: rgb(117, 221, 247);
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+.player.liberal {
+    background-color: rgb(30, 203, 247);
+}
+.liberal .playerRole p{
+    color: white;
+}
+
+.playerName p {
+    font-size: 1.5em;
+    
+}
+.playerRole p {
+    
+}
+.circle h1 {
+    color:rgb(184, 234, 247);;
+    weight: 800;
+    font-size: 20px;
+    writing-mode: vertical-lr;
+    text-orientation: sideways-right;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.player p {
+    color: white;
+}
+.player>h1{
+    font-size: 100px;
+}
+
+.president {
+    background-color: gold;
+    color: black;
+    border: solid 2px darkgoldenrod;
+}
+.chancellor {
+    background-color: silver;
+    color: black;
+    border: solid 2px grey;
+}
+
+.vote .row .col-3 .btn {
     height:100px;  
     width: 100%;
-    font-size: 50px;
+    font-size: 35px;
     font-weight: 100;      
 }
 
@@ -117,42 +184,7 @@ body {
     display: flex;
     border-radius: 5px;
 }
-.players {
-    display: flex;
-    justify-content: left;
-    align-items: left;
-    flex-direction: row;
-    
-}
 
-.player {
-    border-radius: 10px;
-    height: 200px;
-    width: 150px;
 
-}
-.player>h1{
-    font-size: 100px;
-}
 
-.roles {
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-}
-.president {
-    background-color: gold;
-    color: black;
-    border: solid 2px darkgoldenrod;
-}
-.chancellor {
-    background-color: silver;
-    color: black;
-    border: solid 2px grey;
 
-}
-
-.player:hover {
-    border: solid 6px red;
-    cursor: move;
-}

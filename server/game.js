@@ -173,7 +173,7 @@ class Game {
         return returnArray;
     }
 
- 
+     
 
     get nextPresident() {
         let currentIndex = this.getPlayerId(this.president);
