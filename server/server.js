@@ -1,4 +1,9 @@
-const {MAX_PLAYERS, MIN_PLAYERS, WAITING, IN_PROGRESS} = require('./constants');
+const {MAX_PLAYERS, MIN_PLAYERS, WAITING, IN_PROGRESS, 
+    POWER_EXAMINE_TOP_3,
+    POWER_EXAMINE_MEMBERSHIP,
+    POWER_KILL,
+    POWER_KILL_VETO,
+    POWER_PICK_PRESIDENT} = require('./constants');
 const { on } = require('nodemon');
 const { Game, Player } = require('./game');
 const { makeid } = require('./utils');
@@ -44,7 +49,16 @@ io.on('connection',client => {
             // exercise presidential power if there is one;
 
             if (state.isTherePresidentialPower()) {
-                console.log('This is the presidential power ' + state.isTherePresidentialPower());
+                const presidentialPower = state.isTherePresidentialPower()
+                console.log('This is the presidential power ' + presidentialPower );
+                console.log(presidentialPower,state.top3);
+                if (presidentialPower === POWER_EXAMINE_TOP_3) {
+                    console.log(state.top3);
+                    io.to(state.president.id).emit(POWER_EXAMINE_TOP_3, JSON.stringify(state.top3));
+
+
+                }
+
             } else {
                 console.log('No presidential power');
             }
@@ -80,7 +94,6 @@ io.on('connection',client => {
 
     function handleVoted(res) {
         res = JSON.parse(res);
-        console.log(res);
         // if (isValidRoom(gameRooms[client.id])) {
         //     return;
         // }
@@ -95,12 +108,9 @@ io.on('connection',client => {
         }
         io.in(roomId).emit('someonevoted' , JSON.stringify(state.votes));
 
-        console.log(state.votes);
         if (state.hasEveryOneVoted()){
             io.in(roomId).emit('everyonevoted');
             if(state.isChancellorElected()) {
-                console.log('yay');
-                console.log(state.chancellor_elect);
                 state.electChancellor(state.chancellor_elect);
                 io.in(roomId).emit('chancellorelected', JSON.stringify(state.chancellor));
 
@@ -138,8 +148,6 @@ io.on('connection',client => {
         
         client.to(roomId).emit('chancellorpicked', JSON.stringify(state.chancellor_elect));
 
-        console.log('chancellor elect below ')
-        console.log(state.chancellor_elect);
         io.in(roomId).emit('votechancellor', JSON.stringify(state.chancellor_elect));
 
         let time = 10;
@@ -170,10 +178,22 @@ io.on('connection',client => {
             client.emit('notenoughplayers', MIN_PLAYERS);
             return;
         }
+
+        let startCountDown = 3;
+
+        let startCount = setInterval( () => {
+            io.to(roomId).emit('startcountdown', startCountDown);
+            if (startCountDown === 0) {
+                clearInterval(startCount);
+            }
+            
+            startCountDown -= 1;
+
+        },1000);
+        
+
         state.game_state = IN_PROGRESS;
-        
-        
-        // console.log(state);
+
         state.assignPlayerRoles();
         
         
@@ -218,9 +238,6 @@ io.on('connection',client => {
 
        
 
-
-        // states[roomName].players[randomHitlerIndex].role = 'hitler';
-        // console.log(in37070
 
 
         io.to(roomId).emit('gamestate',JSON.stringify(state.gameState));
@@ -274,7 +291,7 @@ io.on('connection',client => {
         
         // now the state of the room has changed emit the changes to the client
         client.emit('gamestate', JSON.stringify(gameStates[roomId].gameState));
-        
+        io.to(roomId).emit('newplayerjoined',JSON.stringify(player));
         
         console.log('Client '+  client.id + ' created the room(' + roomId +')' );
         
@@ -293,7 +310,7 @@ io.on('connection',client => {
             client.emit('unknownroom');
             return;
         }
-        console.log(gameStates[roomId]);
+        
 
         if (gameStates[roomId].game_state === IN_PROGRESS) {
             client.emit('inprogress');
@@ -303,7 +320,8 @@ io.on('connection',client => {
             client.emit('noalias')
             return ;
         }
-        gameStates[roomId].addPlayer(new Player(alias,null,client.id));
+        let newPlayer = new Player(alias,null,client.id);
+        gameStates[roomId].addPlayer(newPlayer);
         gameRooms[client.id] = roomId;
 
         
@@ -312,7 +330,7 @@ io.on('connection',client => {
         io.to(client.id).emit('gamecode', JSON.stringify(roomId));
         // console.log(state);
         io.to(roomId).emit('gamestate',JSON.stringify(gameStates[roomId].gameState));
-        client.to(roomId).emit('newplayerjoined',alias);
+        io.to(roomId).emit('newplayerjoined',JSON.stringify(newPlayer));
         // when 3rd player joins the game we know we can start the game
 
 
@@ -328,6 +346,7 @@ io.on('connection',client => {
     }
     function handleDisconnect() {
         let roomId = gameRooms[client.id]
+        state = gameStates[roomId];
         if (!isValidRoom(roomId)) {
             return;
         }
@@ -337,13 +356,14 @@ io.on('connection',client => {
         // get the room the client was on
 
 
-        gameStates[roomId].removePlayer(client.id);
         // remove current player from the game
-
+        
         // console.log(gameStates[roomId]);
-
+        let playerToDisconnect = state.getPlayerFromId(client.id);
+        
         io.in(roomId).emit('gamestate',JSON.stringify(gameStates[roomId].gameState));
-        client.to(roomId).emit('clientdisconnect',JSON.stringify(client.id));
+        client.to(roomId).emit('clientdisconnect',JSON.stringify(playerToDisconnect));
+        gameStates[roomId].removePlayer(client.id);
     }
 
     

@@ -8,11 +8,11 @@
         <link rel="stylesheet" href="style.css">
         <title>Secret Hitler</title>
     </head>
+    
     <body>
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <!-- <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
             <div id="liveToast" class="toast bg-primary text-white fade show" role="alert" aria-live="assertive" aria-atomic="true">
               <div class="toast-header bg-primary text-white">
-                <!-- <img src="..." class="rounded me-2" alt="..."> -->
                 <strong class="me-auto">Secret Hitler</strong>
                 <small>Now</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -21,7 +21,12 @@
                 Welcome. Start by hosting or joining a game.
               </div>
             </div>
-          </div>
+          </div> -->
+
+
+        <div class="policyCard">
+            
+        </div> 
 
         <div class="container-fluid">
             <!-- <h1>Secret Hitler <span id='gameCode'></span></h1> -->
@@ -46,7 +51,7 @@
             <div class="container w-50 mt-5" id ='menuScreen'>
 
 
-                <div class="row" id="alertDiv"></div>
+                
                 <div class="row border p-2">
                     <form>
                         <div class="mb-3">
@@ -85,27 +90,23 @@
             </form> -->
   
             <div class="row" id='playerScreen'>
-                <div class="row">
-                    <hr />
-                    <div class="col-10">
+                
+                <div class="d-flex justify-content-between align-items-end border w-100" >
+
+                    <div>
                         <h3>Players <span id ='numPlayersDisplay'class="badge bg-secondary"></span></h3>
 
                     </div>
-                    <div class="col-2 border mb-3 bg-dark text-light text-center pt-2 rounded" id='gameCodeBlock'>
-                            <div class="row">
-                                <span>Your Gamecode</span>
-                            </div>
-                            <div class="row">
+                    <div id='gameCodeBlock' class="border p-2 mt-2 rounded d-flex justify-content-center align-items-center flex-column bg-dark text-white">
+                            <span>Your Gamecode</span>
                             <h2 id="gameCode">&nbsp;</h2>
-                            </div>
-                    
                     </div>
-                <hr/>
                 </div>
-
-                <div class="players" id="players_slot">
+   
+                <div class="players mb-2 mt-2" id="players_slot">
                     
                 </div>
+                <div class="container" id="alertDiv"></div>
                 <div class="row">
                     <button class="m-3 btn btn-lg btn-success col-auto" id = 'startGameBtn'>Start Game</button>
                 </div>
@@ -118,22 +119,7 @@
             </div>
             <div class="row">
                 <div class="col-12 d-none"  id='voteD'>
-                    <div class="vote border p-2 d-block">
-                        <div class="timer">
-                            <p class='border' id='timerText'>10</p>
-                        </div>
-                        <div class="row w-100">
-                            <h5>Do you accept <span id='chancellorElect'></span> as your new chancellor?</h5>
-                        </div>
-                        <div class="row" >
-                            <div class="col-3">
-                                <button type='button' class='btn btn-success' onclick="handleVote('yes')">YES!</button>
-                            </div>
-                            <div class="col-3">
-                                <button type='button' class='btn btn-danger' onclick="handleVote('no')">NO!</button>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="row">
@@ -156,24 +142,16 @@
                 <div class="col"  id="gameScreen">
                     <hr />
                     <div>
-                        <div class="row">
-                            <div class="col">
                                 <div class="liberal" >
                                     <h3 class="jumbo">Liberal Policies <span class ="badge bg-success" id="numLibPolicies">0</span></h3>
-                                    <div class="cards border border-success" id="liberal_cards">
+                                    <div class="cards border border-success d-flex" id="liberal_cards">
                                     </div>  
                                 </div>
-                            </div>
-                        </div>
-                        <br/>
-                        <div class="row">
-                            <div class="col">
                                 <div class="fascist">
                                     <h3 class="jumbo">Fascist Policies <span class ="badge bg-danger" id="numFasPolicies">0</span></h3>
                                     <div class="cards border border-danger" id="fascist_cards">
                                     </div>
-                                </div>
-                            </div>
+
                         </div>
                         <p>Failed Elections Counter: <span id="failed_presidency">0</span></p>
                         <hr/> 

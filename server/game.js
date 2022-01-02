@@ -100,6 +100,12 @@ class Game {
         }
         return temp;
     }
+    get top3() {
+        console.log(this.draw_pile);
+        console.log(this.discardPileCardCount);
+        return this.draw_pile.filter((card,index) => index > this.drawPileCardCount-4);
+    }
+
     isTherePresidentialPower() {
         // let partyMembership = this.getPartyMembership(this.president.id);
         // if (partyMembership !== 'fascist') {
