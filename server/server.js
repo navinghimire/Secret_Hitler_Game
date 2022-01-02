@@ -55,16 +55,25 @@ io.on('connection',client => {
                 if (presidentialPower === POWER_EXAMINE_TOP_3) {
                     console.log(state.top3);
                     io.to(state.president.id).emit(POWER_EXAMINE_TOP_3, JSON.stringify(state.top3));
-
-
                 }
 
             } else {
                 console.log('No presidential power');
             }
             
-            
+            state.electPresident(state.nextPresident)
+
+            io.in(roomId).emit('presidentpicked', JSON.stringify(state.president));
+
+        
+            io.to(state.president.id).emit('pickchancellor');
+
+
             io.to(roomId).emit('gamestate',JSON.stringify(state.gameState));
+            
+            
+            
+            
             return;
         }
          client.to(state.chancellor.id).emit('discardone',JSON.stringify(discardCard));
@@ -111,6 +120,10 @@ io.on('connection',client => {
         if (state.hasEveryOneVoted()){
             io.in(roomId).emit('everyonevoted');
             if(state.isChancellorElected()) {
+
+                // reset votes
+                state.votes = {};
+
                 state.electChancellor(state.chancellor_elect);
                 io.in(roomId).emit('chancellorelected', JSON.stringify(state.chancellor));
 
@@ -310,7 +323,7 @@ io.on('connection',client => {
             client.emit('unknownroom');
             return;
         }
-        
+
 
         if (gameStates[roomId].game_state === IN_PROGRESS) {
             client.emit('inprogress');
