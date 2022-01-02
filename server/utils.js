@@ -9,4 +9,5 @@ function makeid(length) {
       myid += characters.charAt(Math.floor(Math.random()* charlen));
     }
     return myid;
+    // return '1'
 }
