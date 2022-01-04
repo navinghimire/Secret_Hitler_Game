@@ -50,7 +50,8 @@ class Game {
         this.totalFasArticles = 11;
         this.totalLibArticles = 6;
         this.topThree = [];
-        this.topTwo = []
+        this.topTwo = [];
+        this.gameSession = SESSION_PRESIDENCY;
     }
     addPlayer(player) {
         if (this.numActivePlayers < MAX_PLAYERS) {
@@ -102,15 +103,43 @@ class Game {
     }
     drawCards() {
         let top3 = [];
-        
-        for(let i = 0; i< 3;i++) {
-            if (this.numDrawPile > 0) {
-                top3.push(this.drawPile.pop());
-            } 
+        //draw pile has 3 or more cards -> pop 3 from drawPile -> add it to 
+        if (this.numDrawPile >=3) {
+            for(let i = 0; i< 3;i++) {
+                    let top = this.drawPile.pop();
+                    top3.push(top);
+            }
+            this.topThree = top3;
+            return top3;
+        } else {
+            let newDrawPile = this.discardPile;
+
+            // shuffle the discard pile
+            this.discardPile = this.discardPile.sort((a,b) => 0.5-Math.random());
+
+            while(this.numDrawPile) {
+                console.log(this.drawPile[this.numDrawPile -1]);
+                newDrawPile.push(this.drawPile.pop());
+            }
+            this.drawPile = newDrawPile;
+
+      
+            this.discardPile = [];
+            return this.drawCards();
         }
-        this.topThree = top3;
-        return top3;
+
     }
+    discardOne(articles, articleToDiscard) {
+        if (!articles) return false;
+        let ind = articles.indexOf(articleToDiscard);
+        if (ind >= 0 ) {
+            let discarded = articles.splice(ind,1);
+            this.discardPile.push(articleToDiscard);
+            return articles;
+        }
+        return false;
+    }
+
 
     makePresident(player) {
         // set the role of existing president to null
@@ -131,7 +160,7 @@ class Game {
             if (curPresId + 1 >= this.numActivePlayers) {
                 return this.activePlayers[0];
             } else {
-                return this.activePlayers[curPresId+1];
+                return this.activePlayers[curPresId+1];articleToDiscard
             }
         }
     }
@@ -146,7 +175,7 @@ class Game {
 
     wasInLastCabinet(player) {
         if (this.pastCabinet.president) {
-            if (player.id === this.pastCabinet.president.id) {
+            if (player.id === this.pastCabinet.president.id) {return
                 return true;
             }
         }
@@ -175,6 +204,7 @@ class Game {
         playerIn.role = CHANCELLOR;
         this.chancellor = playerIn
     }
+
 
     
 
@@ -234,6 +264,7 @@ class Game {
                 return null;
         }
     } 
+
     get fascistPresidentialPower(){
         if (this.numActivePlayers === 5 || this.numActivePlayers === 6) {
             return ({
@@ -262,6 +293,8 @@ class Game {
         }
 
     }
+
+
     
 
 }
@@ -285,14 +318,5 @@ game.makePresident(game.nextPresident);
 
 
 game.makeChancellor(game.activePlayers[2]);
-game.initDrawPile();
-console.log(game);
+game.initDrawPile(game.totalFasArticles);
 
-console.log(game);
-
-// election
-
-
-
- 
- 
