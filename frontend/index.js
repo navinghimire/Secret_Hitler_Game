@@ -62,6 +62,7 @@ class Game {
     addPlayer(player) {
         if (this.numActivePlayers < MAX_PLAYERS) {
             this.activePlayers.push(player);
+            console.log(`Added player ${player.name}`);
             return true;
         }
         return false;
@@ -70,6 +71,8 @@ class Game {
         if(this.isEligibleForChancellor(player)) {
             this.chancellorElect = player;
             this.chancellorElect.role = CHANCELLOR_ELECT;
+
+            console.log(`${player.name} is our new Chancellor elect`);
             return true;
         }
         return false;
@@ -83,6 +86,8 @@ class Game {
         this.activePlayers.forEach((player,id,players) => {
             if(playerIn.id === player.id) {
                 players.splice(id,1);
+
+                console.log(`Removed player ${playerIn.name}`);
                 return true;
             }
         });
@@ -122,6 +127,8 @@ class Game {
                 this.drawPile.push(LIBERAL);
             }
         }
+
+        console.log(`Draw Pile generated ${this.drawPile}`);
     }
     drawCards() {
         let top3 = [];
@@ -132,6 +139,8 @@ class Game {
                     top3.push(top);
             }
             this.topThree = top3;
+
+            console.log(`3 cards drawn ${top3}`);
             return top3;
         } else {
             let newDrawPile = this.discardPile;
@@ -157,6 +166,11 @@ class Game {
         if (ind >= 0 ) {
             articles.splice(ind,1);
             this.discardPile.push(articleToDiscard);
+            console.log(`${articleToDiscard} discarded, ${articles} in hand`);
+            console.log(`Draw Pile ${this.drawPile}`);
+            console.log(`Discard Pile ${this.discardPile}`);
+            
+            
             return articles;
         }
         return;
@@ -166,12 +180,14 @@ class Game {
     makePresident(newPresident) {
         // set the role of existing president to null
         // if (this.president) {
-        //     // console.log(this.president);
+        //     // (this.president);
         //     this.president.role = null;
         //     // this.pastCabinet.president = this.president;
         // }
         newPresident.role = PRESIDENT;
         this.president = newPresident;
+
+        console.log(`${newPresident.name} elected as president`);
     }
     get state() {
         return this;
@@ -202,7 +218,13 @@ class Game {
         this.pastCabinet.president = this.president;
         this.pastCabinet.chancellor = this.chancellor;
         this.president.role = null;
-        this.chancellor.role = null
+        if (this.chancellor) {
+
+            this.chancellor.role = null
+        }
+        console.log(`Round ${round++} done. LP ${this.libPolicyCount}, FP ${this.fasPolicyCount} `);
+        console.log(``);
+        
 
     }
 
@@ -233,6 +255,8 @@ class Game {
         this.chancellor = playerIn;
         this.votes = {};
 
+        console.log(`${playerIn.name} is our new chancellor`);
+
     }
     isEligibleForChancellor(player) {
         // president cannot be chancellor
@@ -249,22 +273,25 @@ class Game {
         let randomIndex = Math.floor(Math.random() * this.numActivePlayers);
         this.fascists.push(this.activePlayers[randomIndex]);   
         this.hitler = this.activePlayers[randomIndex];
-
+        console.log(`${this.hitler.name} is the hitler`);
         let s = new Set();
         while(s.size < this.fascistCount-1) {
             let newIndex = Math.floor(Math.random() * this.numActivePlayers);
             if (newIndex === randomIndex) continue; //this is hitler so skip
             s.add(newIndex);
         }
+        s.add(randomIndex);
         for (let i = 0; i < this.numActivePlayers; i++) {
             if (s.has(i)) {
                 this.fascists.push(this.activePlayers[i]);
-            } else if (i === randomIndex) {
-                continue;
+                console.log(`${this.activePlayers[i].name} is a fascist`);
             } else {
                 this.liberals.push(this.activePlayers[i]);
+                console.log(`${this.activePlayers[i].name} is a liberal`);
             }
         }
+
+        
     }
     castVote(player, vote) {
 
@@ -313,6 +340,11 @@ class Game {
                 return null;
         }
     } 
+    exercisePresidentialPower() {
+        // president and end of round
+
+
+    }
 
     get fascistPresidentialPower(){
         if (this.numActivePlayers === 5 || this.numActivePlayers === 6) {
@@ -348,19 +380,38 @@ class Game {
         } else {
             this.libPolicyCount ++;
         }
+        console.log(`${policy} policy passed`);
     }
     passTopPolicyAtRandom() {
         let top = game.drawPile.pop();
         game.discardPile.push(top);
         this.passPolicy(top);
+        console.log(`${top} policy passed at random`);
     }
+
+    // const SESSION_PRESIDENCY = 'presidency';
+    // const SESSION_ELECTION_PRIMARY = 'election_primary';
+    // const SESSION_ELECTION_GENERAL = 'election_general';
+    // const SESSION_LEGISLATION_PRESIDENT = 'legislation_president';
+    // const SESSION_LEGISLATION_CHANCELLOR = 'legislation_chancellor';
+
+    gameSession(session) {
+        switch(session) {
+            case SESSION_PRESIDENCY: 
+                
+
+        }
+    } 
+
 }
+
+
 
 // create new game instance
 game = new Game();
 
 // add players
-for(let i = 0; i< MAX_PLAYERS; i++) {
+for(let i = 0; i< 6; i++) {
     let player = new Player(i, `Player ${i}`, null);
     game.addPlayer(player);
 }
@@ -369,13 +420,17 @@ game.assignRandomPartyMembership();
 
 // initialize drawPile;
 game.initDrawPile(game.totalFasArticles);
- 
+let round = 0;
+
+
+
 
 do {
     
+
     game.makePresident(game.nextPresident);
-    // console.log(game.president);
-    // console.log(game.president);
+    // (game.president);
+    // (game.president);
     //ELECTION
     let chancellorElect;
     do {
@@ -393,18 +448,17 @@ do {
         if (result) {
             game.makeChancellor(chancellorElect);
             game.numFailedElection = 0;
-
+            console.log('Election Passed');
         } else {
-            console.log('election failed');
             game.numFailedElection++;
             game.chancellor = null;
             
             // game.chancellorElect.role = null;
             
             game.chancellorElect = null;
-
+            console.log(`Election failed : ${game.numFailedElection} x times`);
             if(game.numFailedElection >= 3) {
-                console.log("election failed, passing policy at random");
+                console.log("Flection failed, passing policy at random");
                 game.passTopPolicyAtRandom();
                 game.numFailedElection = 0;
             }
@@ -435,5 +489,5 @@ do {
 } while(!game.isGameOver())
 
 function log(data) {
-    console.log(JSON.stringify(data));
+    (JSON.stringify(data));
 }
