@@ -53,11 +53,12 @@ class Game {
         this.discardPile = [];
         this.totalFasArticles = 11;
         this.totalLibArticles = 6;
-        this.topThree = [];
-        this.topTwo = [];
+        this.drawn = [];
         this.votes = {};
         this.gameSession = SESSION_PRESIDENCY;
         this.numFailedElection = 0;
+        this.round = 0;
+        this.policyToPass = null;
     }
     addPlayer(player) {
         if (this.numActivePlayers < MAX_PLAYERS) {
@@ -79,7 +80,9 @@ class Game {
     }
 
     isPresident(player) {
-        return this.president.id === player.id?true:false;
+        if (this.president) {
+            return this.president.id === player.id?true:false;
+        }
     }
 
     removePlayer(playerIn) {
@@ -93,20 +96,23 @@ class Game {
         });
         return false;
     }
-    isGameOver() {
+    get winner() {
         if (!this.chancellor) return;
         // 3 or more fascist policies passed and hitler elected chancellor
         if (this.fasPolicyCount >= 3 && this.hitler.id === this.chancellor.id) {
             console.log('Fascist won by passing 3 Fascist policies and electing hitler as chancellor');
+        
             return FASCIST;
         }
         // all fascist policies passed
         if (this.fasPolicyCount === this.totalFasPolicies) {
             console.log('Fascist won by passing 5 fascist policies');
+         
             return FASCIST;
             // all liberal policies passed
         } else if (this.libPolicyCount === this.totalLibPolicies) {
             console.log('Liberal won by passing 6 liberal policies');
+           
             return LIBERAL;
         }
         return false;
@@ -131,20 +137,17 @@ class Game {
         console.log(`Draw Pile generated ${this.drawPile}`);
     }
     drawCards() {
-        let top3 = [];
         //draw pile has 3 or more cards -> pop 3 from drawPile -> add it to 
         if (this.numDrawPile >=3) {
             for(let i = 0; i< 3;i++) {
                     let top = this.drawPile.pop();
-                    top3.push(top);
+                    this.drawn.push(top);
             }
-            this.topThree = top3;
-
-            console.log(`3 cards drawn ${top3}`);
-            return top3;
+            console.log(`3 cards drawn ${this.drawn}`);
+            return;
         } else {
-            let newDrawPile = this.discardPile;
 
+            let newDrawPile = this.discardPile;
             // shuffle the discard pile
             this.discardPile = this.discardPile.sort((a,b) => 0.5-Math.random());
 
@@ -192,7 +195,10 @@ class Game {
     get state() {
         return this;
     }
-
+    nextRound() {
+        this.round++;
+        return this.round;
+    }
     get nextPresident() {
         if (!this.president) {
             const randomIndex = Math.floor(Math.random() * this.numActivePlayers);
@@ -217,14 +223,16 @@ class Game {
     endOfRoundHousekeeping() {
         this.pastCabinet.president = this.president;
         this.pastCabinet.chancellor = this.chancellor;
-        this.president.role = null;
+        if (this.president) {
+            this.president.role = null;
+        }
         if (this.chancellor) {
-
             this.chancellor.role = null
         }
-        console.log(`Round ${round++} done. LP ${this.libPolicyCount}, FP ${this.fasPolicyCount} `);
+        this.policyToPass = null;
+        console.log(`Round ${this.round} done. LP ${this.libPolicyCount}, FP ${this.fasPolicyCount} `);
         console.log(``);
-        
+        this.nextRound();
 
     }
 
@@ -389,105 +397,100 @@ class Game {
         console.log(`${top} policy passed at random`);
     }
 
-    // const SESSION_PRESIDENCY = 'presidency';
-    // const SESSION_ELECTION_PRIMARY = 'election_primary';
-    // const SESSION_ELECTION_GENERAL = 'election_general';
-    // const SESSION_LEGISLATION_PRESIDENT = 'legislation_president';
-    // const SESSION_LEGISLATION_CHANCELLOR = 'legislation_chancellor';
-
-    gameSession(session) {
-        switch(session) {
-            case SESSION_PRESIDENCY: 
-                
-
+    init(){
+        // add players Random Players
+        for(let i = 0; i< 6; i++) {
+            let player = new Player(i, `Player ${i}`, null);
+            this.addPlayer(player);
         }
-    } 
+
+        // assign player roles
+        this.assignRandomPartyMembership();
+
+        // initialize drawPile;
+        this.initDrawPile(this.totalFasArticles);
+        game.holdElectionPrimary();
+        
+    }
+    holdElectionPrimary() {
+        do {
+            game.chancellorElect = game.activePlayers[Math.floor(Math.random() * game.numActivePlayers)];
+        } while(!game.isEligibleForChancellor(game.chancellorElect));
+
+        this.electChancellor(this.chancellorElect);
+        this.holdElectionGeneral();
+    }
+    holdElectionGeneral() {
+        if(this.chancellorElect) {
+            for(let player of this.activePlayers) {
+                this.castVote(player, (Math.random() > 0.5)?VOTE_YES:VOTE_NO);
+            }
+            let result = this.getElectionResult();
+            if (result) {
+                this.makeChancellor(this.chancellorElect);
+                this.numFailedElection = 0;
+
+                console.log('Election Passed');
+                if (this.winner) {
+                    console.log("HITLER");
+                    return;
+                }
+                
+                this.holdLegislationPresident();
+
+
+            } else {
+                this.numFailedElection++;
+                this.chancellor = null;
+    
+            
+                // this.chancellorElect.role = null;
+                
+                this.chancellorElect = null;
+                console.log(`Election failed : ${this.numFailedElection} x times`);
+                if(this.numFailedElection >= 3) {
+                    console.log("Flection failed, passing policy at random");
+                    this.passTopPolicyAtRandom();
+                    this.numFailedElection = 0;
+                }
+
+                this.endOfRoundHousekeeping();
+                this.holdElectionPrimary();
+                // continue;
+            }
+        }
+    }
+    holdLegislationPresident() {
+        // legislation
+
+        this.drawCards();
+        // emit drawn cards to president
+
+        //president discards a card;
+        let randomCardToDiscard = this.drawn[Math.floor(Math.random() * this.drawn.length)];
+        this.discardOne(this.drawn, randomCardToDiscard);
+        this.holdLegislationChancellor();
+        
+    }
+    holdLegislationChancellor() {
+        let randomCardToDiscard = this.drawn[Math.floor(Math.random() * this.drawn.length)];
+        game.discardOne(this.drawn, randomCardToDiscard);
+        this.policyToPass = this.drawn.pop();
+        this.passPolicy(this.policyToPass);
+        if (this.winner) {
+            return;
+        }
+        this.endOfRoundHousekeeping();
+        this.holdElectionPrimary();
+    }
 
 }
-
 
 
 // create new game instance
 game = new Game();
+game.init();
+// (game.president);
+// (game.president);
+//ELECTION
 
-// add players
-for(let i = 0; i< 6; i++) {
-    let player = new Player(i, `Player ${i}`, null);
-    game.addPlayer(player);
-}
-// assign player roles
-game.assignRandomPartyMembership();
-
-// initialize drawPile;
-game.initDrawPile(game.totalFasArticles);
-let round = 0;
-
-
-
-
-do {
-    
-
-    game.makePresident(game.nextPresident);
-    // (game.president);
-    // (game.president);
-    //ELECTION
-    let chancellorElect;
-    do {
-        chancellorElect = game.activePlayers[Math.floor(Math.random() * game.numActivePlayers)];
-    } while(!game.isEligibleForChancellor(chancellorElect));
-    game.electChancellor(chancellorElect);
-
-
-
-    if(chancellorElect) {
-        for(let player of game.activePlayers) {
-            game.castVote(player, (Math.random() > 0.5)?VOTE_YES:VOTE_NO);
-        }
-        let result = game.getElectionResult();
-        if (result) {
-            game.makeChancellor(chancellorElect);
-            game.numFailedElection = 0;
-            console.log('Election Passed');
-        } else {
-            game.numFailedElection++;
-            game.chancellor = null;
-            
-            // game.chancellorElect.role = null;
-            
-            game.chancellorElect = null;
-            console.log(`Election failed : ${game.numFailedElection} x times`);
-            if(game.numFailedElection >= 3) {
-                console.log("Flection failed, passing policy at random");
-                game.passTopPolicyAtRandom();
-                game.numFailedElection = 0;
-            }
-
-
-            game.endOfRoundHousekeeping();
-            continue;
-        }
-    }
-
-    // legislation
-
-    let drawnCards = game.drawCards();
-    // emit drawn cards to president
-
-    //president discards a card;
-    let randomCardToDiscard = drawnCards[Math.floor(Math.random() * drawnCards.length)];
-    let presidentDiscardedCard = game.discardOne(drawnCards, randomCardToDiscard);
-
-    randomCardToDiscard = presidentDiscardedCard[Math.floor(Math.random() * presidentDiscardedCard.length)];
-    let cardToPass = game.discardOne(presidentDiscardedCard, randomCardToDiscard);
-
-    game.passPolicy(cardToPass[0]);
-
-    game.endOfRoundHousekeeping();
-    
-
-} while(!game.isGameOver())
-
-function log(data) {
-    (JSON.stringify(data));
-}
