@@ -1,4 +1,172 @@
-
-html{
-    /* background-color: black; */
+*,*::after,*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
+
+:root {
+    --blue: #3ACBFB;
+    --red: #DE6868;
+    --light-blue: #CCCCE8;
+}
+html{
+    /* background: linear-gradient(0deg, var(--red) 0%, var(--blue) 100%); */
+
+}
+body {
+    /* background: (to bottom var(--blue) var(--red)); */
+    background: linear-gradient(0deg, var(--red) 0%, var(--blue) 100%);
+    /* background: linear-gradient(to left, #333, #333 50%, #eee 75%, #333 75%); */
+    overscroll-behavior: contain;
+    background-size: contain;
+    min-height: 100vh;
+}
+
+main {
+
+    position: relative;
+    flex-direction: column;
+    height: 100vh;
+    
+}
+section{
+    width: auto;
+}
+.bgSvg {
+    position: absolute;
+    opacity: .8;
+}
+#stability {
+    top: 2em;
+    left: calc(50%-2.5em);
+}
+#chaos {
+    bottom: 2em;
+    right: calc(50%-2.5em);
+}
+
+.input {
+
+    margin-bottom: .5em;
+    flex-direction: row;
+    color: white;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.input button{
+    height: 4em;
+    padding: 0 2em;
+    border-radius: 1em;   
+    border: none;
+    margin-top: .5em;
+}
+.input button:disabled {
+    /* background-color:red; */
+    opacity: .1;
+    display: none;
+}
+.input button:hover{
+    background-color:var(--light-blue);
+
+    transition: 0.2s ease-in-out;
+}
+
+#or{
+    flex-direction: column;
+    min-width: 10em;
+    color: var(--light-blue);
+}
+#or h1{
+    font-weight: 100;
+    font-size: 3em;
+}
+.input input{
+    background-color: white;
+    text-decoration: none;
+    border: none;
+    width: 10em;
+    max-height:2em;
+    border-radius: .5em;
+    padding:1em;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--light-blue);
+    outline: none;
+    font-size: 2em;
+} 
+.input input::placeholder{
+    color:var(--light-blue);
+    font-weight: 100;
+    font-style: italic;
+} 
+.hline{
+    height: 3em;
+    background-color: var(--light-blue);
+    border-radius: 20%;
+    width: 0.25em;
+}
+.code input {
+    width: 2em;
+    height: 2em;
+    padding:0 .2em;
+    color: var(--light-blue);
+    font-weight: 500;
+    transition: 0.5 ease;
+}
+.code {
+    /* margin: .4em; */
+    width: auto;
+    margin-bottom: 1.5em;
+}
+.code input:focus, .input input:focus {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    transition: 0.5s ease-in-out;
+
+}
+.left {
+    flex-direction: column;
+}
+form {
+    display: flex;
+    flex-direction: column;
+}
+.validationMessage {
+    /* border: solid 1px var(--light-blue); */
+    height:1em;
+    margin:.5em.5em;
+    color:white;
+    display: flex;
+    justify-content: center;
+    /* align-content: center; */
+}
+
+#loginScreen {
+    flex-direction: column;
+}
+#gameScreen {
+
+}
+
+
+@media screen and (min-width: 1000px) {
+    #loginScreen {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    #or {
+        flex-direction: row;
+    }
+    .hline{
+        height: .25em;
+        background-color: var(--light-blue);
+        border-radius: 20%;
+        min-width: 3em;
+        margin:0 1em;
+    }
+
+  }

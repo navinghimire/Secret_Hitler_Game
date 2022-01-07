@@ -1,4 +1,7 @@
 // set options for cors policy
+
+require('./game');
+require('./constants');
 const options = {
     cors: {
         origin: "http://127.0.0.1:8080",
@@ -9,10 +12,11 @@ const options = {
     allowEIO3: true
 };
 const { Server } = require('socket.io');
+const { Game } = require('./game');
 io = new Server(options);
 io.on('connection',socket => {
     socket.emit('init', socket.id);
-    
+
     
     
     socket.on('disconnect', (reason) =>{
