@@ -1,6 +1,7 @@
-const socket = io('http://127.0.0.1:3000');   
-socket.on('hostGame',(id) => {
-})
+
+// const socket = io('http://127.0.0.1:3000');   
+// socket.on('hostGame',(id) => {
+// })
 const frmHost = document.getElementById('frmHost');
 const inputAliasHost = document.getElementById('inputAliasHost');
 const inputAliasJoin = document.getElementById('inputAliasJoin');
@@ -19,8 +20,8 @@ frmLogin.forEach(elem => {
         alias = inputField.value;
         // validate alias
         if(alias.length < 3 || alias.length > 10) {
-            messageElem.textContent = "You surely have a good name! (3-10 chars)";
-            messageElem.classList.add('d-block');
+            messageElem.textContent = "You must have a better name! (3-10 chars)";
+            messageElem.classList.add('d-block','center');
             
             inputField.value = '';
             return;
@@ -67,6 +68,9 @@ function handleJoinGame() {
     loginScreen.classList.toggle('d-none');
 }
 
+
+
+
 moveOnMax = function(field, nextFieldId) {
     if (!field) return;
     field.value = field.value.toUpperCase();
@@ -89,4 +93,3 @@ moveOnMax = function(field, nextFieldId) {
         }
     }
 }
-

@@ -6,28 +6,31 @@
 
 :root {
     --blue: #3ACBFB;
-    --red: #DE6868;
+    --red: #e25f5f;
     --light-blue: #CCCCE8;
-}
-html{
-    /* background: linear-gradient(0deg, var(--red) 0%, var(--blue) 100%); */
+    --secondary-blue: #9A9AC1;
+    --hline-size: 0.4em;
 
 }
+
 body {
-    /* background: (to bottom var(--blue) var(--red)); */
-    background: linear-gradient(0deg, var(--red) 0%, var(--blue) 100%);
-    /* background: linear-gradient(to left, #333, #333 50%, #eee 75%, #333 75%); */
+    /* background: linear-gradient(0deg, var(--red) 15%, var(--blue) 85%); */
+    background: lightcoral;
     overscroll-behavior: contain;
-    background-size: contain;
+    /* background-size: contain; */
     min-height: 100vh;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.hitler{
+    background: linear-gradient(0deg,#7F000C,#A60414);
+    background: linear-gradient(to top left,#7F000C -10%,#A60414 200%) !important;
 }
 
 main {
-
     position: relative;
     flex-direction: column;
     height: 100vh;
-    
 }
 section{
     width: auto;
@@ -46,7 +49,6 @@ section{
 }
 
 .input {
-
     margin-bottom: .5em;
     flex-direction: row;
     color: white;
@@ -79,6 +81,7 @@ section{
     flex-direction: column;
     min-width: 10em;
     color: var(--light-blue);
+    margin: 1em 0em;
 }
 #or h1{
     font-weight: 100;
@@ -94,7 +97,7 @@ section{
     padding:1em;
     text-align: center;
     font-size: 1rem;
-    color: var(--light-blue);
+    color: var(--secondary-blue);
     outline: none;
     font-size: 2em;
 } 
@@ -104,17 +107,16 @@ section{
     font-style: italic;
 } 
 .hline{
-    height: 3em;
+    height: calc(10*var(--hline-size));
     background-color: var(--light-blue);
-    border-radius: 20%;
-    width: 0.25em;
+    border-radius: 1em;
+    width: var(--hline-size);
 }
 .code input {
     width: 2em;
     height: 2em;
     padding:0 .2em;
-    color: var(--light-blue);
-    font-weight: 500;
+    font-weight: 1000;
     transition: 0.5 ease;
 }
 .code {
@@ -146,13 +148,165 @@ form {
 
 #loginScreen {
     flex-direction: column;
+    display: none;
 }
-#gameScreen {
+
+.gameScreen {
+    width: 100%;
+    height: 100vh;
+}
+.player-self{
+    grid-column: 1/3;
+    grid-row:1/3; 
+}
+.vote {
+    border: solid 1px purple;
+    width: 2em;
+    height: 1em;
+    
+    position: absolute;
+    background: red;
+    bottom: 0;
+    right: 0;
+}
+.vote-yes{
+    background: green;
+}
+.vote-no {
+    background: red;
+}
+
+.players {
+    padding:.5rem;
+    display: grid;
+    gap: .5rem;
+    grid-template-columns: 1fr repeat(4,1fr);
+    min-height: 20%;
+    /* border: solid 1px red; */
+}
+.player {
+    /* background: linear-gradient(to top left,var(--blue) -10%,var(--red) 200%); */
+    background: lightslategray  ;
+    border-radius: .5rem;
+    backdrop-filter: blur(1px);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-height:5rem;
+    /* border: solid 1px white; */
+}
+.player.active {
+    background: #CCCCE8;
+}
+
+span.status {
 
 }
+span.role {
+
+}
+
+
+.status.online{
+    
+
+}
+.status.offline {
+    background-color: rgb(238, 76, 76);
+}
+
+
+
+.player>h2{
+    font-weight: 300;
+    font-size: 1rem;
+    margin: .5em
+}
+.player.hitler::before{
+    content: '';
+    display: flex;
+    justify-content: center;
+    content: 'HITLER';
+    position: absolute;
+    color:#F76573;
+    opacity: .1;
+    width:100%;
+    font-size: 3rem;
+    font-weight: 1000;
+    bottom:0;
+}
+.player.offline::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width:.5em;
+    height:.5em;
+    right:0px;
+    border-radius: 50%;
+    margin: 5px;
+    top:0;
+    background-color: red;
+}
+.player.chancellor::before {
+    content: 'C';
+    font-weight: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    position: absolute;
+    width:2em;
+    height:2em;
+    right: 0;
+    border-radius: 50% 50% 0 50%;
+    bottom: 0;
+    opacity: .2;
+    background: var(--light-blue);
+}
+.player.president::before {
+    content: 'P';
+    font-weight: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    position: absolute;
+    width:2em;
+    height:2em;
+    right: 0;
+    border-radius: 50% 50% 0 50%;
+    bottom: 0;
+    opacity: .2;
+    background: var(--light-blue);
+}
+
+
+
+
+.player.online::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width:.5em;
+    height:.5em;
+    right:0px;
+    border-radius: 50%;
+    margin: 5px;
+    top:0;
+    background-color: greenyellow;
+}
+
 
 
 @media screen and (min-width: 1000px) {
+    .players {
+        padding:1rem;
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr repeat(8,1fr);
+        height: 30%;
+        /* border: solid 1px red; */
+    }
     #loginScreen {
         flex-direction: row;
         align-items: flex-start;
@@ -162,11 +316,12 @@ form {
         flex-direction: row;
     }
     .hline{
-        height: .25em;
+        height: var(--hline-size);
         background-color: var(--light-blue);
-        border-radius: 20%;
-        min-width: 3em;
+        border-radius: 1em;
+        min-width: calc(var(--hline-size)*10);
         margin:0 1em;
     }
+
 
   }
