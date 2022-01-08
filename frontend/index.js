@@ -1,14 +1,18 @@
-
-// const socket = io('http://127.0.0.1:3000');   
-// socket.on('hostGame',(id) => {
+const socket = io('http://10.0.0.138:3000');   
+// socket.on('init',(id) => {
 // })
 const frmHost = document.getElementById('frmHost');
 const inputAliasHost = document.getElementById('inputAliasHost');
 const inputAliasJoin = document.getElementById('inputAliasJoin');
 
 const loginScreen = document.getElementById('loginScreen');
+const gameScreen = document.querySelector('.gameScreen');
+
 const allInputElem = document.querySelectorAll('input');
 const frmLogin = document.querySelectorAll('.frmLogin');
+
+
+
 frmLogin.forEach(elem => {
     elem.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -38,13 +42,14 @@ frmLogin.forEach(elem => {
                 return
             }
         }
-
-
-
         if(elemId==='frmHost') {
-            handleHostGame();
+            gameScreen.classList.toggle('hide');
+            loginScreen.style.display = 'none';
+            handleHostGame(alias);
         } else if (elemId === 'frmJoin') {
-            handleJoinGame();
+            gameScreen.classList.toggle('hide');
+            loginScreen.style.display = 'none';
+            handleJoinGame(alias, code);
         }
 
     })
@@ -57,20 +62,17 @@ allInputElem.forEach(elem => {
 
 });
 
-
-
-function handleHostGame() {
-    alert('Hosting Game');
-    loginScreen.classList.toggle('d-none');
+function handleHostGame(alias) {
+    socket.emit('hostGame', JSON.stringify(alias));
 }
-function handleJoinGame() {
-    alert('Joining Game');
-    loginScreen.classList.toggle('d-none');
+function handleJoinGame(alias, code) {
+    let gameConfig = {
+        alias: alias,
+        code: code,
+    }
+    socket.emit('joinGame', JSON.stringify(gameConfig));
+    
 }
-
-
-
-
 moveOnMax = function(field, nextFieldId) {
     if (!field) return;
     field.value = field.value.toUpperCase();
