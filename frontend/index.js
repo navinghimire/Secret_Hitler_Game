@@ -1,6 +1,4 @@
 const socket = io('http://10.0.0.138:3000');   
-// socket.on('init',(id) => {
-// })
 const frmHost = document.getElementById('frmHost');
 const inputAliasHost = document.getElementById('inputAliasHost');
 const inputAliasJoin = document.getElementById('inputAliasJoin');
@@ -11,6 +9,46 @@ const gameScreen = document.querySelector('.gameScreen');
 const allInputElem = document.querySelectorAll('input');
 const frmLogin = document.querySelectorAll('.frmLogin');
 
+let playerId, gameCode;
+let secretRoles;
+socket.on('init',(id) => playerId = id);
+socket.on('gamecode', code => {
+    gameCode = code;
+    gameScreen.classList.toggle('hide');
+    loginScreen.style.display = 'none';
+    
+});
+socket.on('state', (state) => {
+    state = JSON.parse(state);
+    console.log(state);
+    let playersElem = document.querySelector('.players');
+    playersElem.innerHTML = '';
+    state.activePlayers.forEach(player => {
+        playersElem.innerHTML += `<div id=${player.id} class='player ${player.role?player.role:''} ${player.id === playerId?'player-self':''}'><h2>${player.name}</h2> </div>`;
+    })
+    state.inactivePlayers.forEach(player => {
+        playersElem.innerHTML += `<div id=${player.id} class='player offline ${player.id === playerId?'player-self':''}'><h2>${player.name}</h2> </div>`;  
+    })
+    if(secretRoles) {
+        console.log(secretRoles);
+        Object.keys(secretRoles).forEach(playerId =>{
+            let player = document.getElementById(playerId);
+
+            if (player) {
+                player.classList.add(secretRoles[playerId]);
+            }
+        })
+    }
+
+    for(let i = 0; i<11-(state.activePlayers.length+state.inactivePlayers.length); i++) {
+        playersElem.innerHTML += `<div class=${i===0?'info-box':''}><h1>${i===0?gameCode:''}</h1></div>`;
+    }
+}) 
+socket.on('secretRoles',roles => {
+    secretRoles = JSON.parse(roles);
+
+
+});
 
 
 frmLogin.forEach(elem => {
@@ -43,12 +81,9 @@ frmLogin.forEach(elem => {
             }
         }
         if(elemId==='frmHost') {
-            gameScreen.classList.toggle('hide');
-            loginScreen.style.display = 'none';
+
             handleHostGame(alias);
         } else if (elemId === 'frmJoin') {
-            gameScreen.classList.toggle('hide');
-            loginScreen.style.display = 'none';
             handleJoinGame(alias, code);
         }
 
@@ -94,4 +129,7 @@ moveOnMax = function(field, nextFieldId) {
             elemToFocus.select(); 
         }
     }
+}
+function nextSession() {
+    socket.emit('nextSession');
 }

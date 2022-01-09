@@ -17,9 +17,13 @@ const { validateName } = require('./utils');
 io = new Server(options);
 const gameManager = new GameManager(io);
 io.on('connection',socket => {
-    // socket.emit('init', socket.id);
+    socket.emit('init', socket.id);
     socket.on('hostGame', handleHostGame);
     socket.on('joinGame', handleJoinGame);
+    socket.on('nextSession', handleNextSession);
+    function handleNextSession() {
+        gameManager.nextSession(socket);
+    }
     function handleHostGame(alias) {
         alias = JSON.parse(alias);
         if (!validateName(alias)) {
@@ -27,7 +31,7 @@ io.on('connection',socket => {
         }
         console.log(alias + ' connected') ;
         const id = gameManager.createRoom(socket,alias);
-    
+        
     }
     function handleJoinGame(message) {
         message = JSON.parse(message);

@@ -1,3 +1,4 @@
+const { MIN_PLAYERS, MAX_PLAYERS, SESSION_PRESIDENCY, SESSION_INIT, SESSION_OVER } = require('./constants');
 var constant = require('./constants');
 class Player {
     constructor(id, name, role) {
@@ -28,7 +29,6 @@ class Game {
         this.totalLibArticles = 6;
         this.drawn = [];
         this.votes = {};
-        this.gameSession = constant.SESSION_PRESIDENCY;
         this.numFailedElection = 0;
         this.round = 0;
         this.policyToPass = null;
@@ -45,10 +45,13 @@ class Game {
     }
 
     get nextSession() {
-        let currentSessionIndex = constant.SESSION_INIT;
+        let currentSessionIndex = 0;
         if (this.session) {
-            currentSessionIndex =this.sessions.indexOf(this.sessions);
-            if (currentSessionIndex + 1 >= this.sessions.length) {
+            currentSessionIndex =this.sessions.indexOf(this.session);
+            if(this.session === constant.SESSION_OVER) {
+                return constant.SESSION_OVER;
+            }
+            if (currentSessionIndex + 1 === this.sessions.length-1) {
                 return this.sessions[1]
             } else {
                 return this.sessions[currentSessionIndex+1];
@@ -82,6 +85,8 @@ class Game {
     }
 
     removePlayer(playerIn) {
+        if(!playerIn) return;
+        this.inactivePlayers.push(playerIn);
         this.activePlayers.forEach((player,id,players) => {
             if(playerIn.id === player.id) {
                 players.splice(id,1);
@@ -90,6 +95,7 @@ class Game {
                 return true;
             }
         });
+        
         return false;
     }
     get winner() {
@@ -226,6 +232,7 @@ class Game {
             this.chancellor.role = null
         }
         this.policyToPass = null;
+        this.drawn = [];
         console.log(`Round ${this.round} done. LP ${this.libPolicyCount}, FP ${this.fasPolicyCount} `);
         console.log(``);
         this.nextRound();
@@ -416,22 +423,22 @@ class Game {
     
     init(){
         // add players Random Players
-        for(let i = 0; i< 6; i++) {
-            let player = new Player(i, `Player ${i}`, null);
-            this.addPlayer(player);
-        }
+        // for(let i = 0; i< 6; i++) {
+        //     let player = new Player(i, `Player ${i}`, null);
+        //     this.addPlayer(player);
+        // }
 
         // assign player roles
         this.assignRandomPartyMembership();
 
         // initialize drawPile;
         this.initDrawPile(this.totalFasArticles);
-        this.holdPresidency();
+        // this.holdPresidency();
 
     }
     holdPresidency() {
         this.makePresident(this.nextPresident);
-        this.holdElectionPrimary();
+        // this.holdElectionPrimary();
     }
     holdElectionPrimary() {
         do {
@@ -439,7 +446,7 @@ class Game {
         } while(!this.isEligibleForChancellor(this.chancellorElect));
 
         this.electChancellor(this.chancellorElect);
-        this.holdElectionGeneral();
+        // this.holdElectionGeneral();
     }
     holdElectionGeneral() {
         if(this.chancellorElect) {
@@ -453,12 +460,13 @@ class Game {
 
                 console.log('Election Passed');
                 if (this.winner) {
+                    this.session = constant.SESSION_OVER;
                     console.log("HITLER");
                     return;
                 }
                 
-                this.holdLegislationPresident();
-
+                // this.holdLegislationPresident();
+                
 
             } else {
                 this.numFailedElection++;
@@ -481,11 +489,11 @@ class Game {
                     this.passTopPolicyAtRandom();
                     // reset failed election
                     this.numFailedElection = 0;
-
+                   
                 }
 
                 this.endOfRoundHousekeeping();
-                this.holdPresidency();
+                this.session = constant.SESSION_INIT;
                 // continue;
             }
         }
@@ -499,7 +507,7 @@ class Game {
         //president discards a card;
         let randomCardToDiscard = this.drawn[Math.floor(Math.random() * this.drawn.length)];
         this.discardOne(this.drawn, randomCardToDiscard);
-        this.holdLegislationChancellor();
+        // this.holdLegislationChancellor();
         
     }
     handleGameOver() {
@@ -511,12 +519,19 @@ class Game {
         this.policyToPass = this.drawn.pop();
         this.passPolicy(this.policyToPass);
         if (this.winner) {
+            this.session = constant.SESSION_OVER;
             return;
         }
 
         this.exercisePresidentialPower();
         this.endOfRoundHousekeeping();
-        this.holdElectionPrimary();
+        // this.holdElectionPrimary();
+    }
+    get canStart(){
+        if(this.numActivePlayers >= MIN_PLAYERS && this.numActivePlayers<=MAX_PLAYERS) {
+            return true;
+        }
+        return false;
     }
     // constant.SESSION_INIT,
     // constant.SESSION_PRESIDENCY, 
@@ -530,19 +545,29 @@ class Game {
         switch(this.session) {
             case constant.SESSION_INIT:
                 this.init();
+                break;
             case constant.SESSION_PRESIDENCY:
                 this.holdPresidency(); 
+                break;
             case constant.SESSION_ELECTION_PRIMARY:
                 this.holdElectionPrimary();
+                break;
+            case constant.SESSION_ELECTION_GENERAL:
+                this.holdElectionGeneral();
+                break;
             case constant.SESSION_LEGISLATION_PRESIDENT:
                 this.holdLegislationPresident();
+                break;
             case constant.SESSION_LEGISLATION_CHANCELLOR:
                 this.holdLegislationChancellor();
+                break
             case constant.SESSION_OVER:
                 this.handleGameOver();
+                break;
             
         }
     }
+
 
 }
 

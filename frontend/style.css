@@ -13,6 +13,10 @@
 
 }
 
+html {
+    background:linear-gradient(to top,rgb(128, 240, 234),rgb(212, 115, 115));
+ 
+}
 .hide {
     display: none;
 }
@@ -25,8 +29,12 @@ body {
     /* overscroll-behavior: contain; */
     /* background-size: contain; */
     min-height: 100vh;
+    width: 100%;
+    height: 100%;
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-size: cover;
+    background-repeat:  no-repeat;
 }
 .hitler{
     background: linear-gradient(0deg,#7F000C,#A60414);
@@ -55,7 +63,6 @@ section{
 }
 
 .input {
-    margin-bottom: .5em;
     flex-direction: row;
     color: white;
 }
@@ -87,8 +94,8 @@ section{
     flex-direction: column;
     min-width: 10em;
     color: var(--light-blue);
-    margin: 1em 0em;
 }
+
 #or h1{
     font-weight: 100;
     font-size: 3em;
@@ -153,7 +160,23 @@ form {
 }
 
 #loginScreen {
-    flex-direction: column;
+    height: 100vh;
+    display: grid;
+    /* align-items: flex-end; */
+    grid-template-rows: 5fr 1fr 5fr;
+    gap: 1rem;
+    /* flex-direction: column; */
+    /* align-items: flex-end; */
+}
+#loginScreen>section:first-child {
+    align-self: flex-end;
+}
+p {
+    padding: .5rem;
+}
+
+#loginScreen>section:last-child {
+    align-self: flex-start;
 }
 
 .gameScreen {
@@ -164,6 +187,10 @@ form {
     grid-column: 1/3;
     grid-row:1/3; 
 
+}
+.info-box {
+    grid-column: 1/3;
+    grid-row:3/4;
 }
 .vote {
     border: solid 1px purple;
@@ -216,7 +243,6 @@ form {
 .player.active {
     background: #CCCCE8;
 }
-
 span.status {
 
 }
@@ -277,7 +303,7 @@ span.role {
 
 .player.chancellor::before {
     content: 'CHANCELLOR';
-    background: #ec4141;
+    background: linear-gradient(to top right, #222,#333);
 }
 
 .chancellor.fascist::before,.president.fascist::before,.hitler.president::before{
@@ -295,10 +321,10 @@ span.role {
 
 
 
+
 .player.president::before {
     content: 'PRESIDENT';
-    background: #36bff5;
-    color:#b3e1f3;
+    background: #7a8e96;
 }
 .player.president::before, .player.chancellor::before{
     font-weight: 500;
@@ -325,13 +351,38 @@ span.role {
         display: grid;
         gap: 1rem;
         grid-template-columns: 1fr repeat(8,1fr);
+        grid-template-rows: 1fr;
+    
         height: 30%;
-        /* border: solid 1px red; */
+        
     }
+ 
+
     #loginScreen {
-        flex-direction: row;
-        align-items: flex-start;
+        grid-template-columns: 5fr 1fr 5fr ;
+        /* align-self: unset; */
+        height: 100vh;
+        /* justify-content: center; */
+
     }
+
+    #loginScreen>section{
+        /* align-self: flex-end; */
+       height: 100vh;
+
+    }
+    #loginScreen>section:first-child{
+        /* justify-self: center; */
+        justify-self: flex-end;
+        height:100vh;
+    }
+    #loginScreen>section:last-child {
+        justify-self: flex-start;
+    }
+    .input  {
+        display: grid;
+    }
+
 
     #or {
         flex-direction: row;
@@ -340,7 +391,7 @@ span.role {
         height: var(--hline-size);
         background-color: var(--light-blue);
         border-radius: 1em;
-        min-width: calc(var(--hline-size)*10);
+        min-width: calc(var(--hline-size)*5);
         margin:0 1em;
     }
 
