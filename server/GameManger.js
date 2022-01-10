@@ -64,6 +64,7 @@ class GameManager {
             let timeout = setTimeout(() => {
                 game.inactivePlayers = [];
                 this.emitGameState(roomId);
+                clearTimeout(timeout);
             },5000);
         })
 

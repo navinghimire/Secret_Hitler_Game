@@ -14,7 +14,7 @@
 }
 
 html {
-    background:linear-gradient(to top,rgb(128, 240, 234),rgb(212, 115, 115));
+    background:linear-gradient(to bottom,rgb(128, 240, 234),rgb(212, 115, 115));
  
 }
 .hide {
