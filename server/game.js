@@ -511,6 +511,9 @@ class Game {
         
     }
     handleGameOver() {
+        for(let player in this.activePlayers) {
+            player.role = null;
+        }
         console.log(`Game Over. ${this.winner} won!`);
     }
     holdLegislationChancellor() {

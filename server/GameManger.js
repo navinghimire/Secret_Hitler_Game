@@ -19,10 +19,10 @@ class GameManager {
         socket.join(roomId);
         socket.emit('gamecode', roomId);
         console.log(this.io.sockets.adapter.rooms);
-        let game = new Game();
-        this.games[roomId] = game;
+        this.games[roomId] = new Game();
+
         let player = new Player(socket.id, alias, null);
-        game.addPlayer(player);
+        this.games[roomId].addPlayer(player);
         this.emitGameState(roomId);
 
         return roomId;
@@ -31,6 +31,14 @@ class GameManager {
         let roomId = this.clientRoom[socket.id];
         let game = this.games[roomId];
         let nextSession = game.nextSession;
+        
+        if (game.session === constant.SESSION_OVER) {
+            let players = [...game.activePlayers];
+            this.games[roomId] = new Game();
+            this.games[roomId].activePlayers = [...players];
+            this.startGame(roomId);
+            return;
+        }
         game.session = nextSession;
         console.log(game,nextSession);
         game.handleSession();
@@ -58,6 +66,14 @@ class GameManager {
                 this.emitGameState(roomId);
             },5000);
         })
+
+        this.startGame(roomId);
+
+        console.log(game.activePlayers);
+        this.emitGameState(roomId);
+    }
+    startGame(roomId) {
+        let game = this.games[roomId];
         if(game.canStart) {
             game.init();
             game.liberals.forEach(lib => {
@@ -90,14 +106,10 @@ class GameManager {
                 }  
                 this.io.to(playerId).emit('secretRoles',JSON.stringify(roles));
             })
-            
-            
-
         }
 
-        console.log(game.activePlayers);
-        this.emitGameState(roomId);
     }
+
     doesRoomExists(roomId){
         if (this.rooms.has(roomId)) return true;
         return false;
