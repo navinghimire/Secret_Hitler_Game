@@ -9,8 +9,12 @@ const gameScreen = document.querySelector('.gameScreen');
 const allInputElem = document.querySelectorAll('input');
 const frmLogin = document.querySelectorAll('.frmLogin');
 
+// this is where we render players 
+let playersElem = document.querySelector('.players');
+
 let playerId, gameCode;
 let secretRoles;
+let gameState;
 socket.on('init',(id) => playerId = id);
 socket.on('gamecode', code => {
     gameCode = code;
@@ -19,16 +23,33 @@ socket.on('gamecode', code => {
     
 });
 socket.on('state', (state) => {
-    state = JSON.parse(state);
-    console.log(state);
-    let playersElem = document.querySelector('.players');
+    gameState = JSON.parse(state);
+
+    
     playersElem.innerHTML = '';
-    state.activePlayers.forEach(player => {
-        playersElem.innerHTML += `<div id=${player.id} class='player ${player.role?player.role:''} ${player.id === playerId?'player-self':''}'><h2>${player.name}</h2> </div>`;
-    })
-    state.inactivePlayers.forEach(player => {
+    updatePlayerElements();
+    updateSecretRoles();
+
+}) 
+
+function updatePlayerElements() {
+    active = gameState.activePlayers;
+    inactive = gameState.inactivePlayers;
+    active.forEach(player => {
+        playersElem.innerHTML += `<div  id=${player.id}
+                                        class='player ${player.role?player.role:''} ${player.id === playerId?'player-self':''}'>
+                                        <h2>${player.name}</h2> 
+                                 </div>`;
+    }) 
+    inactive.forEach(player => {
         playersElem.innerHTML += `<div id=${player.id} class='player offline ${player.id === playerId?'player-self':''}'><h2>${player.name}</h2> </div>`;  
     })
+    // add inactive divs
+    for(let i = 0; i<11-(active.length+inactive.length); i++) {
+        playersElem.innerHTML += `<div class=${i===0?'info-box':''}><h1>${i===0?gameCode:''}</h1></div>`;
+    }
+}
+function updateSecretRoles() {
     if(secretRoles) {
         console.log(secretRoles);
         Object.keys(secretRoles).forEach(playerId =>{
@@ -39,11 +60,9 @@ socket.on('state', (state) => {
             }
         })
     }
+}
 
-    for(let i = 0; i<11-(state.activePlayers.length+state.inactivePlayers.length); i++) {
-        playersElem.innerHTML += `<div class=${i===0?'info-box':''}><h1>${i===0?gameCode:''}</h1></div>`;
-    }
-}) 
+
 socket.on('secretRoles',roles => {
     secretRoles = JSON.parse(roles);
 
