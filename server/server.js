@@ -21,6 +21,7 @@ io.on('connection',socket => {
     socket.on('hostGame', handleHostGame);
     socket.on('joinGame', handleJoinGame);
     socket.on('nextSession', handleNextSession);
+    socket.on('startgame', () => gameManager.handleStartGame(socket));
     function handleNextSession() {
         gameManager.nextSession(socket);
     }

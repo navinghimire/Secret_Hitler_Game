@@ -28,6 +28,7 @@ class Game {
         this.totalFasArticles = 11;
         this.totalLibArticles = 6;
         this.drawn = [];
+        this.host = null;
         this.votes = {};
         this.numFailedElection = 0;
         this.round = 0;
@@ -41,11 +42,11 @@ class Game {
             constant.SESSION_LEGISLATION_CHANCELLOR,
             constant.SESSION_OVER,
             ];
-        this.session = this.sessions[0];
+        this.session = null;
     }
 
     get nextSession() {
-        let currentSessionIndex = 0;
+        let currentSessionIndex;
         if (this.session) {
             currentSessionIndex =this.sessions.indexOf(this.session);
             if(this.session === constant.SESSION_OVER) {
@@ -57,7 +58,7 @@ class Game {
                 return this.sessions[currentSessionIndex+1];
             }
         }
-        return this.sessions[0];
+        return null;
     }
     addPlayer(player) {
         if (this.numActivePlayers < constant.MAX_PLAYERS) {
@@ -427,7 +428,7 @@ class Game {
         //     let player = new Player(i, `Player ${i}`, null);
         //     this.addPlayer(player);
         // }
-
+        this.session = constant.SESSION_INIT;
         // assign player roles
         this.assignRandomPartyMembership();
 
@@ -474,7 +475,7 @@ class Game {
     
             
                 // this.chancellorElect.role = null;
-                
+                this.chancellorElect.role = null;
                 this.chancellorElect = null;
                 console.log(`Election failed : ${this.numFailedElection} x times`);
                 if(this.numFailedElection >= 3) {
