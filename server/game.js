@@ -1,4 +1,4 @@
-const { MIN_PLAYERS, MAX_PLAYERS, SESSION_PRESIDENCY, SESSION_INIT, SESSION_OVER } = require('./constants');
+
 var constant = require('./constants');
 class Player {
     constructor(id, name, role) {
@@ -532,7 +532,7 @@ class Game {
         // this.holdElectionPrimary();
     }
     get canStart(){
-        if(this.numActivePlayers >= MIN_PLAYERS && this.numActivePlayers<=MAX_PLAYERS) {
+        if(this.numActivePlayers >= constant.MIN_PLAYERS && this.numActivePlayers<= constant.MAX_PLAYERS) {
             return true;
         }
         return false;

@@ -11,12 +11,12 @@
 
     
     <body>
-        <div class='info'>
-            <p>Game code. Pass along!</p>
-            <h1>CODE</h1>
-            <button><svg width="23" height="26" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21.5 10.4019C23.5 11.5566 23.5 14.4434 21.5 15.5981L5 25.1244C3 26.2791 0.499999 24.8357 0.499999 22.5263L0.5 3.47372C0.5 1.16431 3 -0.279058 5 0.875643L21.5 10.4019Z" fill="#FEFAFA"/>
-                </svg></button>
+        <!-- <div class="sessions">
+
+        </div> -->
+        <div class="gameCountdown">
+            <h2>Game Starting in</h2>
+            <h1></h1>
         </div>
         <main class="center">
             <svg id='stability' class="bgSvg" xmlns="http://www.w3.org/2000/svg" width="158" height="77.577" viewBox="0 0 158 77.577">
@@ -40,7 +40,7 @@
                     <div class="left center">
                         <h1>Host Game</h1>
                         <p>How should your friends know you?</p>
-                        <form id='frmHost' action="" class="frmLogin">
+                        <form id='frmHost' action="" class="frmLogin" name='hostForm'>
                             <input class="alias" type="text" placeholder="Enter Alias" name="">
                             <div class="validationMessage">
                             </div>
@@ -68,7 +68,7 @@
                             <input type="text" class='codeInput' maxlength="1" id='4' name="" onkeyup="moveOnMax(this,'inputAliasJoin')">
                         
                         </div>
-                        <form action="" id ='frmJoin' class="frmLogin">
+                        <form action="" id ='frmJoin' class="frmLogin" name='joinForm'>
                             <input class="alias" type="text" placeholder="Enter Alias" name="">
                             <div class="validationMessage">
                             </div>
@@ -81,13 +81,64 @@
                     </div>
                 </section> 
             </div>
+
+
             <div class="gameScreen hide">
                 <section class="players">
-
-                    
                 </section>
-                <button onclick="nextSession()">NEXT SESSION</button>
+                <section class="drawDiscard">
+                    <div class="drawPile">
+                        <h1><span id='drawCount'>0</span></h1>
+                        <p>Draw Pile</p>
+                        <div class="pile">
+                            <h1></h1>
+                            <h1></h1>
+                            <h1></h1>
+                        </div>
+                    </div>
+                    <div class="discardPile">
+                        <h1><span id='discardCount'>0</span></h1>
+                        <p>Discard Pile</p>
+                        <div class="pile">
+                            <h1></h1>
+                            <h1></h1>
+                            <h1></h1>
+                        </div>
+                    </div>
+                </section>
+                <section class="policy">
+                    <section class="liberal">
+                        <h1>Liberal Policy <span>3/6</span></h1>
+                        <div class="policies">
+                            <h1>Liberal Article</h1>
+                            <h1>Liberal Article</h1>
+                            <h1>Liberal Article</h1>
+                            <h1>Liberal Article</h1>
+                            <h1>Liberal Article</h1>
+                            <h1>Liberal Article</h1>
+                        </div>
+                    </section>
+                    <section class="fascist">
+                        <h1>Fascist Policy <span>3/6</span></h1>
+                        <div class="policies">
+                            <h1>Fascist Article</h1>
+                            <h1>Fascist Article</h1>
+                            <h1>Fascist Article</h1>
+                            <h1>Fascist Article</h1>
+                            <h1>Fascist Article</h1>
+                            <h1>Fascist Article</h1>
+                        </div>
+                    </section>
+                </section>
+                <div class="test">
+                    <h1>Test</h1>
+                    <button onclick="nextSession()">NEXT SESSION</button>
+                    <button onclick="addOne()">Add Player </button>
+                    <button onclick="removeOne()">Remove Player </button>
+                    <button onclick="closeAll()">Remove All </button>
+                </div>
             </div>
+
 
         </main>
 
