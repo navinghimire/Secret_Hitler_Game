@@ -28,32 +28,14 @@ class GameManager {
 
         return roomId;
     }
-    nextSession(socket){
-        let roomId = this.clientRooms[socket.id];
-        let game = this.games[roomId];
-        if (!game.session) return;
-
-        let nextSession = game.nextSession;
-        
-        if (game.session === constant.SESSION_OVER) {
-            let players = [...game.activePlayers];
-            this.games[roomId] = new Game();
-            this.games[roomId].activePlayers = [...players];
-            return;
-        }
-        game.session = nextSession;
-        console.log(game,nextSession);
-        game.handleSession();
-        this.emitGameState(roomId);
-    }
     emitGameState(roomId) {
         this.io.to(roomId).emit('state', JSON.stringify(this.games[roomId].state));
-
+        
     }
-
-
+    
+    
     joinRoom(socket,roomId, alias) {
-
+        
         
         let game = this.games[roomId];
         if (game.numActivePlayer > constant.MAX_PLAYERS) {
@@ -80,16 +62,16 @@ class GameManager {
                 clearTimeout(timeout);
             },5000);
         })
-
- 
-
+        
+        
+        
         console.log(game.activePlayers);
         if(game.numActivePlayer >= constant.MIN_PLAYERS && game.numActivePlayer <= constant.MAX_PLAYERS) {
             this.io.to(game.host).emit('canstart');
         } else {
             this.io.to(game.host).emit('cannotstart');
         }
-
+        
         this.emitGameState(roomId);
     }
     handleStartGame(socket) {
@@ -98,17 +80,64 @@ class GameManager {
             let game = this.games[roomId];
             if (socket.id === game.host) {
                 this.startGame(roomId);
+                // let inv = setInterval(() => {
+                //     this.gameLoop(game,socket);
+                //     if (!game.session) {
+                //         this.emitGameState(game);
+                //         clearInterval(inv);
+
+                //     }
+
+                // },1000);
+                
             }
         }
+    }
+    gameLoop(game,socket) {
+        this.nextSession(socket);
+    }
+    handleChancellorChosen(socket, playerId) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        
+    }
 
+    nextSession(socket){
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        if (!game.session) return;
+
+        let nextSession = game.nextSession;
+        
+        if (game.session === constant.SESSION_OVER) {
+            let players = [...game.activePlayers];
+            this.games[roomId] = new Game();
+            this.games[roomId].activePlayers = [...players];
+            return;
+        }
+        game.session = nextSession;
+        console.log(game,nextSession);
+
+
+        if (game.session === constant.SESSION_ELECTION_PRIMARY) {
+            this.io.to(game.president.id).emit('choose_chancellor');
         }
 
+        game.handleSession();
 
+
+        this.emitGameState(roomId);
+        if (game.session === constant.SESSION_PRESIDENCY) {
+            this.io.in(roomId).emit('president_choosen');
+        }
+    }
+    
+    
     startGame(roomId) {
         
         this.io.in(roomId).emit('gamecountdown');
         
-
+        
         let game = this.games[roomId];
         if (game.session) {
             console.log('Game already started')
@@ -148,7 +177,6 @@ class GameManager {
             })
             this.emitGameState(roomId);
         }
-
     }
 
     doesRoomExists(roomId){

@@ -26,6 +26,29 @@ socket.on('gamecode', code => {
     loginScreen.style.display = 'none';
 
 });
+socket.on('president_choosen', () => {
+    if (gameState.president.id === playerId) {
+        displayInfo('You are elected president now.');
+        setTimeout(() => {
+            displayInfo('Pick your chancellor.');
+        },5000);
+
+        nextSession();
+    } else {
+        displayInfo(`${gameState.president.name} is elected president`);
+    }
+})
+
+socket.on('choose_chancellor', () => {
+    let playerElems = document.querySelectorAll('.player');
+
+    playerElems.forEach(player => {
+        player.addEventListener('click', handleChoose);
+    });
+
+
+}) 
+
 socket.on('once', (code) => {
     test(4,code)
 })
@@ -39,11 +62,11 @@ socket.on('gamecountdown', () => {
         if (count < -10) {
             clearInterval(interval);
         }
-    },100);
+    },10);
     let timeout = setTimeout(() => {
         gameCountdownElem.style.display= 'none';
         clearTimeout(timeout);
-    },600);
+    },60);
 })
 
 socket.on('state', (state) => {
@@ -52,17 +75,11 @@ socket.on('state', (state) => {
     gameState = JSON.parse(state);
     renderPlayerElements();
     // renderSecretRoles();
-
-    if (!gameState.session) {
-        renderGameCode(gameState);
+    console.log(gameState);
+    if(!gameState.session) {
+        displayInfo('gamecode');
     }
-    if(gameState.activePlayers.length >= 5 && !gameState.session && playerId != gameState.host) {
-        displayInfo('Waiting for the host to start the game');
-    } 
-    if(gameState.session === 'presidency') {
-        displayInfo(`${gameState.president.name} is our president`);
-    } else if (gameState.session === '')
-
+   
 
 
     if(gameState.drawPile != undefined) {
@@ -95,11 +112,7 @@ socket.on('state', (state) => {
         } 
     })
 //    alert(choosenPlayer);
-    let playerElems = document.querySelectorAll('.player');
 
-    playerElems.forEach(player => {
-        player.addEventListener('click', handleChoose);
-    });
 
 }) 
 socket.on('canstart', () => {libPolicyCount
@@ -112,17 +125,15 @@ function initialize() {
 
 
 function renderGameCode(state) {
-    let canStart = (playerId === state.host) && (state.activePlayers.length>=5 && state.activePlayers.length<=10);
+
     if(gameCode) {
-        playersElem.innerHTML += `<div class='info ${canStart?'can-start':''}'>
-        <div class='info-code'>
-        <p>Game code. Pass along!</p>
-        <h1>${gameCode}</h1>
-        </div>${canStart?
-        `<button onclick='startGame()'><svg width="23" height="26" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21.5 10.4019C23.5 11.5566 23.5 14.4434 21.5 15.5981L5 25.1244C3 26.2791 0.499999 24.8357 0.499999 22.5263L0.5 3.47372C0.5 1.16431 3 -0.279058 5 0.875643L21.5 10.4019Z" fill="#FEFAFA"/>
-        </svg></button>`:''}
-        </div>`;
+
+        // playersElem.innerHTML += `<div class='info ${canStart?'can-start':''}'>
+        // ${canStart?
+        // `<button onclick='startGame()'><svg width="23" height="26" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        //     <path d="M21.5 10.4019C23.5 11.5566 23.5 14.4434 21.5 15.5981L5 25.1244C3 26.2791 0.499999 24.8357 0.499999 22.5263L0.5 3.47372C0.5 1.16431 3 -0.279058 5 0.875643L21.5 10.4019Z" fill="#FEFAFA"/>
+        // </svg></button>`:''}
+        // </div>`;
 
     }
 }
@@ -132,14 +143,27 @@ function displayInfo(message) {
         infoElem = document.createElement('div');
         infoElem.classList.add('info')
     }
-    let messageElem = document.createElement('p');
-    infoElem.innerHTML = '';
-    messageElem.textContent = message;
-    messageElem.classList.add('message');
-    infoElem.appendChild(messageElem);
+    if (message === 'gamecode') {
+        infoElem.innerHTML = `<div class='info-code'>
+                                <p>Game code. Pass along!</p>
+                                <h1>${gameCode}</h1>
+                                </div>`;
+        let canStart = (playerId === gameState.host) && (!gameState.session);
+        if (canStart) {
+            infoElem.innerHTML+= `<button onclick='startGame()'><svg width="23" height="26" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <path d="M21.5 10.4019C23.5 11.5566 23.5 14.4434 21.5 15.5981L5 25.1244C3 26.2791 0.499999 24.8357 0.499999 22.5263L0.5 3.47372C0.5 1.16431 3 -0.279058 5 0.875643L21.5 10.4019Z" fill="#FEFAFA"/>
+                    </svg></button>`
+            infoElem.classList.add('can-start');
+        } 
+    } else {
+        infoElem.classList.remove('can-start');
+        let messageElem = document.createElement('p');
+        infoElem.innerHTML = '';
+        messageElem.textContent = message;
+        messageElem.classList.add('message');
+        infoElem.appendChild(messageElem);
+    }
     playersElem.appendChild(infoElem);
-       
-
 }
 
 function startGame() {
@@ -151,6 +175,8 @@ function handleChoose(e) {
     console.log(e.target);
     if(e.target.id) {
         choosenPlayer = e.target.id;
+        socket.emit('chancellor_chosen', choosenPlayer);
+        choosenPlayer === null;
         gameState.activePlayers.forEach(player => {
             let elem = document.getElementById(player.id);
             if(e.target.id === player.id) {
@@ -187,8 +213,22 @@ function renderPlayerElements() {
         }
         // update role
         if(player.role) {
-            playerElem.classList.add(player.role);
-            
+            if (player.role === 'chancellor' || player.role === 'chancellor_elect') {
+                let roles = ['chancellor','chancellor_elect'];
+                for(let role of roles) {
+                    let elem = document.querySelector(`.${role}`);
+                    if (elem) {
+                        elem.classList.remove(role);
+                    }
+                }
+            }
+            if (player.role === 'president') {
+                let elem = document.querySelector(`.president`);
+                if (elem) {
+                    elem.classList.remove('president');
+                }
+            }
+            playerElem.classList.add(player.role); 
         }
         // update name
         let nameElem = playerElem.querySelector('h2');
@@ -213,7 +253,6 @@ function renderPlayerElements() {
         newElem.appendChild(h2Elem);
         playersElem.appendChild(newElem);
     }
-
 }
 
 function renderSecretRoles() {
@@ -231,13 +270,14 @@ function renderSecretRoles() {
         let inv = setInterval(()=>{
             let player = document.getElementById(roles[n-1]);
             if (player) {
+                
                     player.classList.add(secretRoles[roles[n-1]]);
             }
             n--;
             if (n < 0) {
                 clearInterval(inv);
             }
-        },1000);
+        },100);
     }
 }
 

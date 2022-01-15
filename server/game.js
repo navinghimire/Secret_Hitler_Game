@@ -175,8 +175,7 @@ class Game {
             console.log(`${articleToDiscard} discarded, ${articles} in hand`);
             console.log(`Draw Pile ${this.drawPile}`);
             console.log(`Discard Pile ${this.discardPile}`);
-            
-            
+
             return articles;
         }
         return;
@@ -192,7 +191,7 @@ class Game {
         // }
         newPresident.role =  constant.PRESIDENT;
         this.president = newPresident;
-
+        
         console.log(`${newPresident.name} elected as president`);
     }
     get state() {
@@ -223,6 +222,14 @@ class Game {
             }
         }
     }
+    getPlayerById(id) {
+        for(let player of this.activePlayers) {
+            if (player.id === id) {
+                return player;
+            }
+        }
+    }
+
     endOfRoundHousekeeping() {
         this.pastCabinet.president = this.president;
         this.pastCabinet.chancellor = this.chancellor;
@@ -275,10 +282,6 @@ class Game {
         return (!this.isPresident(player) && !this.wasInLastCabinet(player))?true:false;
     }
 
-
-    
-
-
     assignRandomPartyMembership() {
 
         // assign random player as hitler
@@ -309,10 +312,7 @@ class Game {
 
         this.votes[player.id] = vote;
     }
-    
-    
-
-    getElectionResult() {
+     getElectionResult() {
         let yesVotesCounter = 0;
         for(let playerId of Object.keys(this.votes)) {
             if (this.votes.hasOwnProperty(playerId)) {
@@ -368,8 +368,6 @@ class Game {
     pickPresident() {
 
     }
-
-
 
     exercisePresidentialPower() {
         let powers = this.fascistPresidentialPower;

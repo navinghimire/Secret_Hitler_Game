@@ -397,7 +397,7 @@ p {
     background: linear-gradient(to top left,var(--blue-fluoro), var(--blue-earth)) !important;
 }
 .player.fascist {
-        background: linear-gradient(to top left,var(--red-pastel),var(--red-earth)) !important;
+    background: linear-gradient(to top left,var(--red-pastel),var(--red-earth)) !important;
 
 }
 .players>div:not(.player,.info) {
