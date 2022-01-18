@@ -1,7 +1,6 @@
 var constant = require('./constants');
 const {makeid} = require('./utils');
 const {Game, Player} = require('./game');
-const { emit } = require('nodemon');
 class GameManager {
     
     constructor(io) {
@@ -78,63 +77,81 @@ class GameManager {
         let roomId = this.clientRooms[socket.id];
         if(this.doesRoomExists(roomId)) {
             let game = this.games[roomId];
+            if (socket.id !== this.host) {
+                this.io.in(roomId).to(socket.id).emit('unauthorized');
+            }
             if (socket.id === game.host) {
-                this.startGame(roomId);
-                // let inv = setInterval(() => {
-                //     this.gameLoop(game,socket);
-                //     if (!game.session) {
-                //         this.emitGameState(game);
-                //         clearInterval(inv);
-
-                //     }
-
-                // },1000);
-                
+                this.startGame(socket);
             }
         }
     }
-    gameLoop(game,socket) {
-        this.nextSession(socket);
-    }
+
     handleChancellorChosen(socket, playerId) {
         let roomId = this.clientRooms[socket.id];
         let game = this.games[roomId];
+        let player = game.getPlayerById(playerId);
+        if (player) {
+            game.chancellorElect = player;
+            game.holdElectionPrimary();
+            this.emitGameState(roomId);
+            this.io.to(roomId).emit('vote_chancellor');
+        }
         
     }
 
-    nextSession(socket){
+    handleCardChoosen(socket,cardType) {
         let roomId = this.clientRooms[socket.id];
         let game = this.games[roomId];
-        if (!game.session) return;
+        this.legislationPresident(socket,cardType);
 
-        let nextSession = game.nextSession;
-        
-        if (game.session === constant.SESSION_OVER) {
-            let players = [...game.activePlayers];
-            this.games[roomId] = new Game();
-            this.games[roomId].activePlayers = [...players];
-            return;
-        }
-        game.session = nextSession;
-        console.log(game,nextSession);
-
-
-        if (game.session === constant.SESSION_ELECTION_PRIMARY) {
-            this.io.to(game.president.id).emit('choose_chancellor');
-        }
-
-        game.handleSession();
-
-
+    }
+    handleCardChoosenChancellor(socket,cardType) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        this.legislationChancellor(socket,cardType);
+    }
+    legislationChancellor(socket, cardToDiscard) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        game.holdLegislationChancellor(cardToDiscard);
         this.emitGameState(roomId);
-        if (game.session === constant.SESSION_PRESIDENCY) {
-            this.io.in(roomId).emit('president_choosen');
+        this.io.to(roomId).emit('policypassed');
+        this.presidency(socket);
+    }
+
+    handleVote(socket,vote) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        let player = game.getPlayerById(socket.id);
+        game.castVote(player,vote);
+        this.io.in(roomId).emit('voted',JSON.stringify({'player':player,'vote':vote}))
+        this.emitGameState(roomId);
+
+        if (game.hasEveryOneVoted) {
+            // game.votes = {};
+            this.emitGameState(roomId);
+            this.io.in(roomId).emit('election_concluded');
+            if (game.holdElectionGeneral()) {
+                game.drawCards();
+                this.io.to(game.president.id).emit('discardone', JSON.stringify(game.drawn));
+            } else {
+                this.presidency(socket);
+            }
+            game.votes = {};
         }
     }
-    
-    
-    startGame(roomId) {
-        
+    legislationPresident(socket,cardToDiscard) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        game.holdLegislationPresident(cardToDiscard);
+        this.emitGameState(roomId);
+
+        this.io.to(game.chancellor.id).emit('discardonechancellor', JSON.stringify(game.drawn));
+    }
+
+
+    startGame(socket) {
+        let roomId = this.clientRooms[socket.id];
         this.io.in(roomId).emit('gamecountdown');
         
         
@@ -176,8 +193,21 @@ class GameManager {
                 this.io.to(playerId).emit('secretRoles',JSON.stringify(roles));
             })
             this.emitGameState(roomId);
+            this.presidency(socket);
+
         }
     }
+
+    presidency(socket) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        game.holdPresidency();
+        this.emitGameState(roomId);
+        this.io.in(roomId).emit('president_choosen'); 
+        this.io.to(game.president.id).emit('choose_chancellor');
+    }
+
+
 
     doesRoomExists(roomId){
         if (this.rooms.has(roomId)) return true;

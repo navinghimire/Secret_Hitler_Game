@@ -20,11 +20,11 @@ io.on('connection',socket => {
     socket.emit('init', socket.id);
     socket.on('hostGame', handleHostGame);
     socket.on('joinGame', handleJoinGame);
-    socket.on('nextSession', handleNextSession);
     socket.on('startgame', () => gameManager.handleStartGame(socket));
-    socket.on('chancellor_chosen', (playerId) => gameManager.handleChancellorChosen(socket, playerId));
-
-
+    socket.on('chancellor_choosen', (playerId) => gameManager.handleChancellorChosen(socket, playerId));
+    socket.on('vote', vote => gameManager.handleVote(socket,vote));
+    socket.on('card_choosen', cardType => gameManager.handleCardChoosen(socket,cardType));
+    socket.on('card_choosen_chancellor', cardType => gameManager.handleCardChoosenChancellor(socket,cardType))
 
     function handleNextSession() {
         gameManager.nextSession(socket);
