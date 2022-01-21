@@ -114,6 +114,7 @@ html {
     backface-visibility: hidden !important; 
     transform: rotateY(180deg);
 }
+
 .liberal>.front {
     color: var(--blue-pastel);
     background: url("./images/liberal_article_line.svg");
@@ -142,6 +143,89 @@ html {
 .container:hover .article{
     transform: rotateY(180deg);
 }
+
+
+
+
+.policies {
+    margin: .7em;
+}
+.policies .front {
+    transform: rotateY(0deg);
+}
+.policies .container:hover .article{
+    transform: none;
+}
+.policies .article {
+    width: auto;
+    height: 130px;
+    margin: 0;    
+    background-size: stretch;
+}
+.policies .article .front {
+    background-size: 70%;
+    /* background-image: none; */
+    /* background: repeating-linear-gradient(
+        to bottom,
+        var(--red-pastel),
+        var(--red-pastel) 2px,
+        transparent 2px,
+        transparent 10px
+    ); */
+}
+
+
+.policies .article .front h1{
+    font-size: 1.2em;
+}
+
+.policies .article .front h2{
+    font-size: 1.2em;
+    font-weight: 300;    
+}
+.policy .liberal>h1, .policy .fascist>h1 {
+    /* color:red; */
+    margin: 0em .5em ;
+    padding: .25em;
+    font-weight: 400;
+    border-radius: .5em;
+}
+.policy .liberal>h1 {
+    background-color: var(--blue-jewel);
+    
+}
+ .policy .fascist>h1 {
+
+    background-color: var(--red-jewel);
+ }
+.policy .liberal>h1>span, .policy .fascist>h1>span {
+    float:right;
+    /* border: solid red; */
+   
+}
+ 
+.policies {
+    display: grid;
+    grid-template-columns: 1fr repeat(5, 1fr);
+    gap: .2em;
+}
+.policies .article:not(.passed) .front {
+    background-image: none;
+}
+.policies .article:not(.passed) h1{
+    opacity: 0;
+}
+
+.policies .article:not(.passed) h2{
+    opacity: 0;
+}
+.policies .article:not(.passed) {
+    background: none;
+    /* opacity: .2; */
+    border: dashed 1px black;
+}
+
+
 
 
 .wrapper {
@@ -242,10 +326,11 @@ body {
     color: var(--brown-pastel);
     padding: .2em;
     font-family: Georgia, 'Times New Roman', Times, serif;
-    font-weight: 1000;
+    font-weight: 500;
+
     border-radius:50%;
-    width: 2em;
-    height: 2em;
+    width: 1em;
+    height: 1em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -280,7 +365,7 @@ body {
     /* background-color: var(--brown-pastel) !important; */
     color: var(--brown-earth);
     /* border: solid 4px var(--brown-neutral); */
-    border-radius: 1em;
+    border-radius: .5em;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -330,7 +415,7 @@ body {
 .info>button{
     border: none;
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 0em 1em 1em 0em;
+    border-radius: 0em .5em .5em 0em;
     height: 100%;
     width: 100%;
     background: linear-gradient(to top left, var(--blue-pastel), var(--blue-neutral));
@@ -511,6 +596,8 @@ p {
 .gameScreen {
     width: 100%;
     height: 100vh;
+    /* display: grid; */
+    /* flex-direction: column; */
 }
 .player-self{
     grid-column: 1/3;
@@ -908,6 +995,10 @@ span.role {
     right: 6rem;
 }
 
+
+
+
+/* 
 .policy {
     height: 30%;
     width: 100%;
@@ -915,7 +1006,6 @@ span.role {
 .policy>.liberal, .policy>.fascist {
     height: 50%;
     display: flex;
-    /* justify-content: center; */
     flex-direction: column;
     align-items: center; 
 }
@@ -934,11 +1024,9 @@ span.role {
 }
 .liberal>.policies {
     background: linear-gradient(to right, var(--blue-jewel), var(--blue-earth));
-    /* border-radius: 1em; */
 }
 .fascist>.policies {
     background: linear-gradient(to left, var(--red-jewel), var(--red-earth));
-    /* border-radius: 1em; */
 }
 .liberal>.policies, .fascist>.policies{
     display: flex;
@@ -950,12 +1038,8 @@ span.role {
     opacity: 0 !important;
     background-color: transparent !important;
 }
-/* .fascist.policies>h1,.liberal.policies{
-
-} */
 
 .policies>h1{
-    /* border: solid 1px green; */
     margin:.25em;
     border-radius: 1em;
     font-size: 1em;
@@ -980,7 +1064,7 @@ span.role {
 .fascist h1.passed{
     background: linear-gradient(to top left, var(--red-fluoro) -100%, var(--red-earth)) 20%;
    
-}
+} */
 
 @media screen and (min-width: 1000px) {
     .players {

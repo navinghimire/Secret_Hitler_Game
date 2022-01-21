@@ -211,6 +211,8 @@ socket.on('state', state => {
         let discardCount = document.querySelector('#discardCount');
         discardCount.textContent = gameState.discardPile.length;
     }
+
+
     let totalLibElem = document.querySelector('.policy>.liberal>h1 span');
     if(totalLibElem) {
         totalLibElem.textContent = `${gameState.libPolicyCount}/${gameState.totalLibPolicies}`;
@@ -219,13 +221,13 @@ socket.on('state', state => {
     if(totalFasElem) {
         totalFasElem.textContent = `${gameState.fasPolicyCount}/${gameState.totalFasPolicies}`;
     }
-    let fasSlot = document.querySelectorAll('.fascist>.policies>h1'); 
+    let fasSlot = document.querySelectorAll('.fascist .policies .article'); 
     fasSlot.forEach((elem,id) => {
         if (id < gameState.fasPolicyCount) {
             elem.classList.add('passed');
         } 
     })
-    let libSlot = document.querySelectorAll('.liberal>.policies>h1'); 
+    let libSlot = document.querySelectorAll('.liberal .policies .article'); 
     libSlot.forEach((elem,id) => {
         if (id < gameState.libPolicyCount) {
             elem.classList.add('passed');
@@ -288,6 +290,7 @@ function discardPrompt(cards,session) {
         newCardBtn.addEventListener('click', e => {
             if (e.target) {
                 let isFascist = e.target.classList.contains('fascist');
+                
                 if (!isFascist) {
                     if (session === 'president') {
                         socket.emit('card_choosen', 'liberal');
@@ -301,7 +304,8 @@ function discardPrompt(cards,session) {
                         socket.emit('card_choosen_chancellor', 'fascist');
                     }
                 }
-                topDiv.remove();
+                e.target.remove();
+                setTimeout(() => { topDiv.remove();},1000)
             }
         });
         cardsDrawn.append(newCardBtn);
@@ -310,7 +314,7 @@ function discardPrompt(cards,session) {
     topDiv.append(divPrompt);
     topDiv.append(cardsDrawn);
 
-    let cardsD = document.querySelectorAll('.article');
+    let cardsD = document.querySelectorAll('.maincontainer .article');
     let cardLen = cardsD.length-1;
     let timer = setInterval(() => {
         let card = cardsD[cardLen];
