@@ -19,8 +19,8 @@ class Game {
         this.hitler = null;
         this.fasPolicyCount = 0;
         this.libPolicyCount = 0;
-        this.totalFasPolicies = 5;
-        this.totalLibPolicies = 6;
+        this.totalFasPolicies = 6;
+        this.totalLibPolicies = 5;
         this.fascists = [];
         this.liberals = [];
         this.drawPile = [];
@@ -231,8 +231,6 @@ class Game {
     }
 
     endOfRoundHousekeeping() {
-        this.pastCabinet.president = this.president;
-        this.pastCabinet.chancellor = this.chancellor;
         if (this.president) {
             this.president.role = null;
         }
@@ -241,6 +239,13 @@ class Game {
         }
         this.policyToPass = null;
         this.drawn = [];
+
+        this.chancellor = null;
+        if(this.chancellorElect) {
+            this.chancellorElect.role = null;
+        }
+        this.chancellorElect = null;
+
         console.log(`Round ${this.round} done. LP ${this.libPolicyCount}, FP ${this.fasPolicyCount} `);
         console.log(``);
         this.votes = {};
@@ -415,7 +420,6 @@ class Game {
     }
     
     init(){
-        this.session = 'init';
         // add players Random Players
         // for(let i = 0; i< 6; i++) {
         //     let player = new Player(i, `Player ${i}`, null);
@@ -450,6 +454,11 @@ class Game {
                 this.numFailedElection = 0;
 
                 console.log('Election Passed');
+
+                this.pastCabinet.president = this.president;
+                this.pastCabinet.chancellor = this.chancellor;
+
+                
                 if (this.winner) {
                     this.session = constant.SESSION_OVER;
                     console.log("HITLER");
@@ -460,32 +469,7 @@ class Game {
 
             } else {
                 this.numFailedElection++;
-                this.chancellor = null;
-    
-            
-                // this.chancellorElect.role = null;
-                this.chancellorElect.role = null;
-                this.chancellorElect = null;
-                console.log(`Election failed : ${this.numFailedElection} x times`);
-                if(this.numFailedElection >= 3) {
-                    console.log("Flection failed, passing policy at random");
-                    
-                   // TODO : Remove presidential power unlocked after passing this election
-
-                   // Remove term limits:
-                    this.pastCabinet.president = null;
-                    this.pastCabinet.chancellor = null;
-
-                    this.passTopPolicyAtRandom();
-                    // reset failed election
-                    this.numFailedElection = 0;
-                   
-                }
-
-                this.endOfRoundHousekeeping();
-                // this.session = constant.SESSION_INIT;
                 return false;
-                // continue;
             }
             return true;
         }
@@ -518,7 +502,7 @@ class Game {
         }
 
         this.exercisePresidentialPower();
-        this.endOfRoundHousekeeping();
+        // this.endOfRoundHousekeeping();
         // this.holdElectionPrimary();
     }
     get canStart(){

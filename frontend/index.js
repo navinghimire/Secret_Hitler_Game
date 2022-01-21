@@ -37,7 +37,9 @@ socket.on('vote_chancellor', () => {
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
     
-    divPrompt.innerHTML = `<h1>Do you accept ${gameState.chancellorElect.name} as new chancellor?<h1>`;
+    divPrompt.innerHTML = `
+    <h2>The Presidential Candidate has choosen <span>${gameState.chancellorElect.name}</span> as his Chancellor</h2>
+    <h1>Do you agree on this new government?<h1>`;
     const yesNoElem = document.createElement('div');
 
     yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
@@ -59,17 +61,31 @@ socket.on('vote_chancellor', () => {
     
 
 })
+socket.on('randompolicy', () => {
+    displayInfo('Election has failed 3 times. Passing policy at random.')
+})
+
+socket.on('policypassed', policy => {
+    displayInfo(`${policy} policy passed.`);
+})
+
 
 socket.on('election_concluded', () => {
     if (gameState.chancellor) {
-        let msg = (gameState.chancellor.id === playerId)?'You are choosen chancellor.':`${gameState.chancellor.name} is our new Chancellor`;
+        let msg = (gameState.chancellor.id === playerId)?'The election has passed. You are the new Chancellor.':`The election for the government has passed with simple majority. ${gameState.chancellor.name} is our new Chancellor`;
         displayInfo(msg); 
     } else {
-        displayInfo(`Election Failed`); 
+        displayInfo(`The election has failed.`); 
     }
     let elems = document.querySelectorAll(`.player>h3`);
     elems.forEach(elem => {
         elem.classList.remove('vote','yes','no');
+        elem.innerHTML = '';
+    })
+    
+    let voteElem = document.querySelectorAll('.player h3.player_voted');
+    voteElem.forEach(elem => {
+        elem.classList.remove('player_voted','yes','no');
         elem.innerHTML = '';
     })
 
@@ -77,35 +93,61 @@ socket.on('election_concluded', () => {
 
 socket.on('president_choosen', () => {
     if (gameState.president.id === playerId) {
-        displayInfo('You are elected president now.');
+        displayInfo('You are our new Presidential Candidate.');
         setTimeout(() => {
-            displayInfo('Pick your chancellor.');
+            displayInfo('Pick your Chancellor.');
         },5000);
     } else {
-        displayInfo(`${gameState.president.name} is elected president`);
+        displayInfo(`${gameState.president.name} is the new Presidental Candidate. The President Candidate is now choosing a Chancellor Candidate.`);
     }
 })
 
-socket.on('choose_chancellor', () => {
-    let playerElems = document.querySelectorAll('.player');
-
-    playerElems.forEach(player => {
-        player.addEventListener('click', handleChoose);
-    });
-
-
+socket.on('choose_chancellor', eligiblePlayers => {
+    eligiblePlayers = JSON.parse(eligiblePlayers);
+    eligiblePlayers.forEach(player => {
+        let playerElem = document.getElementById(player.id);
+        if (playerElem) {
+            playerElem.classList.add('eligible');
+            playerElem.addEventListener('click', handleChoose);
+        }
+    }) 
 }) 
+socket.on('gameover', winner => alert('Game Over. '+ winner + 'won'));
 
 socket.on('once', (code) => {
     test(4,code)
 })
+socket.on('card_discarded_president', () => {
+    displayInfo('President has discarded a policy and passed the remaining two policies to the chancellor');
+})
+socket.on('card_discarded_chancellor', () => {
+    displayInfo('Chancellor has discarded a policy and the remaining policy is being passed');
+})
 socket.on('voted',msg=> {
     msg = JSON.parse(msg);
+    let player = msg['player'];
+    let vote = msg['vote'];
+    displayInfo(`${player.name} has voted ${vote.toUpperCase()}`);
+
+    let playerVoted = document.getElementById(player.id);
+    if(playerVoted) {
+        let voteElem = playerVoted.querySelector('h3');
+        if (voteElem.classList.contains('player_voted')) return;
+        
+        voteElem.classList.add('animate');
+        setTimeout(() => voteElem.classList.remove('animate'),2000);
+
+        voteElem && (voteElem.textContent = (vote === 'yes')?'👍':'👎');
+        voteElem && voteElem.classList.add('player_voted', vote);
+    }
+
+
 });
 
 socket.on('gamecountdown', () => {
     let count = 5;
     gameCountdownElem.style.display = 'flex';
+    gameCountdownElem.style.zIndex = '100';
     let timeElem = document.querySelector('.gameCountdown>h1');
     let interval = setInterval(() =>{
         timeElem.textContent = count;
@@ -113,14 +155,14 @@ socket.on('gamecountdown', () => {
         if (count < -10) {
             clearInterval(interval);
         }
-    },10);
+    },1000);
     let timeout = setTimeout(() => {
         gameCountdownElem.style.display= 'none';
         clearTimeout(timeout);
-    },60);
+    },6000);
 })
 
-socket.on('state', (state) => {
+socket.on('state', state => {
 
     // console.log(state);
     gameState = JSON.parse(state);
@@ -129,27 +171,12 @@ socket.on('state', (state) => {
     console.log(gameState);
     if(!gameState.session) {
         displayInfo('gamecode');
-    }
-    
+    } 
 
 
-    gameState.activePlayers.forEach((player) => {
-        let playerElem = document.getElementById(player.id)
-        let voteElem = playerElem.querySelector('h3');
-        if (voteElem) {
-            if (player.id in gameState.votes) {
-                let playerVote = gameState.votes[player.id];
-                voteElem.textContent = ''
-                if(playerVote === 'yes') {
-                    voteElem.textContent='👍';
-                    voteElem.classList.add('vote','yes');
-                } else if (playerVote === 'no') {
-                    voteElem.textContent='👎';
-                    voteElem.classList.add('vote','no');
-                }                 
-            }
-        }
-    });
+
+
+
     
     
     // render drawPile
@@ -212,6 +239,9 @@ socket.on('canstart', () => {libPolicyCount
     canStart = true;
 })
 
+
+
+
 socket.on('discardone', msg => {
     msg = JSON.parse(msg);
     discardPrompt(msg,'president');
@@ -220,36 +250,51 @@ socket.on('discardonechancellor', msg => {
     msg = JSON.parse(msg);
     discardPrompt(msg,'chancellor');
 })
-socket.on('policypassed',() => {
-    displayInfo('New Policy passed');
-});
 
 function discardPrompt(cards,session) {
+
     let body = document.querySelector('body');
     const topDiv = document.createElement('div');
     topDiv.classList.add('choose_card');
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
+
     
     if (session === 'president') {
-        divPrompt.innerHTML = `<h1>These are the cards you have drawn. Discard one</h1>`;
+        divPrompt.innerHTML = `
+        <h2>These are the cards you have drawn.</h2>
+        <h1>Discard one, the remaining two will be passed to your chancellor.</h1>`;
     } else {
-        divPrompt.innerHTML = `<h1>President discarded one.As a chancellor, discard one. The remaining policy will be implemented</h1>`;
+        divPrompt.innerHTML = `<h2>President discarded one policy.</h2>
+        <h1>As a chancellor, discard one. The remaining policy will be implemented</h1>`;
     }
     const cardsDrawn = document.createElement('div');
+    cardsDrawn.classList.add('maincontainer');
+
     cards.forEach(card => {
-        let newCardBtn = document.createElement('button');
-        newCardBtn.classList.add(card);
-        newCardBtn.innerHTML = card;
+        let newCardBtn = document.createElement('div');
+
+        newCardBtn.innerHTML = `<div class='container'><div class="article ${card==='fascist'?'fascist':'liberal'}">
+                                    <div class="back">
+                                        <h1>ARTICLE</h1>
+                                    </div>
+                                    <div class="front">
+                                        <h1>${card==='fascist'?'Fascist':'Liberal'}</h1>
+                                        <h2>Article</h2>
+                                    </div>
+                                </div></div>`;
+        // newCardBtn.classList.add(card);
+        // newCardBtn.innerHTML = card;
         newCardBtn.addEventListener('click', e => {
             if (e.target) {
-                if (e.target.textContent === 'liberal') {
+                let isFascist = e.target.classList.contains('fascist');
+                if (!isFascist) {
                     if (session === 'president') {
                         socket.emit('card_choosen', 'liberal');
                     } else {
                         socket.emit('card_choosen_chancellor', 'liberal');
                     }
-                } else if (e.target.textContent === 'fascist') {
+                } else if (isFascist) {
                     if (session === 'president') {
                         socket.emit('card_choosen', 'fascist');
                     } else {
@@ -264,6 +309,19 @@ function discardPrompt(cards,session) {
     body.prepend(topDiv);
     topDiv.append(divPrompt);
     topDiv.append(cardsDrawn);
+
+    let cardsD = document.querySelectorAll('.article');
+    let cardLen = cardsD.length-1;
+    let timer = setInterval(() => {
+        let card = cardsD[cardLen];
+        card.style.transform = 'rotateY(180deg)';
+        if (cardLen <= 0) {
+            clearInterval(timer);
+        }
+        cardLen--;
+    },500);
+
+
 }
 
 
@@ -333,7 +391,7 @@ function handleChoose(e) {
             // } else {
             //     elem.classList.remove('choosen');
             // }
-
+            elem.classList.remove('eligible');
             elem.removeEventListener('click', handleChoose);
         });
 
@@ -346,52 +404,68 @@ function renderPlayerElements() {
     active = gameState.activePlayers;
     inactive = gameState.inactivePlayers;
 
-    active.forEach(player => {
+    active.forEach((player,ind)=> {
         let playerElem = document.getElementById(player.id);
         if (!playerElem) {
-            playerElem = document.querySelector('.players>div:not(.player)')
+            playerElem = document.querySelector('.players>div:not(.player,.info)')
             if (!playerElem) {
                 playerElem = document.createElement('div');
                 playerElem.classList.add('player');
                 playerElem.id = player.id;
                 let nameElem = document.createElement('h2')
                 playerElem.appendChild(nameElem);
+
+
+
+
+
             }
             playerElem.id = player.id;
             playerElem.classList.add('player');
             let voteElem = document.createElement('h3')
             playerElem.appendChild(voteElem);
-            
-        }   
-        // make it large   
-        if(player.id === playerId) {
-
-            playerElem.classList.add('player-self');
-        }
-        // update role
-        if(player.role) {
-            if (player.role === 'chancellor' || player.role === 'chancellor_elect') {
-                let roles = ['chancellor','chancellor_elect'];
-                for(let role of roles) {
-                    let elem = document.querySelector(`.${role}`);
-                    if (elem) {
-                        elem.classList.remove(role);
-                    }
-                }
+            let imageDiv = document.createElement('div');
+            imageDiv.innerHTML = `
+            <div class='wrapper'>        
+            <div class="avatar">
+                <div class="head">
+                    <img src="./images/avatar/${Math.random()<0.5?'male':'female'}_head_${Math.floor(Math.random()*8)+1}.svg" alt="" srcset="">
+                </div>
+                <div class="cloth">
+                    <img src="./images/avatar/clothes_${Math.floor(Math.random()*15)+1}.svg" alt="" srcset="">
+                </div>
+            </div>
+            </div>
+       `;
+            playerElem.appendChild(imageDiv);
+            if(player.id === playerId) {
+    
+                playerElem.classList.add('player-self');
             }
-            if (player.role === 'president') {
-                let elem = document.querySelector(`.president`);
-                if (elem) {
-                    elem.classList.remove('president');
-                }
-            }
-            playerElem.classList.add(player.role); 
-        }
-        // update name
+                    // update name
         let nameElem = playerElem.querySelector('h2');
         if(nameElem) {
             nameElem.textContent = player.name;
             playerElem.append(nameElem);
+        }
+
+        }   
+
+        playerElem.classList.remove('president','chancellor','chancellor_elect');
+
+        if(gameState.president) {
+            if (player.id === gameState.president.id) {
+                playerElem.classList.add('president');
+            }
+        } 
+        if (gameState.chancellor) {
+            if (player.id === gameState.chancellor.id) {
+                playerElem.classList.add('chancellor');
+            }
+        } else if (gameState.chancellorElect) {
+            if (player.id === gameState.chancellorElect.id) {
+                playerElem.classList.add('chancellor_elect');
+            }
         }
 
 
@@ -409,9 +483,12 @@ function renderPlayerElements() {
             inactiveElem.classList.add('offline');
         }
     })
-    let playerElemsLen = document.querySelectorAll('.players>div').length;
-    for(let i = 0; i < (10 - playerElemsLen);i++) {
+
+
+    let infoElemNew = document.querySelector('.players>.info');
+    if (!infoElemNew) {
         let newElem = document.createElement('div');
+        newElem.classList = 'info';
         let h2Elem = document.createElement('h2');
         newElem.appendChild(h2Elem);
         playersElem.appendChild(newElem);

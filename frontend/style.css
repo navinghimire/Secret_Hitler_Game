@@ -45,6 +45,152 @@ html {
     background:linear-gradient(to bottom,var(--red-pastel),var(--blue-pastel));
  
 }
+
+.maincontainer {
+    /* background: black; */
+    /* width: 400px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 800px; */
+    perspective: 100px;
+    /* border: solid red; */
+}
+.article {
+    margin: 1em;
+    height: 150px;
+    width: 120px;
+    position: relative;
+    background: linear-gradient(to top, var(--brown-jewel),var(--brown-earth));
+    border-radius: .5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .7em;
+    /* overflow: hidden; */
+    transition: all 300ms ease-in-out;
+    transform-style: preserve-3d;
+    transform: rotate(0deg);
+    pointer-events: auto;
+}
+.article h2{
+    padding-top: .1em;
+    font-size: .9rem;
+}
+.front,.back {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    border-radius: .5em;
+
+}
+
+.back {
+
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    /* opacity: 0; */
+    background: linear-gradient(to top, var(--brown-jewel), var(--brown-earth));
+    color: var(--brown-pastel);
+    z-index: 2;
+}
+.back>h1{
+    opacity: 0.3;
+}
+.front {
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    padding: .8em;
+    text-align: left;
+    /* display: none; */
+    /* opacity: 0; */
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: left 1em bottom 2.4em;
+    z-index: 1;
+    backface-visibility: hidden !important; 
+    transform: rotateY(180deg);
+}
+.liberal>.front {
+    color: var(--blue-pastel);
+    background: url("./images/liberal_article_line.svg");
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: left 1em bottom 2.4em;
+}
+.fascist>.front {
+    color: var(--red-pastel);
+    background: url("./images/fascist_article_line.svg");
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: left 1em bottom 2.4em;
+}
+
+.article.fascist {
+    background: linear-gradient(to top, var(--red-jewel), var(--red-earth));
+}
+
+.article.liberal {
+    background: linear-gradient(to top, var(--blue-jewel), var(--blue-earth));
+}
+.containermain>.container, .front, .back {
+    pointer-events: none;
+}
+.container:hover .article{
+    transform: rotateY(180deg);
+}
+
+
+.wrapper {
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   pointer-events: none;
+}
+.avatar {
+    z-index: -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+    width: inherit;
+    position: relative;
+    /* border: 2px dotted purple ; */
+    display: flex;
+    opacity: .4;
+    overflow: hidden;
+    /* border: solid red; */
+}
+
+.cloth {
+    position: absolute;
+    /* border: solid red; */
+
+    transform: scale(.25);
+    bottom: -50px;
+}
+.head {
+    transform: scale(.25);
+    position: absolute;
+    /* border: solid white; */
+    top: 10;
+}
+.avatar img {
+    /* max-width: 100%;
+    max-height: 100%; */
+    display: block;
+    /* filter:sepia(85%) saturate(525%) hue-rotate(169deg) brightness(106%) contrast(90%); */
+    object-fit: contain;
+}
+.player-self .avatar .cloth, .player-self .avatar .head{
+    transform: scale(.5);
+    /* border: solid red; */
+}
+
+
 .hide {
     display: none;
 }
@@ -53,7 +199,7 @@ html {
 }
 body {
     /* background: linear-gradient(0deg, var(--red) 15%, var(--blue) 85%); */
-    background:linear-gradient(to bottom,var(--blue-pastel), var(--red-pastel));
+    background:linear-gradient(to bottom,var(--blue-neutral), var(--red-neutral));
     /* overscroll-behavior: contain; */
     /* background-size: contain; */
     min-height: 100vh;
@@ -85,6 +231,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     cursor: pointer;
 }
+
 .info>.message{
     padding: 1em;
 }
@@ -128,8 +275,8 @@ body {
     font-size: 10em;
 }
 .info {
-    grid-column: 1/3;
-    grid-row:3/4;
+    grid-column: 1/6;
+    grid-row:4/4;
     /* background-color: var(--brown-pastel) !important; */
     color: var(--brown-earth);
     /* border: solid 4px var(--brown-neutral); */
@@ -148,11 +295,13 @@ body {
 }
 .info.can-start{
     background: (var(--red-jewel));
-    color: var(--green-earth);
-    animation: twinkle 1000ms ease-in-out infinite alternate!important;
+    color: var(--red-earth);
+    animation: twinkle 500ms ease-in-out infinite alternate!important;
 }
 .info:not(.can-start) {
-        background-color: var(--brown-pastel) !important;
+        background: linear-gradient(to left, var(--brown-pastel), var(--brown-neutral)) !important;
+        color: var(--brown-earth);
+        font-weight: 600;
 }
 @keyframes twinkle {
     from {
@@ -366,6 +515,7 @@ p {
 .player-self{
     grid-column: 1/3;
     grid-row:1/3; 
+    min-height: 10em;
 }
 .vote {
     text-align: center;
@@ -374,14 +524,81 @@ p {
     justify-content: center;
     align-items: center;
     z-index: 12;
-    background-color: rgba(238, 90, 90,.70);
+    background-color: rgba(238, 90, 90,.50);
     backdrop-filter: blur(4px);
     position:absolute;
     top:0;
     right:0;
+    padding: 1em;
     bottom: 0;
     left:0;
+
 }
+.player_voted {
+    position: absolute;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top:0;
+    right:0;
+    bottom: 0;
+    left:0;
+    z-index: 12;
+    /* opacity: .7; */
+    border-radius: 100% 100% 0% 100%;
+    left: 65%;
+    top:65%;
+
+}
+.player_voted.yes {
+    background:linear-gradient(to top right, rgba(25, 173, 25, 0.726), rgba(12, 122, 12, 0.699));
+}
+.player_voted.no {
+    background:linear-gradient(to top right, rgba(206, 27, 20, 0.726), rgba(112, 14, 8, 0.699));
+}
+.player_voted>h3{
+    padding: 2px;
+}
+.animate {
+    z-index: 12;
+    top:0;
+    right:0;
+    bottom: 0;
+    left:0;
+    border-radius: 0%;
+    backdrop-filter: blur(4px);
+    animation: retract 2000ms ease-in-out forwards;
+    animation-iteration-count: 1;
+}
+@keyframes retract {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        backdrop-filter: none;
+        border-radius: 100% 100% 0% 100%;
+        left: 65%;
+        top:65%;
+    }
+}
+.vote h1 {
+    color: var(--brown);
+    font-size: 1.5em;
+}
+.vote h2 {
+    font-weight: 300;
+    margin-bottom: 1em;
+}
+.vote h2>span {
+    color:blanchedalmond;
+    font-weight: 800;
+
+}
+
 .vote>div {
     padding:1em 0em;
 }
@@ -394,11 +611,16 @@ p {
     background:linear-gradient(to top right, var(--red-jewel), var(--red-earth));
     color: var(--red-pastel);
 }
+button.fascist,button.liberal {
+ 
+}
+
 .vote>div>button{
+    font-size: 1rem;
     width: 10em;
     height: 10em;
     border-radius: 1em;
-    margin: .5em;
+    margin: .2em;
     border: none;
     font-weight: 600;
 }
@@ -450,14 +672,34 @@ button.no {
 
 }
 .players>.player{
-    background: linear-gradient(to top right, var(--brown-neutral), var(--brown-pastel));
+    background: linear-gradient(to top, var(--brown-neutral), var(--brown-earth));
     border-radius: .5rem;
     backdrop-filter: blur(1px);
     min-height:5rem;
-    padding: .2em;
+    /* padding: .2em; */
+    border: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+    /* filter: drop-shadow(2px 4px 4px --blue-fluoro); */
 }
 .choosen {
     border: solid 5px var(--light-shade);
+}
+.player.eligible {
+    border: solid var(--light-shade);
+    animation: dimInOut 1s alternate infinite ease-in-out
+}
+@keyframes dimInOut {
+    0% {
+        border: solid var(--light-shade)
+    }
+    50% {
+        border: solid var(--green-earth)
+    }
+    100% {
+        border: solid var(--light-shade)
+    }
 }
 
 span.status {
@@ -487,10 +729,11 @@ span.role {
 
 
 .player>h2{
-    font-weight: 600;
-    font-size: 1rem;
+    font-weight: 500;
+    font-size: .9rem;
     margin: .5em;
-    color: #ddd ;
+    color: #ddd;
+    z-index: 1;
 }
 .player.hitler::before{
     display: flex;
@@ -539,9 +782,11 @@ span.role {
 
 .chancellor.fascist::before,.president.fascist::before,.hitler.president::before,.chancellor_elect.fascist::before{
     background-color: var(--red-earth) !important;
+    opacity: .8;
 }
 .chancellor.liberal::before,.president.liberal::before,.chancellor_elect.liberal::before{
     background-color: var(--blue-fluoro) !important;
+    opacity: .8;
 }
 
 
@@ -552,6 +797,7 @@ span.role {
 .player.president::before {
     content: 'PRESIDENT';
     background: var(--brown-earth);
+    opacity: .8;
 }
 .player.president::before, .player.chancellor::before, .player.chancellor_elect::before{
     font-weight: 500;
@@ -566,7 +812,7 @@ span.role {
     left:0;
     right: 0;
     bottom: 0;
-    opacity: 1;
+    opacity: .8;
 }
 .sessions {
     border: solid 1px blue;
@@ -674,27 +920,35 @@ span.role {
     align-items: center; 
 }
 .policy>.liberal>h1, .policy>.fascist>h1 {
-    background: linear-gradient(to right, var(--blue-fluoro), var(--red-pastel));
+    background: linear-gradient(to right, var(--blue-jewel), var(--blue-earth));
+    padding: .2em .2em;
     height: 20%;
     border-radius: 1em 1em 0em 0em;
     width: 50%;
     text-align: center;
+    font-weight: 300;
 }
 .policy>.fascist>h1 {
-    background: linear-gradient(to left, var(--red-fluoro), var(--blue-pastel));
+    background: linear-gradient(to left, var(--red-jewel), var(--red-earth));
+    border-radius: 0em 0em 1em 1em;
 }
 .liberal>.policies {
-    background: linear-gradient(to left, var(--blue-fluoro), var(--red-pastel));
-    border-radius: 1em;
+    background: linear-gradient(to right, var(--blue-jewel), var(--blue-earth));
+    /* border-radius: 1em; */
 }
 .fascist>.policies {
-    background: linear-gradient(to left, var(--blue-pastel), var(--red-fluoro));
-    border-radius: 1em;
+    background: linear-gradient(to left, var(--red-jewel), var(--red-earth));
+    /* border-radius: 1em; */
 }
 .liberal>.policies, .fascist>.policies{
     display: flex;
     flex-direction: row;
     height: 80%;
+}
+.liberal>.policies>h1:last-child {
+    pointer-events: none;
+    opacity: 0 !important;
+    background-color: transparent !important;
 }
 /* .fascist.policies>h1,.liberal.policies{
 
@@ -736,8 +990,11 @@ span.role {
         grid-template-columns: 1fr repeat(8,1fr);
         grid-template-rows: 1fr;
     
-        max-height: 30%;
+        /* max-height: 30%; */
         
+    }
+    .player-self {
+        grid-row: -7/3;
     }
  
 
