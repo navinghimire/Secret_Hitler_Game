@@ -9,6 +9,7 @@
 }
 
 :root {
+    --gap : 0.4em;
     --blue: #3ACBFB;
     --red: #e25f5f;
     --light-blue: #CCCCE8;
@@ -148,7 +149,7 @@ html {
 
 
 .policies {
-    margin: .7em;
+    margin: .2em;
 }
 .policies .front {
     transform: rotateY(0deg);
@@ -185,8 +186,8 @@ html {
 }
 .policy .liberal>h1, .policy .fascist>h1 {
     /* color:red; */
-    margin: 0em .5em ;
-    padding: .25em;
+    /* margin: 0em .5em ; */
+    /* padding: .25em; */
     font-weight: 400;
     border-radius: .5em;
 }
@@ -270,7 +271,7 @@ html {
     object-fit: contain;
 }
 .player-self .avatar .cloth, .player-self .avatar .head{
-    transform: scale(.5);
+    /* transform: scale(.5); */
     /* border: solid red; */
 }
 
@@ -317,14 +318,12 @@ body {
 }
 
 .info>.message{
-    padding: 1em;
 }
 .info::before {
     content: 'i';
     position: absolute;
     background-color: var(--brown-earth);
     color: var(--brown-pastel);
-    padding: .2em;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-weight: 500;
 
@@ -360,19 +359,23 @@ body {
     font-size: 10em;
 }
 .info {
-    grid-column: 1/6;
-    grid-row:4/4;
+    display: flex;
+    /* max-height: 5em; */
+    /* grid-column: 1/3; */
+    /* grid-column: 1/3; */
+    /* grid-auto-flow: column; */
     /* background-color: var(--brown-pastel) !important; */
     color: var(--brown-earth);
     /* border: solid 4px var(--brown-neutral); */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     border-radius: .5em;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    min-width: 10em;
-    padding: .4em;
 }
 .info.can-start::before {
     content: '';
@@ -408,7 +411,7 @@ body {
 }
 .info-code>h1 {
     color:var(--6);
-    padding-left: .2em;
+    /* padding-left: .2em; */
 
 }
 
@@ -434,11 +437,11 @@ body {
 .info::after{
     content:'';
     position: absolute;
-    width: 10em;
-    height:2em;
+    /* width: 10em;
+    height:2em; */
     right: -3em;
     border: solid 10px var(--blue-jewel);
-    top: 1em;
+    /* top: 1em; */
     transform: rotate(-75deg);
     opacity: .1;
 
@@ -472,26 +475,16 @@ section{
     bottom: 2em;
     right: calc(50%-2.5em);
 }
-
-.input {
-    flex-direction: row;
-    color: white;
+#chaos, #stability {
+    pointer-events: none;
 }
 
-.center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+
+
 .input button{
-    height: 4em;
-    padding: 0 2em;
-    border-radius: 1em;   
     border: none;
-    margin-top: .5em;
 }
 .input button:disabled {
-    /* background-color:red; */
     opacity: .1;
     display: none;
 }
@@ -505,9 +498,7 @@ section{
 }
 
 #or{
-    flex-direction: column;
-    min-width: 10em;
-    color: var(--blue-neutral);
+
 }
 
 #or h1{
@@ -516,17 +507,12 @@ section{
 }
 .input input{
     background-color: white;
+    color: var(--secondary-blue);
     text-decoration: none;
     border: none;
-    width: 10em;
     max-height:2em;
-    border-radius: .5em;
-    padding:1em;
     text-align: center;
-    font-size: 1rem;
-    color: var(--secondary-blue);
     outline: none;
-    font-size: 2em;
 } 
 .input input::placeholder{
     color:var(--light-blue);
@@ -534,22 +520,19 @@ section{
     font-style: italic;
 } 
 .hline{
-    height: calc(10*var(--hline-size));
-    background-color: var(--blue-neutral);
-    border-radius: 1em;
-    width: var(--hline-size);
+
 }
 .code input {
     width: 2em;
     height: 2em;
-    padding:0 .2em;
+    /* padding:0 .2em; */
     font-weight: 1000;
     transition: 0.5 ease;
 }
 .code {
     /* margin: .4em; */
     width: auto;
-    margin-bottom: 1.5em;
+    /* margin-bottom: 1.5em; */
 }
 .code input:focus, .input input:focus {
     box-shadow: 0 2px 4px rgba(0,0,0,0.7);
@@ -565,8 +548,8 @@ form {
 }
 .validationMessage {
     /* border: solid 1px var(--light-blue); */
-    height:1em;
-    margin:.5em.5em;
+    /* height:1em;
+    margin:.5em.5em; */
     color:white;
     display: flex;
     justify-content: center;
@@ -574,35 +557,34 @@ form {
 }
 
 #loginScreen {
-    height: 100vh;
     display: grid;
-    /* align-items: flex-end; */
-    grid-template-rows: 5fr 1fr 5fr;
-    gap: 1rem;
-    /* flex-direction: column; */
-    /* align-items: flex-end; */
+    grid-template-columns: 4fr 1fr 4fr;
+    align-items: center;
+    justify-content: center;
 }
 #loginScreen>section:first-child {
-    align-self: flex-end;
+
 }
-p {
-    padding: .5rem;
+#loginScreen>section:last-child {
+
 }
 
-#loginScreen>section:last-child {
-    align-self: flex-start;
-}
+
+
 
 .gameScreen {
-    width: 100%;
-    height: 100vh;
-    /* display: grid; */
+    /* width: 100%; */
+    /* height: 100vh; */
+    display: grid;
+    grid-template-rows: auto 1fr 5fr 5fr;
     /* flex-direction: column; */
+    /* grid-template-columns: none; */
+    
 }
 .player-self{
     grid-column: 1/3;
-    grid-row:1/3; 
-    min-height: 10em;
+    grid-row: 1/2;
+    
 }
 .vote {
     text-align: center;
@@ -645,12 +627,7 @@ p {
     background:linear-gradient(to top right, rgba(206, 27, 20, 0.726), rgba(112, 14, 8, 0.699));
 }
 .player_voted>h3{
-    padding: 2px;
-}
-.animate {
-    z-index: 12;
-    top:0;
-    right:0;
+    padding: 2px;.info
     bottom: 0;
     left:0;
     border-radius: 0%;
@@ -731,12 +708,16 @@ button.no {
 }
 
 .players {
-    padding:.5rem;
     display: grid;
-    gap: .5rem;
-    grid-template-columns: 1fr repeat(4,1fr);
-    min-height: 20%;
-    /* border: solid 1px red; */
+    grid-template-columns: 1fr repeat(5,1fr);
+    /* grid-template-rows: 1fr 1fr; */
+    grid-auto-rows: auto;
+
+    /* margin: .4em; */
+    /* grid-auto-rows: min-content; */
+    /* grid-auto-flow: row; */
+    
+    /* gap: .4em; */
 }
 .player.liberal{
     background: linear-gradient(to top left,var(--blue-fluoro), var(--blue-earth)) !important;
@@ -762,7 +743,8 @@ button.no {
     background: linear-gradient(to top, var(--brown-neutral), var(--brown-earth));
     border-radius: .5rem;
     backdrop-filter: blur(1px);
-    min-height:5rem;
+    min-width: 5rem;
+    min-height: 5rem;
     /* padding: .2em; */
     border: none;
     position: relative;
@@ -1046,8 +1028,45 @@ span.role {
     padding: .5em;
     font-weight: 200;
 }
+Prakash
+Shyam
+Florian
+Prasanna
+Navin
 
-.fascist>.policies>h1:not(.passed){
+Game code. Pass along!
+M3XE
+Liberal Policy 0/5
+Liberal
+Article
+Liberal
+Article
+Liberal
+Article
+Liberal
+Article
+Liberal
+Article
+Fascist
+Article
+Fascist
+Article
+Fascist
+Article
+Fascist
+Article
+Fascist
+Article
+Fascist
+Article
+Fascist Policy 0/6
+0
+
+Draw Pile
+0
+
+Discard Pile
+
     background-color: var(--blue-pastel);
     color: var(--red-pastel);
     opacity: .2;
@@ -1066,58 +1085,65 @@ span.role {
    
 } */
 
-@media screen and (min-width: 1000px) {
+@media screen and (min-width: 769px) {
+
+    .gameScreen {
+        grid-template-columns: 1fr 9fr !important;
+        grid-template-rows: 10% auto auto;
+        height: 100vh;
+        grid-template-areas: 
+            "players info"
+            "players policy"
+            "players drawDiscard"
+    }
     .players {
-        padding:1rem;
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr repeat(8,1fr);
-        grid-template-rows: 1fr;
-    
-        /* max-height: 30%; */
+        grid-area: players;
+        /* background-color: red; */
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr repeat(10,1fr);
+        gap: var(--gap);
+    }
+    .policy {
+        grid-area: policy;
+
+    }
+    .info {
+        grid-area: info;
+
+    }
+    .drawDiscard {
+        grid-area: drawDiscard;
         
     }
-    .player-self {
-        grid-row: -7/3;
-    }
- 
+  }
+  @media screen and (min-width: 1025px) {
 
-    #loginScreen {
-        grid-template-columns: 5fr 1fr 5fr ;
-        /* align-self: unset; */
+    .gameScreen {
+        grid-template-columns: 1fr 9fr !important;
+        grid-template-rows: 10% auto auto;
         height: 100vh;
-        /* justify-content: center; */
+        grid-template-areas: 
+            "players info info"
+            "players policy drawDiscard"
+            "players policy drawDiscard"
+    }
+    .players {
+        grid-area: players;
+        /* background-color: red; */
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr repeat(10,1fr);
+    }
+    .policy {
+        grid-area: policy;
+        width: 80%;
 
     }
+    .info {
+        grid-area: info;
 
-    #loginScreen>section{
-        /* align-self: flex-end; */
-       height: 100vh;
     }
-
-    #loginScreen>section:first-child{
-        /* justify-self: center; */
-        justify-self: flex-end;
-        height:100vh;
+    .drawDiscard {
+        grid-area: drawDiscard;
+        
     }
-    #loginScreen>section:last-child {
-        justify-self: flex-start;
-    }
-    .input  {
-        display: grid;
-    }
-
-
-    #or {
-        flex-direction: row;
-    }
-    .hline{
-        height: var(--hline-size);
-        background-color: var(--light-blue);
-        border-radius: 1em;
-        min-width: calc(var(--hline-size)*5);
-        margin:0 1em;
-    }
-
-
   }

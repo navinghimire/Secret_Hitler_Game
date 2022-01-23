@@ -373,7 +373,7 @@ function displayInfo(message) {
         messageElem.classList.add('message');
         infoElem.appendChild(messageElem);
     }
-    playersElem.appendChild(infoElem);
+    // playersElem.appendChild(infoElem);
 }
 
 function startGame() {
@@ -489,14 +489,14 @@ function renderPlayerElements() {
     })
 
 
-    let infoElemNew = document.querySelector('.players>.info');
-    if (!infoElemNew) {
-        let newElem = document.createElement('div');
-        newElem.classList = 'info';
-        let h2Elem = document.createElement('h2');
-        newElem.appendChild(h2Elem);
-        playersElem.appendChild(newElem);
-    }
+    // let infoElemNew = document.querySelector('.info');
+    // if (!infoElemNew) {
+    //     let newElem = document.createElement('div');
+    //     newElem.classList = 'info';
+    //     let h2Elem = document.createElement('h2');
+    //     newElem.appendChild(h2Elem);
+    //     playersElem.appendChild(newElem);
+    // }
 }
 
 function renderSecretRoles() {
