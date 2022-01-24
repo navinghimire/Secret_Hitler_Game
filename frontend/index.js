@@ -29,7 +29,7 @@ socket.on('gamecode', code => {
 
 socket.on('vote_chancellor', () => {
     // displayInfo(`Do you accept ${gameState.chancellorElect.name} as chancellor?`);
-    let body = document.querySelector('body');
+    let body = document.querySelector('.drawDiscard');
     // displayElem.innerHTML = '';
 
     // displayElem.textContent = '';
@@ -49,15 +49,20 @@ socket.on('vote_chancellor', () => {
 
     const btnYes = document.querySelector('.vote>div>button.yes');
     const btnNo = document.querySelector('.vote>div>button.no')
+
     btnYes.addEventListener('click', () => {
         socket.emit('vote','yes');
-        topDiv.style.display = 'none';
-
+        setTimeout(() => {
+            topDiv.remove();
+        }, 1000);
     })
     btnNo.addEventListener('click', () => {
         socket.emit('vote','no');
-        topDiv.remove();
+        setTimeout(() => {
+            topDiv.remove();
+        }, 1000);
     })
+
     
 
 })
@@ -137,7 +142,7 @@ socket.on('voted',msg=> {
         voteElem.classList.add('animate');
         setTimeout(() => voteElem.classList.remove('animate'),2000);
 
-        voteElem && (voteElem.textContent = (vote === 'yes')?'👍':'👎');
+        voteElem && (voteElem.textContent = (vote === 'yes')?'✔':'✘');
         voteElem && voteElem.classList.add('player_voted', vote);
     }
 
@@ -255,7 +260,7 @@ socket.on('discardonechancellor', msg => {
 
 function discardPrompt(cards,session) {
 
-    let body = document.querySelector('body');
+    let body = document.querySelector('.drawDiscard');
     const topDiv = document.createElement('div');
     topDiv.classList.add('choose_card');
     topDiv.classList.add('vote');

@@ -9,6 +9,7 @@
 }
 
 :root {
+    --radius: .5em;
     --gap : 0.4em;
     --blue: #3ACBFB;
     --red: #e25f5f;
@@ -43,7 +44,7 @@
 }
 
 html {
-    background:linear-gradient(to bottom,var(--red-pastel),var(--blue-pastel));
+    /* background:linear-gradient(to bottom,var(--red-pastel),var(--blue-pastel)); */
  
 }
 
@@ -63,7 +64,7 @@ html {
     width: 120px;
     position: relative;
     background: linear-gradient(to top, var(--brown-jewel),var(--brown-earth));
-    border-radius: .5em;
+    border-radius: var(--radius);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -82,7 +83,7 @@ html {
     display: flex;
     flex-direction: column;
     position: absolute;
-    border-radius: .5em;
+    border-radius: var(--radius);
 
 }
 
@@ -159,10 +160,16 @@ html {
 }
 .policies .article {
     width: auto;
-    height: 130px;
+    height: 100px;
     margin: 0;    
     background-size: stretch;
 }
+.policies .article.liberal.passed > .front,.policies .article.fascist.passed > .front  {
+    background: url(./images/liberal_article_line.svg) left .9em bottom .8em/ 70% no-repeat
+}
+
+
+
 .policies .article .front {
     background-size: 70%;
     /* background-image: none; */
@@ -173,6 +180,7 @@ html {
         transparent 2px,
         transparent 10px
     ); */
+
 }
 
 
@@ -188,8 +196,9 @@ html {
     /* color:red; */
     /* margin: 0em .5em ; */
     /* padding: .25em; */
+    padding: .5em;
     font-weight: 400;
-    border-radius: .5em;
+    border-radius: var(--radius);
 }
 .policy .liberal>h1 {
     background-color: var(--blue-jewel);
@@ -284,7 +293,7 @@ html {
 }
 body {
     /* background: linear-gradient(0deg, var(--red) 15%, var(--blue) 85%); */
-    background:linear-gradient(to bottom,var(--blue-neutral), var(--red-neutral));
+    /* background:linear-gradient(to bottom,var(--blue-neutral), var(--red-neutral)); */
     /* overscroll-behavior: contain; */
     /* background-size: contain; */
     min-height: 100vh;
@@ -308,7 +317,7 @@ body {
 .test>button{
     padding: 1em;
     margin-bottom: 1em;
-    border-radius: 1em;
+    border-radius: var(--radius);
     border: none;
     background-color: var(--green-pastel);
     color: var(--green-earth);
@@ -370,7 +379,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-radius: .5em;
+    border-radius: var(--radius);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -579,6 +588,8 @@ form {
     grid-template-rows: auto 1fr 5fr 5fr;
     /* flex-direction: column; */
     /* grid-template-columns: none; */
+    gap: var(--gap);
+    margin: var(--gap);
     
 }
 .player-self{
@@ -609,49 +620,41 @@ form {
     display: flex;
     justify-content: center;
     align-items: center;
-    top:0;
-    right:0;
-    bottom: 0;
-    left:0;
     z-index: 12;
-    /* opacity: .7; */
+    opacity: 1;
+    backdrop-filter: none;
+    bottom: 0px;
+    right: 0px;
+    padding: .4em;
     border-radius: 100% 100% 0% 100%;
-    left: 65%;
-    top:65%;
+    height: 1.5em;
+    width: 1.5em;
 
 }
 .player_voted.yes {
     background:linear-gradient(to top right, rgba(25, 173, 25, 0.726), rgba(12, 122, 12, 0.699));
+    color: var(--green-pastel);
 }
 .player_voted.no {
     background:linear-gradient(to top right, rgba(206, 27, 20, 0.726), rgba(112, 14, 8, 0.699));
+    color: var(--red-pastel);
 }
-.player_voted>h3{
-    padding: 2px;.info
-    bottom: 0;
-    left:0;
-    border-radius: 0%;
-    backdrop-filter: blur(4px);
-    animation: retract 2000ms ease-in-out forwards;
-    animation-iteration-count: 1;
+.animate {
+    opacity: 0;
+    animation: retract 1s ease-in-out  1 forwards;
 }
+
 @keyframes retract {
     0% {
-        opacity: 0;
-    }
-    20% {
-        opacity: 1;
+        
     }
     100% {
-        backdrop-filter: none;
-        border-radius: 100% 100% 0% 100%;
-        left: 65%;
-        top:65%;
+        opacity: 1;
     }
 }
 .vote h1 {
     color: var(--brown);
-    font-size: 1.5em;
+    /* font-size: 1.5em; */
 }
 .vote h2 {
     font-weight: 300;
@@ -664,7 +667,7 @@ form {
 }
 
 .vote>div {
-    padding:1em 0em;
+    /* padding:1em 0em; */
 }
 .vote>div>button.liberal {
     background:linear-gradient(to top right, var(--green-jewel), var(--green-earth));
@@ -680,10 +683,10 @@ button.fascist,button.liberal {
 }
 
 .vote>div>button{
-    font-size: 1rem;
-    width: 10em;
-    height: 10em;
-    border-radius: 1em;
+    /* font-size: 1rem; */
+    width: 8em;
+    height: 8em;
+    border-radius: var(--radius);
     margin: .2em;
     border: none;
     font-weight: 600;
@@ -712,7 +715,7 @@ button.no {
     grid-template-columns: 1fr repeat(5,1fr);
     /* grid-template-rows: 1fr 1fr; */
     grid-auto-rows: auto;
-
+    gap: var(--gap);
     /* margin: .4em; */
     /* grid-auto-rows: min-content; */
     /* grid-auto-flow: row; */
@@ -734,14 +737,14 @@ button.no {
     position: relative;
     overflow: hidden;
     width: 100%;
-    border-radius: .5rem;
+    border-radius: var(--radius);
     opacity: .2;
     border: dashed 2px var(--brown-fluoro)
 
 }
 .players>.player{
     background: linear-gradient(to top, var(--brown-neutral), var(--brown-earth));
-    border-radius: .5rem;
+    border-radius: var(--radius);
     backdrop-filter: blur(1px);
     min-width: 5rem;
     min-height: 5rem;
@@ -892,20 +895,20 @@ span.role {
 
 .drawDiscard {
     /* border: solid 1px red; */
-    height: 25%;
+    height: 20em;
     width: 100%;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     padding: 1em;
-
+    position: relative;
 }
 .drawPile,.discardPile {
     display: flex;
     width: 4em;
     height: 100%;
     background: linear-gradient(to bottom, var(--red-pastel) -20%, var(--blue-fluoro) 180%);
-    border-radius: 2em;
+    border-radius: var(--radius);
     justify-content: flex-start;
     align-items: center;
     position: relative;
@@ -914,10 +917,10 @@ span.role {
     justify-content: flex-end;
 }
 .drawPile {
-    border-radius: 2em 2em 0em 2em;
+    border-radius: var(--radius);
 }
 .discardPile {
-    border-radius: 2em 2em 2em 0em;
+    border-radius: var(--radius);
     background: linear-gradient(to bottom, var(--blue-pastel) -20%, var(--red-fluoro) 180%);
 }
 .drawPile>p{
@@ -952,7 +955,7 @@ span.role {
     height: 75%;
     bottom: 0;
     position: absolute;
-    border-radius: 1em;
+    border-radius: var(--radius);
     width: 8rem;
 }
 
@@ -1094,7 +1097,9 @@ Discard Pile
         grid-template-areas: 
             "players info"
             "players policy"
-            "players drawDiscard"
+            "players drawDiscard";
+        gap: var(--gap);
+        margin: var(--gap);
     }
     .players {
         grid-area: players;
@@ -1119,8 +1124,8 @@ Discard Pile
   @media screen and (min-width: 1025px) {
 
     .gameScreen {
-        grid-template-columns: 1fr 9fr !important;
-        grid-template-rows: 10% auto auto;
+        grid-template-columns: 1fr 4fr 4fr !important;
+        grid-template-rows: 5% auto auto;
         height: 100vh;
         grid-template-areas: 
             "players info info"
@@ -1135,7 +1140,6 @@ Discard Pile
     }
     .policy {
         grid-area: policy;
-        width: 80%;
 
     }
     .info {
