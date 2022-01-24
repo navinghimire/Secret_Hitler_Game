@@ -160,11 +160,11 @@ socket.on('gamecountdown', () => {
         if (count < -10) {
             clearInterval(interval);
         }
-    },1000);
+    },10);
     let timeout = setTimeout(() => {
         gameCountdownElem.style.display= 'none';
         clearTimeout(timeout);
-    },6000);
+    },60);
 })
 
 socket.on('state', state => {
@@ -188,10 +188,26 @@ socket.on('state', state => {
     let drawPile = document.querySelector('.drawPile>.pile');
     let drawPileCards = gameState.drawPile.length>=3?3:gameState.drawPile.length;
     drawPile.innerHTML = '';
+
+
+    drawPile.classList.add('maincontainer');
+    
     for(let i=0;i<drawPileCards;i++) {
-        let newCardElem = document.createElement('h1');
+        let newCardElem = document.createElement('div');
+        newCardElem.innerHTML = `<div class='container'><div class="fascist">
+                                    <div class="back">
+                                        <h1>ARTICLE</h1>
+                                    </div>
+                                    <div class="front">
+                                        <h1>Fascist</h1>
+                                        <h2>Article</h2>
+                                    </div>
+                                </div></div>`;
+
+
+
         newCardElem.style.left = `${(i+1)*2}rem`;
-        newCardElem.style.zIndex = `${(i+1)*2}`;
+        // newCardElem.style.zIndex = `${(i+1)*2}`;
         drawPile.append(newCardElem);
     }
 

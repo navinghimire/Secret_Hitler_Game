@@ -55,9 +55,13 @@ html {
     justify-content: center;
     align-items: center;
     /* height: 800px; */
-    perspective: 100px;
+    /* perspective: 100px; */
     /* border: solid red; */
 }
+.main {
+    height: 20em;
+}
+
 .article {
     margin: 1em;
     height: 150px;
@@ -893,200 +897,15 @@ span.role {
     flex-direction: row;
 }
 
-.drawDiscard {
-    /* border: solid 1px red; */
-    height: 20em;
-    width: 100%;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding: 1em;
+.pile.maincontainer {
+    height: 200px;
+    width: 200px;
     position: relative;
 }
-.drawPile,.discardPile {
-    display: flex;
-    width: 4em;
-    height: 100%;
-    background: linear-gradient(to bottom, var(--red-pastel) -20%, var(--blue-fluoro) 180%);
-    border-radius: var(--radius);
-    justify-content: flex-start;
-    align-items: center;
-    position: relative;
-}
-.discardPile {
-    justify-content: flex-end;
-}
-.drawPile {
-    border-radius: var(--radius);
-}
-.discardPile {
-    border-radius: var(--radius);
-    background: linear-gradient(to bottom, var(--blue-pastel) -20%, var(--red-fluoro) 180%);
-}
-.drawPile>p{
-    writing-mode: tb-rl;
-
-}
-.drawPile>h1,.discardPile>h1 {
-    display: flex;
-    align-self: center;
-    justify-content: center;
-    width: 4rem;
-    height: 4rem;
-    margin:0;
-    padding:0;
-    border: solid red;
-    border: solid;
-    position: absolute;
-    top:0;
-    padding-top:.5em;
-    border-radius: 50%;
-}
-.drawPile>h1>span, .discardPile>h1>span{
-    /* border: solid 1px; */
-    font-size: 2rem;
-}
-.discardPile>p {
-    writing-mode: vertical-rl;
-  
-}
-.pile>h1 {
-    border: 1px;
-    height: 75%;
-    bottom: 0;
-    position: absolute;
-    border-radius: var(--radius);
-    width: 8rem;
+.pile.maincontainer.container {
+    width: 200px;
 }
 
-.drawPile .pile>h1{
-    background: linear-gradient(to bottom, var(--red-pastel) -20%, var(--blue-fluoro) 180%);
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    left:0rem;
-    transition: left 5s ease !important;
-}
-
-
-.discardPile .pile>h1 {
-    background: linear-gradient(to bottom, var(--red-pastel) -20%, var(--blue-fluoro) 180%);
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-
-.discardPile .pile>h1:nth-child(2) {
-    right: 4rem;
-}
-.discardPile .pile>h1:nth-child(3) {
-    right: 6rem;
-}
-
-
-
-
-/* 
-.policy {
-    height: 30%;
-    width: 100%;
-}
-.policy>.liberal, .policy>.fascist {
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-}
-.policy>.liberal>h1, .policy>.fascist>h1 {
-    background: linear-gradient(to right, var(--blue-jewel), var(--blue-earth));
-    padding: .2em .2em;
-    height: 20%;
-    border-radius: 1em 1em 0em 0em;
-    width: 50%;
-    text-align: center;
-    font-weight: 300;
-}
-.policy>.fascist>h1 {
-    background: linear-gradient(to left, var(--red-jewel), var(--red-earth));
-    border-radius: 0em 0em 1em 1em;
-}
-.liberal>.policies {
-    background: linear-gradient(to right, var(--blue-jewel), var(--blue-earth));
-}
-.fascist>.policies {
-    background: linear-gradient(to left, var(--red-jewel), var(--red-earth));
-}
-.liberal>.policies, .fascist>.policies{
-    display: flex;
-    flex-direction: row;
-    height: 80%;
-}
-.liberal>.policies>h1:last-child {
-    pointer-events: none;
-    opacity: 0 !important;
-    background-color: transparent !important;
-}
-
-.policies>h1{
-    margin:.25em;
-    border-radius: 1em;
-    font-size: 1em;
-    padding: .5em;
-    font-weight: 200;
-}
-Prakash
-Shyam
-Florian
-Prasanna
-Navin
-
-Game code. Pass along!
-M3XE
-Liberal Policy 0/5
-Liberal
-Article
-Liberal
-Article
-Liberal
-Article
-Liberal
-Article
-Liberal
-Article
-Fascist
-Article
-Fascist
-Article
-Fascist
-Article
-Fascist
-Article
-Fascist
-Article
-Fascist
-Article
-Fascist Policy 0/6
-0
-
-Draw Pile
-0
-
-Discard Pile
-
-    background-color: var(--blue-pastel);
-    color: var(--red-pastel);
-    opacity: .2;
-}
-.liberal>.policies>h1:not(.passed){
-    background-color: var(--blue-pastel);
-    color: var(--blue-pastel);
-    opacity: .2;
-}
-.liberal h1.passed{
-    background: linear-gradient(to top left, var(--blue-fluoro) -100%, var(--blue-earth)) 20%;
-}
-
-.fascist h1.passed{
-    background: linear-gradient(to top left, var(--red-fluoro) -100%, var(--red-earth)) 20%;
-   
-} */
 
 @media screen and (min-width: 769px) {
 
