@@ -44,22 +44,21 @@
 }
 
 html {
-    /* background:linear-gradient(to bottom,var(--red-pastel),var(--blue-pastel)); */
- 
+    background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
 }
 
 .maincontainer {
-    /* background: black; */
-    /* width: 400px; */
     display: flex;
     justify-content: center;
     align-items: center;
-    /* height: 800px; */
-    /* perspective: 100px; */
-    /* border: solid red; */
 }
-.main {
-    height: 20em;
+
+
+.drawDiscard {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    position: relative;
 }
 
 .article {
@@ -389,6 +388,8 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    /* margin: 1em 0em; */
+    padding: 1em 0em;
 }
 .info.can-start::before {
     content: '';
@@ -589,7 +590,7 @@ form {
     /* width: 100%; */
     /* height: 100vh; */
     display: grid;
-    grid-template-rows: auto 1fr 5fr 5fr;
+    grid-template-rows: auto 1fr auto 5fr;
     /* flex-direction: column; */
     /* grid-template-columns: none; */
     gap: var(--gap);
@@ -613,7 +614,6 @@ form {
     position:absolute;
     top:0;
     right:0;
-    padding: 1em;
     bottom: 0;
     left:0;
 
@@ -662,7 +662,6 @@ form {
 }
 .vote h2 {
     font-weight: 300;
-    margin-bottom: 1em;
 }
 .vote h2>span {
     color:blanchedalmond;
@@ -728,11 +727,34 @@ button.no {
 }
 .player.liberal{
     background: linear-gradient(to top left,var(--blue-fluoro), var(--blue-earth)) !important;
+    animation: colorpopfas ease-in 1s forwards !important;
+
 }
 .player.fascist {
     background: linear-gradient(to top left,var(--red-pastel),var(--red-earth)) !important;
+    animation: colorpoplib ease-in 1s forwards !important;
 
 }
+
+@keyframe colorpoplib {
+    0% {
+        background: linear-gradient(to top left, var(--brown-neutral), var(--brown-pastel));     
+    } 
+    100%{
+        background: linear-gradient(to top left,var(--blue-fluoro), var(--blue-earth)) !important;
+    }
+}
+
+@keyframe colorpopfas {
+    0% {
+        background: linear-gradient(to top left, var(--brown-neutral), var(--brown-pastel));     
+    } 
+    100%{
+        background: linear-gradient(to top left,var(--red-pastel),var(--red-earth)) !important;
+    }
+}
+
+
 .players>div:not(.player,.info) {
     /* background: linear-gradient(to top left,var(--blue) -10%,var(--red) 200%); */
     min-height:5rem;
@@ -897,25 +919,17 @@ span.role {
     flex-direction: row;
 }
 
-.pile.maincontainer {
-    height: 200px;
-    width: 200px;
-    position: relative;
-}
-.pile.maincontainer.container {
-    width: 200px;
-}
 
 
 @media screen and (min-width: 769px) {
 
     .gameScreen {
         grid-template-columns: 1fr 9fr !important;
-        grid-template-rows: 10% auto auto;
+        grid-template-rows: auto 10% auto;
         height: 100vh;
         grid-template-areas: 
-            "players info"
             "players policy"
+            "players info"
             "players drawDiscard";
         gap: var(--gap);
         margin: var(--gap);
@@ -937,6 +951,7 @@ span.role {
     }
     .drawDiscard {
         grid-area: drawDiscard;
+     
         
     }
   }

@@ -10,6 +10,8 @@ const gameScreen = document.querySelector('.gameScreen');
 const allInputElem = document.querySelectorAll('input');
 const frmLogin = document.querySelectorAll('.frmLogin');
 
+
+
 // this is where we render players 
 let playersElem = document.querySelector('.players');
 // const constant = import('./utils');
@@ -52,15 +54,12 @@ socket.on('vote_chancellor', () => {
 
     btnYes.addEventListener('click', () => {
         socket.emit('vote','yes');
-        setTimeout(() => {
-            topDiv.remove();
-        }, 1000);
+        topDiv.remove();
+    
     })
     btnNo.addEventListener('click', () => {
         socket.emit('vote','no');
-        setTimeout(() => {
-            topDiv.remove();
-        }, 1000);
+        topDiv.remove();
     })
 
     
@@ -167,6 +166,7 @@ socket.on('gamecountdown', () => {
     },60);
 })
 
+
 socket.on('state', state => {
 
     // console.log(state);
@@ -190,27 +190,26 @@ socket.on('state', state => {
     drawPile.innerHTML = '';
 
 
-    drawPile.classList.add('maincontainer');
     
-    for(let i=0;i<drawPileCards;i++) {
-        let newCardElem = document.createElement('div');
-        newCardElem.innerHTML = `<div class='container'><div class="fascist">
-                                    <div class="back">
-                                        <h1>ARTICLE</h1>
-                                    </div>
-                                    <div class="front">
-                                        <h1>Fascist</h1>
-                                        <h2>Article</h2>
-                                    </div>
-                                </div></div>`;
-
-
-
-        newCardElem.style.left = `${(i+1)*2}rem`;
-        // newCardElem.style.zIndex = `${(i+1)*2}`;
-        drawPile.append(newCardElem);
-    }
-
+    // for(let i=0;i<drawPileCards;i++) {
+    //     let newCard = document.createElement('div');
+    //     newCard.classList.add('container');
+    //     newCard.classList.add('card'+i);
+    //     newCard.innerHTML = ` <div class="article liberal">
+    //                                 <div class="front">
+    //                                     <h1>Liberal</h1>
+    //                                     <h2>Article</h2>
+    //                                 </div>
+    //                                 <div class="back">
+    //                                     <h1>ARTICLE</h1>
+    //                                 </div>
+    //                             </div>`;
+    //     newCard.style.position = 'absolute';
+    //     newCard.style.left = i*1 +'em';
+    //     newCard.style.zIndex = (i+1)*5+'';
+    //     drawPile.append(newCard);
+    // }
+    
     // render discardPile
     let discardPile = document.querySelector('.discardPile>.pile');
     let discardPileCards = gameState.discardPile.length>=3?3:gameState.discardPile.length;
@@ -268,6 +267,11 @@ socket.on('canstart', () => {libPolicyCount
 socket.on('discardone', msg => {
     msg = JSON.parse(msg);
     discardPrompt(msg,'president');
+
+
+
+
+
 });
 socket.on('discardonechancellor', msg => {
     msg = JSON.parse(msg);
@@ -325,7 +329,6 @@ function discardPrompt(cards,session) {
                         socket.emit('card_choosen_chancellor', 'fascist');
                     }
                 }
-                e.target.remove();
                 setTimeout(() => { topDiv.remove();},1000)
             }
         });
@@ -394,7 +397,9 @@ function displayInfo(message) {
         messageElem.classList.add('message');
         infoElem.appendChild(messageElem);
     }
+   
     // playersElem.appendChild(infoElem);
+
 }
 
 function startGame() {
@@ -534,8 +539,8 @@ function renderSecretRoles() {
         let n = roles.length;
         let inv = setInterval(()=>{
             let player = document.getElementById(roles[n-1]);
-            if (player) {
-                
+            player.style.animationDelay = n+'s';
+            if (player) {       
                     player.classList.add(secretRoles[roles[n-1]]);
             }
             n--;
