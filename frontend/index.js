@@ -64,7 +64,54 @@ socket.on('powers', powers => {
     })
 
 })
+socket.on('veto_verdict', verdict => {
+    let elem = document.querySelector('.drawDiscard>.vote');
+    if (verdict === 'yes') {
+        elem.remove();
+    } else {
+        let infoElem = document.createElement('p');
+        infoElem.textContent = 'The president refused to veto the bill. You must pass a policy';
+        elem.appendChild(infoElem);
+        
+    }
+})
+
+socket.on('veto',() => {
+        let body = document.querySelector('.drawDiscard');
+        const topDiv = document.createElement('div');
+        topDiv.classList.add('vote');
+        const divPrompt = document.createElement('div');
+        
+        divPrompt.innerHTML = `
+        <h2>The The chancellor wants to veto the bill.</h2>
+        <h1>Do you agree?<h1>`;
+        const yesNoElem = document.createElement('div');
+    
+        yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
+        body.prepend(topDiv);
+        topDiv.append(divPrompt);
+        topDiv.append(yesNoElem);
+    
+        const btnYes = document.querySelector('.vote>div>button.yes');
+        const btnNo = document.querySelector('.vote>div>button.no')
+    
+        btnYes.addEventListener('click', () => {
+            socket.emit('veto_president','yes');
+            topDiv.remove();
+        
+        })
+        btnNo.addEventListener('click', () => {
+            socket.emit('veto_president','no');
+            topDiv.remove();
+        })
+    
+})
+
+
 socket.on('vote_chancellor', () => {
+    if (gameState.activePlayers.map(player=>player.id).filter(playerid => playerid === playerId).length === 0) {
+        return;
+    }
     // displayInfo(`Do you accept ${gameState.chancellorElect.name} as chancellor?`);
     let body = document.querySelector('.drawDiscard');
     // displayElem.innerHTML = '';
@@ -164,7 +211,7 @@ function pickOneFromPlayers(players, emitCode) {
 socket.on('gameover', winner => alert('Game Over. '+ winner + 'won'));
 
 socket.on('once', (code) => {
-    test(4,code)
+    test(9,code)
 })
 socket.on('card_discarded_president', () => {
     displayInfo('President has discarded a policy and passed the remaining two policies to the chancellor');
@@ -312,16 +359,18 @@ socket.on('canstart', () => {libPolicyCount
 socket.on('discardone', msg => {
     msg = JSON.parse(msg);
     discardPrompt(msg,'president');
-
-
-
-
-
 });
 socket.on('discardonechancellor', msg => {
     msg = JSON.parse(msg);
     discardPrompt(msg,'chancellor');
 })
+
+function handleVeto(elem) {
+
+    socket.emit('veto');
+    elem.remove();
+}
+
 
 function discardPrompt(cards,session) {
 
@@ -382,6 +431,10 @@ function discardPrompt(cards,session) {
     body.prepend(topDiv);
     topDiv.append(divPrompt);
     topDiv.append(cardsDrawn);
+    let vetoDiv = document.createElement('div');
+    vetoDiv.innerHTML = `<div class='veto' onclick='handleVeto(this)'>${gameState.vetoPower && session != 'president' ?'<button>Exercise Veto Power</button>':''}</div>`;
+    topDiv.append(vetoDiv);
+
 
     let cardsD = document.querySelectorAll('.maincontainer .article');
     let cardLen = cardsD.length-1;
@@ -491,11 +544,6 @@ function renderPlayerElements() {
                 playerElem.id = player.id;
                 let nameElem = document.createElement('h2')
                 playerElem.appendChild(nameElem);
-
-
-
-
-
             }
             playerElem.id = player.id;
             playerElem.classList.add('player');
@@ -613,6 +661,11 @@ socket.on('pick_' + POWER_KILL,(players) => {
     pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_KILL);
 })
 
+socket.on('pick_' + POWER_KILL_VETO,(players) => {
+    displayInfo('Pick a player you want to eleminate. Will unlock veto');
+    eligiblePlayers = JSON.parse(players);
+    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_KILL_VETO);
+})
 
 
 socket.on(POWER_EXAMINE_MEMBERSHIP, role => {
@@ -630,6 +683,14 @@ socket.on(POWER_KILL, player => {
     displayInfo(`${player.name} is eliminated from the game.`);
 })
 
+socket.on(POWER_KILL_VETO, player => {
+    displayInfo(`${player.name} is eliminated. Veto power now unlocked.`);
+    player = JSON.parse(player);
+    let playerElem = document.getElementById(player.id);
+    playerElem.classList.add('eleminated');
+    playerElem.classList.remove('fascist','liberal','chancellor','offline');
+    displayInfo(`${player.name} is eliminated from the game.`);
+})
 
 
 socket.on('secretRoles',roles => {

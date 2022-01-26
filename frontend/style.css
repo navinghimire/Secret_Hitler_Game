@@ -60,6 +60,9 @@ html {
     text-align: center;
     position: relative;
 }
+.article:hover{
+    cursor: pointer;
+}
 
 .article {
     margin: 1em;
@@ -788,7 +791,7 @@ button.no {
     background: linear-gradient(to top, var(--brown-neutral), var(--brown-earth));
     border-radius: var(--radius);
     backdrop-filter: blur(1px);
-    min-width: 5rem;
+    min-width: auto;
     min-height: 5rem;
     /* padding: .2em; */
     border: none;
@@ -804,12 +807,52 @@ button.no {
     border: solid var(--light-shade);
     animation: dimInOut 1s alternate infinite ease-in-out !important;
 }
-.player.eleminated {
+.player.eleminated{
     background: linear-gradient(to bottom, var(--mid-shade), var(--light-shade));
     background-color: gray !important;
-    /* opacity: .4; */
-}
+    background-image: none;
+    opacity: .2;
 
+}
+.player.eleminated.player-self {
+    background-image: none;
+    opacity: 1 !important;
+}
+.player.eleminated.player-self::before{
+    text-align: center;
+    content: 'YOU WERE ELEMINATED';
+    color: var(--red-pastel);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left:0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--red-jewel);
+}
+.player.eleminated::after{
+    content: none;
+}
+.veto button {
+    height: 4em;
+    margin: 1em;
+    padding: 1em;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background: none;
+    outline: none;
+    border: solid 2px var(--brown-pastel);
+    border-radius: 2em;
+    color: white;
+    font-weight: 600;
+}
+.veto button:hover {
+    background: var(--red-jewel);
+    cursor: pointer;
+}
 @keyframes dimInOut {
     0% {
         border: solid var(--light-shade)
@@ -961,7 +1004,14 @@ span.role {
         /* background-color: red; */
         grid-template-columns: 1fr;
         grid-template-rows: 1fr repeat(10,1fr);
+        
         gap: var(--gap);
+    }
+    .player {
+        width: 5em;
+    }
+    .player-self {
+        grid-column: 1/3;
     }
     .policy {
         grid-area: policy;
@@ -980,7 +1030,7 @@ span.role {
   @media screen and (min-width: 1025px) {
 
     .gameScreen {
-        grid-template-columns: 1fr 4fr 4fr !important;
+        grid-template-columns: 1fr 5fr 5fr !important;
         grid-template-rows: 5% auto auto;
         height: 100vh;
         grid-template-areas: 
@@ -991,9 +1041,14 @@ span.role {
     .players {
         grid-area: players;
         /* background-color: red; */
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr repeat(10,1fr);
+        grid-auto-flow: row;
     }
+    .player {
+        min-width: 5em;
+    }
+
     .policy {
         grid-area: policy;
 

@@ -33,6 +33,7 @@ class Game {
         this.numFailedElection = 0;
         this.round = 0;
         this.policyToPass = null;
+        this.vetoPower = false;
         this.powers = null;
         this.sessions = [
             constant.SESSION_INIT,
@@ -316,6 +317,7 @@ class Game {
         
     }
     castVote(player, vote) {
+        
         this.votes[player.id] = vote;
     }
     get hasEveryOneVoted() {
@@ -382,9 +384,9 @@ class Game {
         if (this.numActivePlayers === 5 || this.numActivePlayers === 6) {
             return ({
                 // 3: constant.POWER_EXAMINE_TOP_3,
-                3: constant.POWER_KILL,
-                4: constant.POWER_EXAMINE_MEMBERSHIP,
-                5: constant.POWER_KILL_VETO,
+                3: constant.POWER_KILL_VETO,
+                4: constant.POWER_KILL,
+                5: constant.POWER_EXAMINE_MEMBERSHIP,
             });
         } else if (this.numActivePlayers === 7 || this.numActivePlayers === 8) {
             return ({

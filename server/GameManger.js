@@ -147,21 +147,58 @@ class GameManager {
                 // console.log(eligiblePlayers);
                 this.io.to(game.president.id).emit('pick_' + POWER_KILL, JSON.stringify(eligiblePlayers));               
 
-
-
             } else if (power === POWER_KILL_VETO) {
+                let eligiblePlayers = game.activePlayers.filter(player => player.id !== game.president.id);
+                // console.log(eligiblePlayers);
+                this.io.to(game.president.id).emit('pick_' + POWER_KILL_VETO, JSON.stringify(eligiblePlayers));        
 
             } else if (power === POWER_PICK_PRESIDENT) {
                 
             } 
             return;
-  
+            gameMangaer
         } else {
             game.endOfRoundHousekeeping();
             this.emitGameState(roomId);
             setTimeout(() => {
                 this.presidency(socket);
             },3000);
+        }
+
+    }
+    handleVeto(socket) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        // let player = game.getPlayerById(socket.id);
+        if (!game) return;
+        if (!game.chancellor || (socket.id !== game.chancellor.id)) {
+            return;
+        }
+
+        this.io.to(game.president.id).emit('veto');
+
+
+    }
+    handleVetoPresident(socket,verdict) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        let player = game.getPlayerById(socket.id);
+
+        if (!game.president || (socket.id !== game.president.id)) {
+            return;
+        }
+        if (verdict === 'yes') {
+            this.io.to(game.chancellor.id).emit('veto_verdict','yes');
+            game.drawn.forEach(card => game.discardOne(card, game.drawn));
+
+
+            game.endOfRoundHousekeeping();
+            this.emitGameState(roomId);
+            setTimeout(() => {
+                this.presidency(socket);
+            },3000);
+        } else {
+            this.io.to(game.chancellor.id).emit('veto_verdict','no');
         }
 
     }
@@ -184,9 +221,11 @@ class GameManager {
         } else if ( power === POWER_KILL) {
             this.io.in(roomId).emit(POWER_KILL, JSON.stringify(player));
             game.removePlayer(player);
+        } else if (power === POWER_KILL_VETO) {
+            game.vetoPower = true;
+            this.io.in(roomId).emit(POWER_KILL_VETO, JSON.stringify(player));
+            game.removePlayer(player);
         }
-
-
         delete game.powers[game.fasPolicyCount];
         game.endOfRoundHousekeeping();
         this.emitGameState(roomId);
@@ -228,15 +267,13 @@ class GameManager {
                     this.io.in(roomId).emit('randompolicy');
                     game.numFailedElection = 0;
                     game.pastCabinet.president = null;
-                    game.pastCabinet.chancellor = null;
-                   
+                    game.pastCabinet.chancellor = null;                  
                 }
                 game.endOfRoundHousekeeping();
                 this.emitGameState(roomId);
                 setTimeout(() => {
                     this.presidency(socket);
                 },3000);
-
             }
             this.io.in(roomId).emit('election_concluded');
             game.votes = {};
