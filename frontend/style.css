@@ -183,8 +183,22 @@ html {
         transparent 2px,
         transparent 10px
     ); */
-
+    overflow: hidden;
 }
+.policies .article .front img{
+    background-size: 70%;
+    /* border: solid 1px white; */
+    opacity: .5;
+    position: absolute;
+    width: 80%;
+    top:20px;
+    border: solid 5px var(--red-pastel);
+    border-radius: 50%;
+}
+.policies .article.fascist.passed .front img {
+    opacity: 0;
+}
+
 
 
 .policies .article .front h1{
@@ -786,7 +800,7 @@ button.no {
 }
 .player.eligible {
     border: solid var(--light-shade);
-    animation: dimInOut 1s alternate infinite ease-in-out
+    animation: dimInOut 1s alternate infinite ease-in-out !important;
 }
 @keyframes dimInOut {
     0% {

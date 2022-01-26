@@ -1,4 +1,5 @@
 
+
 const socket = io('http://10.0.0.138:3000');   
 const frmHost = document.getElementById('frmHost');
 const inputAliasHost = document.getElementById('inputAliasHost');
@@ -10,6 +11,28 @@ const gameScreen = document.querySelector('.gameScreen');
 const allInputElem = document.querySelectorAll('input');
 const frmLogin = document.querySelectorAll('.frmLogin');
 
+// constants 
+const MAX_PLAYERS = 10;
+const MIN_PLAYERS = 5;
+const POWER_EXAMINE_TOP_3 = 'examine_top_3';
+const POWER_KILL = 'kill';
+const POWER_KILL_VETO = 'kill_veto';
+const POWER_PICK_PRESIDENT = 'pick_president';
+const POWER_EXAMINE_MEMBERSHIP = 'examine_membership';
+const LIBERAL = 'liberal';
+const FASCIST = 'fascist';
+const PRESIDENT = 'president';
+const CHANCELLOR = 'chancellor';
+const CHANCELLOR_ELECT = 'chancellor_elect';
+const SESSION_INIT = 'init';
+const SESSION_PRESIDENCY = 'presidency';
+const SESSION_ELECTION_PRIMARY = 'election_primary';
+const SESSION_ELECTION_GENERAL = 'election_general';
+const SESSION_LEGISLATION_PRESIDENT = 'legislation_president';
+const SESSION_LEGISLATION_CHANCELLOR = 'legislation_chancellor';
+const SESSION_OVER = 'over';
+const VOTE_YES = 'yes';
+const VOTE_NO = 'no';
 
 
 // this is where we render players 
@@ -28,7 +51,19 @@ socket.on('gamecode', code => {
     loginScreen.style.display = 'none';
 
 });
+socket.on('powers', powers => {
+    powers = JSON.parse(powers);
+    let fasSlot = document.querySelectorAll('.fascist .policies .article .front');
+    let imageElem = document.createElement('img');
+    fasSlot.forEach((elem,id) => {
+        if (id+1 in powers) {
+            let imageElem = document.createElement('img');
+            imageElem.src = `./images/powers/${powers[id+1]}.png`;
+            elem.appendChild(imageElem);
+        }
+    })
 
+})
 socket.on('vote_chancellor', () => {
     // displayInfo(`Do you accept ${gameState.chancellorElect.name} as chancellor?`);
     let body = document.querySelector('.drawDiscard');
@@ -107,15 +142,24 @@ socket.on('president_choosen', () => {
 })
 
 socket.on('choose_chancellor', eligiblePlayers => {
+
     eligiblePlayers = JSON.parse(eligiblePlayers);
-    eligiblePlayers.forEach(player => {
+    let emitCode = 'chancellor_choosen';
+    pickOneFromPlayers(eligiblePlayers, emitCode);
+}) 
+function pickOneFromPlayers(players, emitCode) {
+    players.forEach(player => {
         let playerElem = document.getElementById(player.id);
         if (playerElem) {
-            playerElem.classList.add('eligible');
-            playerElem.addEventListener('click', handleChoose);
+            setTimeout(() => {
+                playerElem.classList.add('eligible');
+            },0)
+            playerElem.addEventListener('click',event => handleChoose(event,emitCode));
         }
-    }) 
-}) 
+    })
+}
+
+
 socket.on('gameover', winner => alert('Game Over. '+ winner + 'won'));
 
 socket.on('once', (code) => {
@@ -405,13 +449,15 @@ function displayInfo(message) {
 function startGame() {
     socket.emit('startgame');
 }
-function handleChoose(e) {
+
+function handleChoose(e, emitCode) {
     // console.log(e);
     // if(gameState.session != 'election_primary') return;
+    if (!emitCode) return;
     console.log(e.target);
     if(e.target.id) {
         choosenPlayer = e.target.id;
-        socket.emit('chancellor_choosen', choosenPlayer);
+        socket.emit(emitCode, choosenPlayer);
         // choosenPlayer === null;
         
         gameState.activePlayers.forEach(player => {
@@ -422,13 +468,13 @@ function handleChoose(e) {
             //     elem.classList.remove('choosen');
             // }
             elem.classList.remove('eligible');
-            elem.removeEventListener('click', handleChoose);
+            elem.replaceWith(elem.cloneNode(true));
         });
-
-
-
     }
 }
+
+
+
 
 function renderPlayerElements() {
     active = gameState.activePlayers;
@@ -525,7 +571,7 @@ function renderPlayerElements() {
     // }
 }
 
-function renderSecretRoles() {
+function renderSecretRoles(secretRoles) {
     if(secretRoles) {
         // console.log(secretRoles);
         // Object.keys(secretRoles).forEach(playerId =>{
@@ -539,7 +585,7 @@ function renderSecretRoles() {
         let n = roles.length;
         let inv = setInterval(()=>{
             let player = document.getElementById(roles[n-1]);
-            player.style.animationDelay = n+'s';
+            // player.style.animationDelay = n+'s';
             if (player) {       
                     player.classList.add(secretRoles[roles[n-1]]);
             }
@@ -552,9 +598,26 @@ function renderSecretRoles() {
 }
 
 
+
+
+socket.on('pick_' + POWER_EXAMINE_MEMBERSHIP,(players) => {
+    // alert('pick a players whose membership you want to view');
+    eligiblePlayers = JSON.parse(players);
+    console.log(eligiblePlayers);
+    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_EXAMINE_MEMBERSHIP);
+})
+
+socket.on(POWER_EXAMINE_MEMBERSHIP, role => {
+    console.log('Got role below: ');
+    console.log(role)
+
+    role = JSON.parse(role);
+    renderSecretRoles(role);
+})
+
 socket.on('secretRoles',roles => {
     secretRoles = JSON.parse(roles);
-    renderSecretRoles();
+    renderSecretRoles(secretRoles);
 
 });
 

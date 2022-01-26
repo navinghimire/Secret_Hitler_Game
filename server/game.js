@@ -17,7 +17,7 @@ class Game {
         this.president = null;
         this.pastCabinet = {president:null, chancellor:null};
         this.hitler = null;
-        this.fasPolicyCount = 0;
+        this.fasPolicyCount = 2;
         this.libPolicyCount = 0;
         this.totalFasPolicies = 6;
         this.totalLibPolicies = 5;
@@ -33,6 +33,7 @@ class Game {
         this.numFailedElection = 0;
         this.round = 0;
         this.policyToPass = null;
+        this.powers = null;
         this.sessions = [
             constant.SESSION_INIT,
             constant.SESSION_PRESIDENCY, 
@@ -374,12 +375,14 @@ class Game {
             console.log("WE HAVE POWER ++++++++++++++++++++++++++++++++");
             console.log(powers[this.fasPolicyCount], this.fasPolicyCount);
         }
+
     }
 
     get fascistPresidentialPower(){
         if (this.numActivePlayers === 5 || this.numActivePlayers === 6) {
             return ({
-                3: constant.POWER_EXAMINE_TOP_3,
+                // 3: constant.POWER_EXAMINE_TOP_3,
+                3: constant.POWER_EXAMINE_MEMBERSHIP,
                 4: constant.POWER_KILL,
                 5: constant.POWER_KILL_VETO,
             });
@@ -425,6 +428,7 @@ class Game {
         //     let player = new Player(i, `Player ${i}`, null);
         //     this.addPlayer(player);
         // }
+        this.powers = this.fascistPresidentialPower;
         this.session = constant.SESSION_INIT;
         // assign player roles
         this.assignRandomPartyMembership();

@@ -1,6 +1,7 @@
 var constant = require('./constants');
 const {makeid} = require('./utils');
 const {Game, Player} = require('./game');
+const { FASCIST, POWER_EXAMINE_MEMBERSHIP, POWER_EXAMINE_TOP_3, POWER_KILL, POWER_KILL_VETO, POWER_PICK_PRESIDENT } = require('./constants');
 class GameManager {
     
     constructor(io) {
@@ -91,11 +92,12 @@ class GameManager {
         let roomId = this.clientRooms[socket.id];
         let game = this.games[roomId];
         let player = game.getPlayerById(playerId);
+        if (socket.id != game.president.id) return;
         if (player) {
             game.chancellorElect = player;
             game.holdElectionPrimary();
             this.emitGameState(roomId);
-            this.session = constant.SESSION_ELECTION_GENERAL;
+            game.session = constant.SESSION_ELECTION_GENERAL;
             this.io.to(roomId).emit('vote_chancellor');
         }
         
@@ -121,6 +123,57 @@ class GameManager {
         let game = this.games[roomId];
         game.holdLegislationChancellor(cardToDiscard);
         this.io.to(roomId).emit('policypassed',game.policyToPass);
+        this.emitGameState(roomId);
+        let powers = game.powers;
+        let powerid = game.fasPolicyCount;
+        if (game.policyToPass === FASCIST && powerid in powers) {
+          
+            // console.log(powers);
+            // console.log(game.fasPolicyCount);
+            // console.log(game.policyToPass);
+            // console.log(POWER_EXAMINE_MEMBERSHIP);
+
+            let power = powers[powerid];
+            console.log(power);
+            if (power === POWER_EXAMINE_MEMBERSHIP) {
+                let eligiblePlayers = game.activePlayers.filter(player => player.id !== game.president.id);
+                // console.log(eligiblePlayers);
+                this.io.to(game.president.id).emit('pick_' + POWER_EXAMINE_MEMBERSHIP, JSON.stringify(eligiblePlayers));
+
+            } else if(power === POWER_EXAMINE_TOP_3) {
+
+            } else if (power === POWER_KILL) {
+
+            } else if (power === POWER_KILL_VETO) {
+
+            } else if (power === POWER_PICK_PRESIDENT) {
+                
+            } 
+            return;
+  
+        } else {
+            game.endOfRoundHousekeeping();
+            this.emitGameState(roomId);
+            setTimeout(() => {
+                this.presidency(socket);
+            },3000);
+        }
+
+    }
+
+    handlePower(socket, playerid) {
+        let roomId = this.clientRooms[socket.id];
+        let game = this.games[roomId];
+        let roles = {};
+        let fas = game.fascists.map(player => player.id).filter(pid => pid === playerid);
+        if (fas.length > 0) {
+            roles[playerid] = 'fascist'
+        } else {
+            roles[playerid] = 'liberal'
+        }
+
+        this.io.to(game.president.id).emit(POWER_EXAMINE_MEMBERSHIP, JSON.stringify(roles));
+        delete game.powers[game.fasPolicyCount];
         game.endOfRoundHousekeeping();
         this.emitGameState(roomId);
         setTimeout(() => {
@@ -192,7 +245,12 @@ class GameManager {
             return;
         }
         if(game.canStart) {
+
+
             game.init();
+            let powers = game.powers;
+            this.io.emit('powers',JSON.stringify(game.powers));
+            
             game.liberals.forEach(lib => {
                 let roles={};
                 let playerId = lib.id

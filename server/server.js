@@ -1,5 +1,6 @@
 // set options for cors policy
-require('./constants');
+const { FASCIST, POWER_EXAMINE_MEMBERSHIP, POWER_EXAMINE_TOP_3, POWER_KILL, POWER_KILL_VETO, POWER_PICK_PRESIDENT } = require('./constants');
+
 require('./utils');
 const options = {
     cors: {
@@ -11,6 +12,7 @@ const options = {
     allowEIO3: true
 };
 const { Server } = require('socket.io');
+const constants = require('./constants');
 const { Game } = require('./game');
 const {GameManager} = require('./GameManger');
 const { validateName } = require('./utils');
@@ -24,8 +26,9 @@ io.on('connection',socket => {
     socket.on('chancellor_choosen', (playerId) => gameManager.handleChancellorChosen(socket, playerId));
     socket.on('vote', vote => gameManager.handleVote(socket,vote));
     socket.on('card_choosen', cardType => gameManager.handleCardChoosen(socket,cardType));
-    socket.on('card_choosen_chancellor', cardType => gameManager.handleCardChoosenChancellor(socket,cardType))
-
+    socket.on('card_choosen_chancellor', cardType => gameManager.handleCardChoosenChancellor(socket,cardType));
+    socket.on('picked_' + POWER_EXAMINE_MEMBERSHIP, playerid => gameManager.handlePower(socket, playerid));
+   
     function handleNextSession() {
         gameManager.nextSession(socket);
     }
@@ -34,10 +37,11 @@ io.on('connection',socket => {
         if (!validateName(alias)) {
             return;
         }
-        console.log(alias + ' connected') ;
+        // console.log(alias + ' connected') ;
         const id = gameManager.createRoom(socket,alias);
         
     }
+
     function handleJoinGame(message) {
         message = JSON.parse(message);
         if (!validateName(message.alias)) return;
@@ -46,7 +50,7 @@ io.on('connection',socket => {
     }
 
     socket.on('disconnect', (reason) =>{
-        console.log('client disconnected ' + reason);
+        // console.log('client disconnected ' + reason);
     });
         
     });
