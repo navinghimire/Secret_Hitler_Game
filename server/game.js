@@ -382,8 +382,8 @@ class Game {
         if (this.numActivePlayers === 5 || this.numActivePlayers === 6) {
             return ({
                 // 3: constant.POWER_EXAMINE_TOP_3,
-                3: constant.POWER_EXAMINE_MEMBERSHIP,
-                4: constant.POWER_KILL,
+                3: constant.POWER_KILL,
+                4: constant.POWER_EXAMINE_MEMBERSHIP,
                 5: constant.POWER_KILL_VETO,
             });
         } else if (this.numActivePlayers === 7 || this.numActivePlayers === 8) {

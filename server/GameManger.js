@@ -143,6 +143,11 @@ class GameManager {
             } else if(power === POWER_EXAMINE_TOP_3) {
 
             } else if (power === POWER_KILL) {
+                let eligiblePlayers = game.activePlayers.filter(player => player.id !== game.president.id);
+                // console.log(eligiblePlayers);
+                this.io.to(game.president.id).emit('pick_' + POWER_KILL, JSON.stringify(eligiblePlayers));               
+
+
 
             } else if (power === POWER_KILL_VETO) {
 
@@ -161,18 +166,27 @@ class GameManager {
 
     }
 
-    handlePower(socket, playerid) {
+    handlePower(socket, playerid, power) {
+        console.log('power');
+        console.log(power);
         let roomId = this.clientRooms[socket.id];
         let game = this.games[roomId];
-        let roles = {};
-        let fas = game.fascists.map(player => player.id).filter(pid => pid === playerid);
-        if (fas.length > 0) {
-            roles[playerid] = 'fascist'
-        } else {
-            roles[playerid] = 'liberal'
+        let player = game.getPlayerById(playerid);
+        if (power === POWER_EXAMINE_MEMBERSHIP) {
+            let roles = {};
+            let fas = game.fascists.map(player => player.id).filter(pid => pid === playerid);
+            if (fas.length > 0) {
+                roles[playerid] = 'fascist';
+            } else {
+                roles[playerid] = 'liberal';
+            }
+            this.io.to(game.president.id).emit(POWER_EXAMINE_MEMBERSHIP, JSON.stringify(roles));
+        } else if ( power === POWER_KILL) {
+            this.io.in(roomId).emit(POWER_KILL, JSON.stringify(player));
+            game.removePlayer(player);
         }
 
-        this.io.to(game.president.id).emit(POWER_EXAMINE_MEMBERSHIP, JSON.stringify(roles));
+
         delete game.powers[game.fasPolicyCount];
         game.endOfRoundHousekeeping();
         this.emitGameState(roomId);
@@ -184,6 +198,10 @@ class GameManager {
     handleVote(socket,vote) {
         let roomId = this.clientRooms[socket.id];
         let game = this.games[roomId];
+        let playerid = game.activePlayers.map(player => player.id).filter(playerid => playerid === socket.id);
+        if (playerid.length === 0) {
+            return;
+        }
         let player = game.getPlayerById(socket.id);
         game.castVote(player,vote);
         this.io.in(roomId).emit('voted',JSON.stringify({'player':player,'vote':vote}))

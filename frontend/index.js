@@ -154,6 +154,7 @@ function pickOneFromPlayers(players, emitCode) {
             setTimeout(() => {
                 playerElem.classList.add('eligible');
             },0)
+            console.log(emitCode,player.name);
             playerElem.addEventListener('click',event => handleChoose(event,emitCode));
         }
     })
@@ -601,19 +602,35 @@ function renderSecretRoles(secretRoles) {
 
 
 socket.on('pick_' + POWER_EXAMINE_MEMBERSHIP,(players) => {
+    displayInfo('Pick a player whose party membership you want to view.');
     // alert('pick a players whose membership you want to view');
     eligiblePlayers = JSON.parse(players);
-    console.log(eligiblePlayers);
     pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_EXAMINE_MEMBERSHIP);
 })
+socket.on('pick_' + POWER_KILL,(players) => {
+    displayInfo('Pick a player you want to eleminate.');
+    eligiblePlayers = JSON.parse(players);
+    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_KILL);
+})
+
+
 
 socket.on(POWER_EXAMINE_MEMBERSHIP, role => {
-    console.log('Got role below: ');
-    console.log(role)
-
+    displayInfo('You can now view the new role');
     role = JSON.parse(role);
     renderSecretRoles(role);
 })
+
+socket.on(POWER_KILL, player => {
+    displayInfo(`${player.name} is eliminated`);
+    player = JSON.parse(player);
+    let playerElem = document.getElementById(player.id);
+    playerElem.classList.add('eleminated');
+    playerElem.classList.remove('fascist','liberal','chancellor','offline');
+    displayInfo(`${player.name} is eliminated from the game.`);
+})
+
+
 
 socket.on('secretRoles',roles => {
     secretRoles = JSON.parse(roles);

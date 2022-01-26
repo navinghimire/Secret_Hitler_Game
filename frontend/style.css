@@ -189,11 +189,13 @@ html {
     background-size: 70%;
     /* border: solid 1px white; */
     opacity: .5;
-    position: absolute;
-    width: 80%;
-    top:20px;
-    border: solid 5px var(--red-pastel);
-    border-radius: 50%;
+    /* position: absolute; */
+    /* width: 80%;
+    top:20px; */
+    /* border: solid 5px var(--red-pastel); */
+    /* border-radius: 50%;
+    object-fit: contain; */
+    object-fit: cover;
 }
 .policies .article.fascist.passed .front img {
     opacity: 0;
@@ -311,7 +313,7 @@ html {
 body {
     /* background: linear-gradient(0deg, var(--red) 15%, var(--blue) 85%); */
     /* background:linear-gradient(to bottom,var(--blue-neutral), var(--red-neutral)); */
-    /* overscroll-behavior: contain; */
+    overscroll-behavior: contain;
     /* background-size: contain; */
     min-height: 100vh;
     width: 100%;
@@ -802,6 +804,12 @@ button.no {
     border: solid var(--light-shade);
     animation: dimInOut 1s alternate infinite ease-in-out !important;
 }
+.player.eleminated {
+    background: linear-gradient(to bottom, var(--mid-shade), var(--light-shade));
+    background-color: gray !important;
+    /* opacity: .4; */
+}
+
 @keyframes dimInOut {
     0% {
         border: solid var(--light-shade)

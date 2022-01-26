@@ -27,7 +27,8 @@ io.on('connection',socket => {
     socket.on('vote', vote => gameManager.handleVote(socket,vote));
     socket.on('card_choosen', cardType => gameManager.handleCardChoosen(socket,cardType));
     socket.on('card_choosen_chancellor', cardType => gameManager.handleCardChoosenChancellor(socket,cardType));
-    socket.on('picked_' + POWER_EXAMINE_MEMBERSHIP, playerid => gameManager.handlePower(socket, playerid));
+    socket.on('picked_' + POWER_EXAMINE_MEMBERSHIP, playerid => gameManager.handlePower(socket, playerid, POWER_EXAMINE_MEMBERSHIP));
+    socket.on('picked_' + POWER_KILL, playerid => gameManager.handlePower(socket, playerid, POWER_KILL));
    
     function handleNextSession() {
         gameManager.nextSession(socket);
