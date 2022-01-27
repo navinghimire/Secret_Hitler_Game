@@ -54,6 +54,7 @@ socket.on('gamecode', code => {
 socket.on('powers', powers => {
     powers = JSON.parse(powers);
     let fasSlot = document.querySelectorAll('.fascist .policies .article .front');
+    let libSlot = document.querySelectorAll('.liberal .policies .article .front');
     let imageElem = document.createElement('img');
     fasSlot.forEach((elem,id) => {
         if (id+1 in powers) {
@@ -62,6 +63,17 @@ socket.on('powers', powers => {
             elem.appendChild(imageElem);
         }
     })
+
+    let trophyElemLib = document.createElement('img');
+    trophyElemLib.src = `./images/powers/trophy.png`;
+    let trophyElemFas = document.createElement('img');
+    trophyElemFas.src = `./images/powers/trophy.png`;
+    let fasFinal = fasSlot[gameState.totalFasPolicies-1];
+    let libFinal = libSlot[gameState.totalLibPolicies-1];
+    fasFinal.appendChild(trophyElemFas);
+    libFinal.appendChild(trophyElemLib);
+    
+
 
 })
 socket.on('veto_verdict', verdict => {
@@ -230,7 +242,7 @@ socket.on('gameover', winner => {
 });
 
 socket.on('once', (code) => {
-    test(4,code)
+    test(7,code)
 })
 socket.on('card_discarded_president', () => {
     displayInfo('President has discarded a policy and passed the remaining two policies to the chancellor');

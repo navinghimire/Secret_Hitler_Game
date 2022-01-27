@@ -399,7 +399,7 @@ class Game {
         if (this.numActivePlayers === 5 || this.numActivePlayers === 6) {
             return ({
                 // 3: constant.POWER_EXAMINE_TOP_3,
-                1: constant.POWER_PICK_PRESIDENT,
+                3: constant.POWER_EXAMINE_TOP_3,
                 4: constant.POWER_KILL,
                 5: constant.POWER_KILL_VETO,
             });

@@ -467,21 +467,21 @@ body {
 
 .info>button{
     border: none;
-    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 0em .5em .5em 0em;
+    /* box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25); */
+    /* border-radius: 0em .5em .5em 0em; */
     height: 100%;
-    width: 100%;
-    background: linear-gradient(to top left, var(--blue-pastel), var(--blue-neutral));
+    width: 20%;
+    /* background: linear-gradient(to top left, var(--blue-pastel), var(--blue-neutral)); */
     opacity: .8;
     z-index: 2;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: all ease-in-out 200ms ;
-    
+    /* backdrop-filter: blur(4px); */
+    /* -webkit-backdrop-filter: blur(4px); */
+    /* transition: all ease-in-out 200ms ; */
+    background: transparent;
 }
 .info>button:hover{
     box-shadow: none;
-    filter: drop-shadow(0px 4px 4px --blue-earth);
+    /* filter: drop-shadow(0px 4px 4px --blue-earth); */
     cursor: pointer;
 }
 
@@ -753,8 +753,8 @@ button.no {
 .players {
     display: grid;
     grid-template-columns: 1fr repeat(5,1fr);
-    /* grid-template-rows: 1fr 1fr; */
-    grid-auto-rows: auto;
+    grid-template-rows: 1fr 1fr;
+
     gap: var(--gap);
     /* margin: .4em; */
     /* grid-auto-rows: min-content; */

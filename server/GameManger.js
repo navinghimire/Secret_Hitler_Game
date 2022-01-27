@@ -50,7 +50,10 @@ class GameManager {
         this.clientRooms[socket.id] = roomId;
         socket.emit('gamecode', roomId);
         // console.log(`${alias} has joined the room ${roomId} (${this.numRooms}) with id ${socket.id}`);
-        // console.log(this.io.sockets.adapter.rooms);
+        // console.log(this.io.sockets.adapter.rooms);        socket.join(roomId);
+        this.clientRooms[socket.id] = roomId;
+        socket.emit('gamecode', roomId);
+        // console.log(`${alias} has joined the room ${roomId}
         let player = new Player(socket.id, alias, null);
         game.addPlayer(player);
         socket.on('disconnect',(reason) => {
@@ -126,7 +129,7 @@ class GameManager {
         this.emitGameState(roomId);
 
         if(game.winner) {
-            game.session = SESSION_OVER;
+            game.session = constant.SESSION_OVER;
             this.io.in(roomId).emit('gameover',JSON.stringify(game.winner));
             return;
         }
