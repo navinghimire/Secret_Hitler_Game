@@ -33,7 +33,6 @@ class Game {
         this.numFailedElection = 0;
         this.round = 0;
         this.vetoPresident = null;
-        this.vetoPresidentCache = null;
         this.policyToPass = null;
         this.vetoPower = false;
         this.powers = null;
@@ -457,9 +456,11 @@ class Game {
 
     }
     holdPresidency() {
+        console.log(this.vetoPresident);
         if (this.vetoPresident && this.vetoPresident['player']) {
-            this.makePresident(this.vetoPresident['player']);
             this.vetoPresident['next'] = this.nextPresident;
+            this.makePresident(this.vetoPresident['player']);
+            this.vetoPresident['player'] = null;
         } else if (this.vetoPresident && this.vetoPresident['next']) {
             this.makePresident(this.vetoPresident['next']);
             this.vetoPresident = null;
