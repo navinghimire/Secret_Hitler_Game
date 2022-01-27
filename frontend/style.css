@@ -608,19 +608,32 @@ form {
 }
 
 #loginScreen {
-    display: grid;
+    /* display: grid;
     grid-template-columns: 4fr 1fr 4fr;
     align-items: center;
+    justify-content: center; */
+    text-align: center;
+    display: flex;
+    align-items: center;
     justify-content: center;
-}
-#loginScreen>section:first-child {
+    flex-direction: column;
+    height: 100vh;
 
 }
-#loginScreen>section:last-child {
-
+#loginScreen>section:first-child,#loginScreen>section:last-child  {
+    width: 50%;
 }
-
-
+#loginScreen input {
+    font-size: 1.2rem;
+    height: 4em;
+    margin: 1em 0em;
+    border-radius: var(--radius);
+}
+#loginScreen button {
+    font-size: 1.2rem;
+    height: 2em;
+    border-radius: var(--radius);
+}
 
 
 .gameScreen {
@@ -1006,6 +1019,10 @@ span.role {
 
 
 @media screen and (min-width: 769px) {
+    #loginScreen {
+        flex-direction: row;
+        padding: 2em;
+    }
 
     .gameScreen {
         grid-template-columns: 1fr 9fr !important;

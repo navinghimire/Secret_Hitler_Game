@@ -43,11 +43,13 @@ let playerId, gameCode;
 let secretRoles;
 let gameState;
 let choosenPlayer;
-let gameCountdownElem = document.querySelector('.gameCountdown')
+let gameCountdownElem = document.querySelector('.gameCountdown');
+gameScreen.style.display = 'none';
 socket.on('init',(id) => playerId = id);
 socket.on('gamecode', code => {
     gameCode = code;
-    gameScreen.classList.toggle('hide');
+    gameScreen.style.display = 'grid';
+
     loginScreen.style.display = 'none';
 
 });
