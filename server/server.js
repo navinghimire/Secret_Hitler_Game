@@ -30,6 +30,12 @@ io.on('connection',socket => {
     socket.on('picked_' + POWER_EXAMINE_MEMBERSHIP, playerid => gameManager.handlePower(socket, playerid, POWER_EXAMINE_MEMBERSHIP));
     socket.on('picked_' + POWER_KILL, playerid => gameManager.handlePower(socket, playerid, POWER_KILL));
     socket.on('picked_' + POWER_KILL_VETO, playerid => gameManager.handlePower(socket, playerid, POWER_KILL_VETO));
+    socket.on('picked_' + POWER_PICK_PRESIDENT, playerid =>  {
+        console.log(playerid, POWER_PICK_PRESIDENT);
+        gameManager.handlePower(socket, playerid, POWER_PICK_PRESIDENT);
+        
+    });
+    
     socket.on('veto', () => gameManager.handleVeto(socket));
     socket.on('veto_president', verdict => gameManager.handleVetoPresident(socket,verdict));
     

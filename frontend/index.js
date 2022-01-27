@@ -208,10 +208,29 @@ function pickOneFromPlayers(players, emitCode) {
 }
 
 
-socket.on('gameover', winner => alert('Game Over. '+ winner + 'won'));
+socket.on('gameover', winner => {
+    winner = JSON.parse(winner);
+    let h1Text = (winner['team'] + ' won').toUpperCase();
+    let h2Text;
+    if (winner['reason'] === 'hitler_eliminated') {
+        h2Text = "Hiter was killed!";
+    } else if (winner['reason'] === 'hitler_chancellor') {
+        h2Text = "Hiter was elected chancellor after 3rd fascist policies were passed.";
+    } else if (winner['reason'] === 'fascist_pol') {
+        h2Text = "Fascist passed all the fascist policies";
+    }else if (winner['reason'] === 'liberal_pol') {
+        h2Text = "Liberals passed all the liberal policies";
+    }
+    
+    gameCountdownElem.innerHTML = `<h1>${h1Text}</h1><h2>${h2Text}</h2>`;
+    gameCountdownElem.classList.add('gameover');
+    gameCountdownElem.classList.add(winner['team']);
+    gameCountdownElem.style.display = 'flex';
+
+});
 
 socket.on('once', (code) => {
-    test(9,code)
+    test(4,code)
 })
 socket.on('card_discarded_president', () => {
     displayInfo('President has discarded a policy and passed the remaining two policies to the chancellor');
@@ -385,6 +404,10 @@ function discardPrompt(cards,session) {
         divPrompt.innerHTML = `
         <h2>These are the cards you have drawn.</h2>
         <h1>Discard one, the remaining two will be passed to your chancellor.</h1>`;
+    } else if (session === 'top3') {
+        divPrompt.innerHTML = `
+        <h2>These are top 3 cards in the draw pile.</h2>
+        <h1>Discard one, the remaining two will be passed to your chancellor.</h1>`;
     } else {
         divPrompt.innerHTML = `<h2>President discarded one policy.</h2>
         <h1>As a chancellor, discard one. The remaining policy will be implemented</h1>`;
@@ -406,26 +429,28 @@ function discardPrompt(cards,session) {
                                 </div></div>`;
         // newCardBtn.classList.add(card);
         // newCardBtn.innerHTML = card;
-        newCardBtn.addEventListener('click', e => {
-            if (e.target) {
-                let isFascist = e.target.classList.contains('fascist');
-                
-                if (!isFascist) {
-                    if (session === 'president') {
-                        socket.emit('card_choosen', 'liberal');
-                    } else {
-                        socket.emit('card_choosen_chancellor', 'liberal');
+        if (session !== 'top3') {
+            newCardBtn.addEventListener('click', e => {
+                if (e.target) {
+                    let isFascist = e.target.classList.contains('fascist');
+                    
+                    if (!isFascist) {
+                        if (session === 'president') {
+                            socket.emit('card_choosen', 'liberal');
+                        } else {
+                            socket.emit('card_choosen_chancellor', 'liberal');
+                        }
+                    } else if (isFascist) {
+                        if (session === 'president') {
+                            socket.emit('card_choosen', 'fascist');
+                        } else {
+                            socket.emit('card_choosen_chancellor', 'fascist');
+                        }
                     }
-                } else if (isFascist) {
-                    if (session === 'president') {
-                        socket.emit('card_choosen', 'fascist');
-                    } else {
-                        socket.emit('card_choosen_chancellor', 'fascist');
-                    }
+                    setTimeout(() => { topDiv.remove();},1000)
                 }
-                setTimeout(() => { topDiv.remove();},1000)
-            }
-        });
+            });
+        }
         cardsDrawn.append(newCardBtn);
     })
     body.prepend(topDiv);
@@ -509,11 +534,12 @@ function handleChoose(e, emitCode) {
     // if(gameState.session != 'election_primary') return;
     if (!emitCode) return;
     console.log(e.target);
+    
     if(e.target.id) {
         choosenPlayer = e.target.id;
         socket.emit(emitCode, choosenPlayer);
         // choosenPlayer === null;
-        
+        console.log('Emitting ',emitCode,' and ', choosenPlayer);    
         gameState.activePlayers.forEach(player => {
             let elem = document.getElementById(player.id);
             // if(e.target.id === player.id) {
@@ -666,6 +692,11 @@ socket.on('pick_' + POWER_KILL_VETO,(players) => {
     eligiblePlayers = JSON.parse(players);
     pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_KILL_VETO);
 })
+socket.on('pick_' + POWER_PICK_PRESIDENT,(players) => {
+    displayInfo('This is a Special Election for President. Pick a president. WISELY');
+    eligiblePlayers = JSON.parse(players);
+    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_PICK_PRESIDENT);
+})
 
 
 socket.on(POWER_EXAMINE_MEMBERSHIP, role => {
@@ -690,6 +721,20 @@ socket.on(POWER_KILL_VETO, player => {
     playerElem.classList.add('eleminated');
     playerElem.classList.remove('fascist','liberal','chancellor','offline');
     displayInfo(`${player.name} is eliminated from the game.`);
+})
+
+socket.on(POWER_EXAMINE_TOP_3, cards => {
+    cards = JSON.parse(cards);
+    discardPrompt(cards, 'top3');
+    
+    let elem = document.querySelector('.drawDiscard>.vote');
+    setTimeout(() => {
+        elem.remove();
+    },5000)
+})
+socket.on(POWER_PICK_PRESIDENT, player => {
+    player = JSON.parse(player);
+    displayInfo(`${player.name} was choosen president with veto`);
 })
 
 

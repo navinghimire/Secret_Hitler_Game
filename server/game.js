@@ -17,7 +17,7 @@ class Game {
         this.president = null;
         this.pastCabinet = {president:null, chancellor:null};
         this.hitler = null;
-        this.fasPolicyCount = 2;
+        this.fasPolicyCount = 0;
         this.libPolicyCount = 0;
         this.totalFasPolicies = 6;
         this.totalLibPolicies = 5;
@@ -32,9 +32,12 @@ class Game {
         this.votes = {};
         this.numFailedElection = 0;
         this.round = 0;
+        this.vetoPresident = null;
+        this.vetoPresidentCache = null;
         this.policyToPass = null;
         this.vetoPower = false;
         this.powers = null;
+        
         this.sessions = [
             constant.SESSION_INIT,
             constant.SESSION_PRESIDENCY, 
@@ -102,23 +105,36 @@ class Game {
         return false;
     }
     get winner() {
+        let winner = {}
         if (!this.chancellor) return;
         // 3 or more fascist policies passed and hitler elected chancellor
         if (this.fasPolicyCount >= 3 && this.hitler.id === this.chancellor.id) {
             console.log('Fascist won by passing 3 Fascist policies and electing hitler as chancellor');
-        
-            return constant.FASCIST;
+            winner['team'] = constant.FASCIST;
+            winner['reason'] = 'hitler_chancellor';
+            return winner;
         }
         // all fascist policies passed
         if (this.fasPolicyCount === this.totalFasPolicies) {
             console.log('Fascist won by passing 5 fascist policies');
-         
-            return constant.FASCIST;
+            winner['team'] = constant.FASCIST;
+            winner['reason'] = 'fascist_pol';
+            return winner;
             // all liberal policies passed
         } else if (this.libPolicyCount === this.totalLibPolicies) {
-            console.log('Liberal won by passing 6 liberal policies');
-           
-            return constant.LIBERAL;
+            console.log('Liberal won by passing 6 liberal policies');         
+            winner['team'] = constant.LIBERAL;
+            winner['reason'] = 'liberal_pol';
+            return winner;
+            //hitler eleminated
+        } else {
+            if (this.inactivePlayers.length === 0) return;
+            let activePlayer = this.inactivePlayers.filter(player => player.id === this.hitler.id);
+            if (activePlayer.length > 0) {
+                winner['team'] = constant.LIBERAL;
+                winner['reason'] = 'hitler_eliminated';
+                return winner;
+            }
         }
         return false;
     }
@@ -384,9 +400,9 @@ class Game {
         if (this.numActivePlayers === 5 || this.numActivePlayers === 6) {
             return ({
                 // 3: constant.POWER_EXAMINE_TOP_3,
-                3: constant.POWER_KILL_VETO,
+                1: constant.POWER_PICK_PRESIDENT,
                 4: constant.POWER_KILL,
-                5: constant.POWER_EXAMINE_MEMBERSHIP,
+                5: constant.POWER_KILL_VETO,
             });
         } else if (this.numActivePlayers === 7 || this.numActivePlayers === 8) {
             return ({
@@ -441,7 +457,15 @@ class Game {
 
     }
     holdPresidency() {
-        this.makePresident(this.nextPresident);
+        if (this.vetoPresident && this.vetoPresident['player']) {
+            this.makePresident(this.vetoPresident['player']);
+            this.vetoPresident['next'] = this.nextPresident;
+        } else if (this.vetoPresident && this.vetoPresident['next']) {
+            this.makePresident(this.vetoPresident['next']);
+            this.vetoPresident = null;
+        } else {
+            this.makePresident(this.nextPresident);
+        }
         // this.holdElectionPrimary();
     }
     holdElectionPrimary() {
