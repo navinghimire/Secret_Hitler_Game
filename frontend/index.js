@@ -1,5 +1,3 @@
-
-
 const socket = io('http://10.0.0.138:3000');   
 const frmHost = document.getElementById('frmHost');
 const inputAliasHost = document.getElementById('inputAliasHost');
@@ -49,27 +47,32 @@ socket.on('init',(id) => playerId = id);
 socket.on('gamecode', code => {
     gameCode = code;
     gameScreen.style.display = 'grid';
-
     loginScreen.style.display = 'none';
-
 });
+
+
 socket.on('powers', powers => {
     powers = JSON.parse(powers);
     let fasSlot = document.querySelectorAll('.fascist .policies .article .front');
     let libSlot = document.querySelectorAll('.liberal .policies .article .front');
-    let imageElem = document.createElement('img');
+    // let imageElem = document.createElement('img');
     fasSlot.forEach((elem,id) => {
         if (id+1 in powers) {
             let imageElem = document.createElement('img');
+            imageElem.classList.add('power');
             imageElem.src = `./images/powers/${powers[id+1]}.png`;
             elem.appendChild(imageElem);
+
         }
     })
 
     let trophyElemLib = document.createElement('img');
+    trophyElemLib.classList.add('power');
     trophyElemLib.src = `./images/powers/trophy.png`;
     let trophyElemFas = document.createElement('img');
+    trophyElemFas.classList.add('power');
     trophyElemFas.src = `./images/powers/trophy.png`;
+
     let fasFinal = fasSlot[gameState.totalFasPolicies-1];
     let libFinal = libSlot[gameState.totalLibPolicies-1];
     fasFinal.appendChild(trophyElemFas);
@@ -150,29 +153,31 @@ socket.on('vote_chancellor', () => {
 
     btnYes.addEventListener('click', () => {
         socket.emit('vote','yes');
-        topDiv.remove();
-    
+        gsap.to(topDiv,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement, onCompleteParams:[topDiv]});
+ 
     })
     btnNo.addEventListener('click', () => {
         socket.emit('vote','no');
-        topDiv.remove();
+        gsap.to(topDiv,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
     })
-
-    
-
+    gsap.from(topDiv,{duration:1, opacity:0, y:-10, ease:'back.out'});
 })
+function removeElement(elem) {
+    elem.remove();
+}
 socket.on('randompolicy', () => {
     displayInfo('Election has failed 3 times. Passing policy at random.')
 })
 
 socket.on('policypassed', policy => {
-    displayInfo(`${policy} policy passed.`);
+    displayInfo(`${policy.toUpperCase()} policy passed.`);
 })
 
 
 socket.on('election_concluded', () => {
     if (gameState.chancellor) {
-        let msg = (gameState.chancellor.id === playerId)?'The election has passed. You are the new Chancellor.':`The election for the government has passed with simple majority. ${gameState.chancellor.name} is our new Chancellor`;
+        let subj = gameState.chancellor.id === playerId?'You are the ':gameState.chancellor.name +' is our';
+        let msg = (gameState.chancellor.id === playerId)?'The election has passed. You are the new Chancellor.':`The election for the government has passed with simple majority. ${subj} new Chancellor`;
         displayInfo(msg); 
     } else {
         displayInfo(`The election has failed.`); 
@@ -195,7 +200,7 @@ socket.on('president_choosen', () => {
     if (gameState.president.id === playerId) {
         displayInfo('You are our new Presidential Candidate.');
         setTimeout(() => {
-            displayInfo('Pick your Chancellor.');
+            displayInfo('Pick your Chancellor wisely.');
         },5000);
     } else {
         displayInfo(`${gameState.president.name} is the new Presidental Candidate. The President Candidate is now choosing a Chancellor Candidate.`);
@@ -244,7 +249,7 @@ socket.on('gameover', winner => {
 });
 
 socket.on('once', (code) => {
-    test(7,code)
+    test(4,code);
 })
 socket.on('card_discarded_president', () => {
     displayInfo('President has discarded a policy and passed the remaining two policies to the chancellor');
@@ -421,7 +426,7 @@ function discardPrompt(cards,session) {
     } else if (session === 'top3') {
         divPrompt.innerHTML = `
         <h2>These are top 3 cards in the draw pile.</h2>
-        <h1>Discard one, the remaining two will be passed to your chancellor.</h1>`;
+        <h1>Watch how the new cabinet votes. You can smell the foul play.</h1>`;
     } else {
         divPrompt.innerHTML = `<h2>President discarded one policy.</h2>
         <h1>As a chancellor, discard one. The remaining policy will be implemented</h1>`;
@@ -432,13 +437,14 @@ function discardPrompt(cards,session) {
     cards.forEach(card => {
         let newCardBtn = document.createElement('div');
 
-        newCardBtn.innerHTML = `<div class='container'><div class="article ${card==='fascist'?'fascist':'liberal'}">
+        newCardBtn.innerHTML = `<div class='container'><div class="article ${card}">
                                     <div class="back">
                                         <h1>ARTICLE</h1>
                                     </div>
                                     <div class="front">
                                         <h1>${card==='fascist'?'Fascist':'Liberal'}</h1>
                                         <h2>Article</h2>
+                                        <img src="./images/${card}_article_line.svg" alt="" srcset="">
                                     </div>
                                 </div></div>`;
         // newCardBtn.classList.add(card);
@@ -461,7 +467,9 @@ function discardPrompt(cards,session) {
                             socket.emit('card_choosen_chancellor', 'fascist');
                         }
                     }
-                    setTimeout(() => { topDiv.remove();},1000)
+                    gsap.to(e.target.parentElement,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
+
+
                 }
             });
         }
@@ -485,13 +493,13 @@ function discardPrompt(cards,session) {
         }
         cardLen--;
     },500);
-
+    gsap.from(topDiv,{duration:1, opacity:0, y:-10, ease:'back.out'});
 
 }
 
 
 function initialize() {
-    
+    gsap.from('#loginScreen>section',{duration:2,opacity:0, x:-20, stagger:0.25, ease:'elastic',repeat:1});
 }
 
 
@@ -533,14 +541,16 @@ function displayInfo(message) {
         messageElem.textContent = message;
         messageElem.classList.add('message');
         infoElem.appendChild(messageElem);
+        gsap.from('.info>p',{duration: 1, opacity:0})
     }
    
     // playersElem.appendChild(infoElem);
-
 }
 
 function startGame() {
     socket.emit('startgame');
+
+    gsap.from('.policies>.container',{duration:2.2,x:-20,stagger:0.2,opacity:0,color:'red', ease:'elastic'});
 }
 
 function handleChoose(e, emitCode) {
@@ -878,3 +888,5 @@ moveOnMax = function(field, nextFieldId) {
 function nextSession() {
     socket.emit('nextSession');
 }
+
+initialize();

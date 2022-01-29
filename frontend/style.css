@@ -6,6 +6,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* font-family: Eskapade; */
+    font-family: 'Montserrat Alternates', sans-serif;
 }
 
 :root {
@@ -44,7 +46,7 @@
 }
 
 html {
-    background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
+    background-image: linear-gradient(to top, var(--red-jewel) 0%,var(--blue-jewel) 100%);
 }
 
 .maincontainer {
@@ -63,7 +65,6 @@ html {
 .article:hover{
     cursor: pointer;
 }
-
 .article {
     margin: 1em;
     height: 150px;
@@ -127,17 +128,11 @@ html {
 
 .liberal>.front {
     color: var(--blue-pastel);
-    background: url("./images/liberal_article_line.svg");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: left 1em bottom 2.4em;
+
 }
 .fascist>.front {
     color: var(--red-pastel);
-    background: url("./images/fascist_article_line.svg");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: left 1em bottom 2.4em;
+
 }
 
 .article.fascist {
@@ -147,6 +142,8 @@ html {
 .article.liberal {
     background: linear-gradient(to top, var(--blue-jewel), var(--blue-earth));
 }
+
+
 .containermain>.container, .front, .back {
     pointer-events: none;
 }
@@ -154,7 +151,9 @@ html {
     transform: rotateY(180deg);
 }
 
-
+.article>.front>img{
+    opacity: .2;
+}
 
 
 .policies {
@@ -167,19 +166,17 @@ html {
     transform: none;
 }
 .policies .article {
+    /* width: 100%; */
     width: auto;
     height: 100px;
     margin: 0;    
     background-size: stretch;
 }
-.policies .article.liberal.passed > .front,.policies .article.fascist.passed > .front  {
-    background: url(./images/liberal_article_line.svg) left .9em bottom .8em/ 70% no-repeat
-}
 
 
 
 .policies .article .front {
-    background-size: 70%;
+    width: 100%;
     /* background-image: none; */
     /* background: repeating-linear-gradient(
         to bottom,
@@ -190,21 +187,28 @@ html {
     ); */
     overflow: hidden;
 }
-.policies .article .front img{
+.policies .article .front img.power{
     background-size: 70%;
-    /* border: solid 1px white; */
     opacity: .5;
-    /* position: absolute; */
-    /* width: 80%;
-    top:20px; */
+    position: absolute;
+    height: 6em;
+    left:50%;
+    top:50%;
+    transform: translate(-3em, -3em);
+
     /* border: solid 5px var(--red-pastel); */
     /* border-radius: 50%;
     object-fit: contain; */
-    object-fit: cover;
+    /* object-fit: contain; */
 }
-.policies .article.fascist.passed .front img {
+.article.fascist.passed .front img.power {
     opacity: 0;
 }
+.article .front img {
+    height: auto;
+    object-fit: cover;
+}
+
 
 
 
@@ -244,9 +248,12 @@ html {
     gap: .2em;
 }
 .policies .article:not(.passed) .front {
-    background-image: none;
+
 }
 .policies .article:not(.passed) h1{
+    opacity: 0;
+}
+.policies .article:not(.passed)>.front>img:not(.power){
     opacity: 0;
 }
 
@@ -324,7 +331,7 @@ body {
     width: 100%;
     height: 100%;
     color: white;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; */
     background-size: cover;
     background-repeat:  no-repeat;
 }
@@ -425,7 +432,7 @@ body {
     flex-direction: row;
     flex-wrap: nowrap;
     /* margin: 1em 0em; */
-    padding: 1em 0em;
+    padding: 1em;
 }
 .info.can-start::before {
     content: '';
@@ -462,6 +469,7 @@ body {
 .info-code>h1 {
     color:var(--6);
     /* padding-left: .2em; */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
 }
 
@@ -509,7 +517,7 @@ body {
 main {
     position: relative;
     flex-direction: column;
-    height: 100vh;
+    /* height: 100vh; */
 }
 section{
     width: auto;
@@ -539,9 +547,7 @@ section{
     opacity: .1;
     display: none;
 }
-.player:hover{
-    cursor: pointer;
-}
+
 .input button:hover{
     background-color:var(--light-blue);
 
@@ -549,7 +555,7 @@ section{
 }
 
 #or{
-
+    padding: 2em 0em;
 }
 
 #or h1{
@@ -579,6 +585,7 @@ section{
     /* padding:0 .2em; */
     font-weight: 1000;
     transition: 0.5 ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .code {
     /* margin: .4em; */
@@ -618,6 +625,7 @@ form {
     justify-content: center;
     flex-direction: column;
     height: 100vh;
+    /* opacity: 0; */
 
 }
 #loginScreen>section:first-child,#loginScreen>section:last-child  {
@@ -640,33 +648,15 @@ form {
     /* width: 100%; */
     /* height: 100vh; */
     display: grid;
-    grid-template-rows: auto 1fr auto 5fr;
+    grid-template-rows: auto auto 5em 5fr;
     /* flex-direction: column; */
     /* grid-template-columns: none; */
     gap: var(--gap);
-    margin: var(--gap);
     
 }
 .player-self{
     grid-column: 1/3;
     grid-row: 1/3;
-}
-.vote {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 12;
-    background-color: rgba(238, 90, 90,.50);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    position:absolute;
-    top:0;
-    right:0;
-    bottom: 0;
-    left:0;
-
 }
 .player_voted {
     position: absolute;
@@ -683,7 +673,7 @@ form {
     border-radius: 100% 100% 0% 100%;
     height: 1.5em;
     width: 1.5em;
-
+    
 }
 .player_voted.yes {
     background:linear-gradient(to top right, rgba(25, 173, 25, 0.726), rgba(12, 122, 12, 0.699));
@@ -706,21 +696,44 @@ form {
         opacity: 1;
     }
 }
+.vote {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 12;
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    position:absolute;
+    left:0;
+    right:0;
+    padding: 1em;
+    /* width: 100%; */
+}
 .vote h1 {
     color: var(--brown);
-    /* font-size: 1.5em; */
+    font-size: 1rem;
+    padding: var(--gap);
+    
 }
 .vote h2 {
     font-weight: 300;
+    font-size: 1em;
 }
 .vote h2>span {
     color:blanchedalmond;
-    font-weight: 800;
-
+    font-weight: 1000;
+    
 }
 
 .vote>div {
     /* padding:1em 0em; */
+}
+.vote>div>button {
+
+    font-size: 1em;
 }
 .vote>div>button.liberal {
     background:linear-gradient(to top right, var(--green-jewel), var(--green-earth));
@@ -732,15 +745,15 @@ form {
     color: var(--red-pastel);
 }
 button.fascist,button.liberal {
- 
+    
 }
 
 .vote>div>button{
     /* font-size: 1rem; */
-    width: 8em;
-    height: 8em;
+
     border-radius: var(--radius);
-    margin: .2em;
+    padding: calc(var(--gap) * 4);
+    margin: var(--gap);
     border: none;
     font-weight: 600;
 }
@@ -753,7 +766,8 @@ button.no {
     color: var(--red-pastel);
 }
 .vote>div>button:hover{
-    border: solid 2px greenyellow;  
+    border: solid 1px greenyellow;  
+
     cursor: pointer; 
 }
 .player>.vote.yes {
@@ -767,8 +781,11 @@ button.no {
     display: grid;
     grid-template-columns: 1fr repeat(5,1fr);
     grid-template-rows: 1fr 1fr;
-
+    background-color: rgba(27, 27, 54, 0.466);
     gap: var(--gap);
+    backdrop-filter: blur(2px);
+
+    padding: calc(2*var(--gap));
     /* margin: .4em; */
     /* grid-auto-rows: min-content; */
     /* grid-auto-flow: row; */
@@ -831,7 +848,17 @@ button.no {
     overflow: hidden;
     z-index: 10;
     /* filter: drop-shadow(2px 4px 4px --blue-fluoro); */
+    transition: box-shadow 200ms ease-in-out;
 }
+.player:hover:not(.player-self) {
+    cursor: pointer;
+}
+.player:hover:not(.player-self,.player.eligible,.player.eleminated){
+    /* border: solid 1px var(--mid-shade) !important; */
+    box-shadow: 2px 2px 2px rgba(255, 255, 255, 0.479);
+}
+
+
 .choosen {
     border: solid 5px var(--light-shade);
 }
@@ -867,6 +894,7 @@ button.no {
 .player.eleminated::after{
     content: none;
 }
+
 .veto button {
     height: 4em;
     margin: 1em;
@@ -1023,42 +1051,43 @@ span.role {
         flex-direction: row;
         padding: 2em;
     }
+    #or {
+        padding: 0em 1em;
+    }
 
     .gameScreen {
         grid-template-columns: 1fr 9fr !important;
-        grid-template-rows: auto 10% auto;
-        height: 100vh;
+        grid-template-rows: minmax(5em,10%) auto auto;
+        /* align-items: start; */
+        /* height: 100vh; */
         grid-template-areas: 
-            "players policy"
             "players info"
+            "players policy"
             "players drawDiscard";
-        gap: var(--gap);
-        margin: var(--gap);
     }
     .players {
         grid-area: players;
         /* background-color: red; */
         grid-template-columns: 1fr;
         grid-template-rows: 1fr repeat(10,1fr);
-        
-        gap: var(--gap);
     }
     .player:not(.player-self) {
-        width: auto;
+        /* width: auto; */
         grid-column: 1/2;
-        width: 5em;
+        /* width: 5em; */
+        width: auto;
     }
     .player-self {
-        grid-column: 1/3;
+        grid-column: 1/2;
         /* column-span: 2; */
         grid-row: 1/3;
-        width: 5em;
+        /* width: 5em; */
+        width: auto;
 
     }
  
     .policy {
         grid-area: policy;
-
     }
     .info {
         grid-area: info;
@@ -1073,28 +1102,29 @@ span.role {
   @media screen and (min-width: 1025px) {
 
     .gameScreen {
-        grid-template-columns: 1fr 5fr 5fr !important;
-        grid-template-rows: 5% auto auto;
-        height: 100vh;
+        grid-template-columns: auto 2fr 1fr !important;
+        grid-template-rows: minmax(5em, 10%) auto auto;
+        /* height: 100vh; */
         grid-template-areas: 
-            "players info info"
+            "players info drawDiscard"
             "players policy drawDiscard"
             "players policy drawDiscard"
     }
     .players {
         grid-area: players;
         /* background-color: red; */
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         grid-template-rows: 1fr repeat(9,1fr);
         /* grid-auto-flow: row; */
+
     }
     .player:not(.player-self) {
         /* min-width: 5em; */
         width: 5em;
     }
     .player-self {
-        column-span: 2;
-        width: 10em;
+        /* column-span: 2; */
+        /* width: auto; */
     }
 
     .policy {
