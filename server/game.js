@@ -212,7 +212,39 @@ class Game {
         console.log(`${newPresident.name} elected as president`);
     }
     get state() {
-        return this;
+        return {
+            activePlayers : this.activePlayers,
+            inactivePlayers : this.inactivePlayers,
+            chancellor : this.chancellor,
+            president : this.president,
+            chancellorElect: this.chancellorElect,
+            pastCabinet : this.pastCabinet,
+            // hitler : null,
+            fasPolicyCount : this.fasPolicyCount,
+            libPolicyCount : this.libPolicyCount,
+            totalFasPolicies : this.totalFasPolicies,
+            totalLibPolicies : this.totalLibPolicies,
+            // fascists : [],
+            // liberals : [],
+
+            // drawPile : [],
+            // discardPile : [],
+            numDrawPile: this.numDrawPile,
+            numDiscardPile: this.numDiscardPile,
+            
+            totalFasArticles : this.totalFasArticles,
+            totalLibArticles : this.totalLibArticles,
+            // drawn : [],
+            host : this.host,
+            votes : this.votes,
+            numFailedElection : this.numFailedElection,
+            round : this.round,
+            session: this.session,
+            vetoPresident : this.vetoPresident,
+            policyToPass : this.vetoPresident,
+            vetoPower : this.vetoPower,
+            powers : this.powers,
+        };
     }
     nextRound() {
         this.round++;

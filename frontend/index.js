@@ -31,7 +31,9 @@ const SESSION_LEGISLATION_CHANCELLOR = 'legislation_chancellor';
 const SESSION_OVER = 'over';
 const VOTE_YES = 'yes';
 const VOTE_NO = 'no';
-
+window.onload = function() {
+    initialize();
+}
 
 // this is where we render players 
 let playersElem = document.querySelector('.players');
@@ -137,10 +139,15 @@ socket.on('vote_chancellor', () => {
     const topDiv = document.createElement('div');
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
-    
-    divPrompt.innerHTML = `
-    <h2>The Presidential Candidate has choosen <span>${gameState.chancellorElect.name}</span> as his Chancellor</h2>
-    <h1>Do you agree on this new government?<h1>`;
+    if (gameState.chancellorElect.id === playerId) {
+        divPrompt.innerHTML = `
+        <h2>The Presidential Candidate has choosen you as his Chancellor</h2>
+        <h1>Do you agree to be in the cabinet?<h1>`;
+    } else {
+        divPrompt.innerHTML = `
+        <h2>The Presidential Candidate has choosen <span>${gameState.chancellorElect.name}</span> as his Chancellor</h2>
+        <h1>Do you agree on this new government?<h1>`;
+    }
     const yesNoElem = document.createElement('div');
 
     yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
@@ -316,7 +323,7 @@ socket.on('state', state => {
     
     // render drawPile
     let drawPile = document.querySelector('.drawPile>.pile');
-    let drawPileCards = gameState.drawPile.length>=3?3:gameState.drawPile.length;
+    let drawPileCards = gameState.numDrawPile>=3?3:gameState.numDiscardPile;
     drawPile.innerHTML = '';
 
 
@@ -342,7 +349,7 @@ socket.on('state', state => {
     
     // render discardPile
     let discardPile = document.querySelector('.discardPile>.pile');
-    let discardPileCards = gameState.discardPile.length>=3?3:gameState.discardPile.length;
+    let discardPileCards = gameState.numDiscardPile>=3?3:gameState.numDiscardPile;
     discardPile.innerHTML = '';
     for(let i=0;i<discardPileCards;i++) {
         let newCardElem = document.createElement('h1');
@@ -352,14 +359,14 @@ socket.on('state', state => {
     }
 
 
-    if(gameState.drawPile != undefined) {
+    if(gameState.numDrawPile != undefined) {
         let drawCount = document.querySelector('#drawCount')
-        drawCount.textContent = gameState.drawPile.length;
+        drawCount.textContent = gameState.numDrawPile;
     }
     
-    if(gameState.drawPile != undefined) {
+    if(gameState.numDiscardPile != undefined) {
         let discardCount = document.querySelector('#discardCount');
-        discardCount.textContent = gameState.discardPile.length;
+        discardCount.textContent = gameState.numDiscardPile;
     }
 
 
@@ -452,6 +459,7 @@ function discardPrompt(cards,session) {
         if (session !== 'top3') {
             newCardBtn.addEventListener('click', e => {
                 if (e.target) {
+                    // (e.target.parentElement).classList.add('selected');
                     let isFascist = e.target.classList.contains('fascist');
                     
                     if (!isFascist) {
@@ -459,16 +467,32 @@ function discardPrompt(cards,session) {
                             socket.emit('card_choosen', 'liberal');
                         } else {
                             socket.emit('card_choosen_chancellor', 'liberal');
+                            
                         }
                     } else if (isFascist) {
                         if (session === 'president') {
                             socket.emit('card_choosen', 'fascist');
                         } else {
                             socket.emit('card_choosen_chancellor', 'fascist');
+
                         }
                     }
-                    gsap.to(e.target.parentElement,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
-
+                    // if (session === 'president') {
+                    //     gsap.to(e.target.parentElement,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
+                    // } else {
+                    //     let ind = isFascist?gameState.fasPolicyCount:gameState.libPolicyCount;
+                    //     let whereToElem = document.querySelectorAll(`.policy ${isFascist?'.fascist':'.liberal'}`).map(elem => elem.parentElement.parentElement)[ind];
+                    //     let fromElem = e.target.parentElement.parentElement.nextSibling;
+   
+                    //     let x1 = whereToElem.getBoundingClientRect().left;
+                    //     let y1 = whereToElem.getBoundingClientRect().top;
+                    //     let x2 = fromElem.getBoundingClientRect().left;
+                    //     let y2 = fromElem.getBoundingClientRect().top;
+                    //     let xMove = x1-x2;
+                    //     let yMove = y1-y2;
+                    //     gsap.to(fromElem,{duration:4, x: xMove,y:yMove,scale:.3,height: whereToElem.height, width: whereToElem.width, ease:'expo.out', onComplete: removeElement,  onCompleteParams:[topDiv]});
+                    // }
+                    topDiv.remove();
 
                 }
             });
@@ -499,7 +523,7 @@ function discardPrompt(cards,session) {
 
 
 function initialize() {
-    gsap.from('#loginScreen>section',{duration:2,opacity:0, x:-20, stagger:0.25, ease:'elastic',repeat:1});
+    gsap.from('#loginScreen>section',{duration:2,opacity:0, x:-20, stagger:0.25, ease:'elastic'});
 }
 
 
@@ -516,7 +540,7 @@ function renderGameCode(state) {
 
     }
 }
-function displayInfo(message) {
+function displayInfo(message,type='info') {
     let infoElem = document.querySelector('.info');
     if (!infoElem) {
         infoElem = document.createElement('div');
@@ -536,11 +560,17 @@ function displayInfo(message) {
         } 
     } else {
         infoElem.classList.remove('can-start');
-        let messageElem = document.createElement('p');
         infoElem.innerHTML = '';
+        
+        let messageElem = document.createElement('p');
         messageElem.textContent = message;
         messageElem.classList.add('message');
+
+        let infoIcon = document.createElement('img');
+        infoIcon.src = './images/powers/trophy.png';
         infoElem.appendChild(messageElem);
+        infoElem.prepend(infoIcon);
+        gsap.fromTo(infoIcon, {duration: 1, opacity: .5, repeat: -1, rotate:20, yoyo: true},{duration: 1, opacity: 1, repeat: -1, rotate:-20})
         gsap.from('.info>p',{duration: 1, opacity:0})
     }
    
@@ -771,8 +801,14 @@ socket.on('secretRoles',roles => {
 let openWindows = [];
 let players = ['Aditya', 'Sonali','Ujjar','Sunada','Dhwani','Prasanna','Prakash','Shyam','Florian']
 function test(num,gameCode) {
+    let height = 844;
+    let width = 390;
+    window.focus();
+    window.moveTo(num*window,0);
     for (let i = 0; i < num; i++) {
-        addOne(players.pop(),gameCode)
+        let features = `resizable:no, height=${height}, width=${width}, left=${i*width+100}`;
+        console.log(features);
+        addOne(players.pop(),gameCode,features)
     }
 }
 
@@ -782,17 +818,18 @@ function closeAll() {
         window.close();
     });
 }
-function addOne(player = players.pop()) {
+function addOne(player,gameCode,features) {
     players.unshift(player);
     if (!player) {
         return;
     }
-    let w = window.open('http://10.0.0.138:8080',);
+    
+
+    let w = window.open('http://10.0.0.138:8080',player, features);
     w.addEventListener('DOMContentLoaded', () => {
         w.handleJoinGame(player,gameCode);
     }, false);
     openWindows.push(w);
-    window.focus();
 }
 function removeOne() {
     let window = openWindows.pop();
@@ -888,5 +925,3 @@ moveOnMax = function(field, nextFieldId) {
 function nextSession() {
     socket.emit('nextSession');
 }
-
-initialize();

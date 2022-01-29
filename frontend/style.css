@@ -357,9 +357,8 @@ body {
     cursor: pointer;
 }
 
-.info>.message{
-}
-.info::before {
+
+/* .info::before {
     content: 'i';
     position: absolute;
     background-color: var(--brown-earth);
@@ -376,7 +375,7 @@ body {
     bottom: 0;
     right:0;
     overflow: show;
-}
+} */
 
 .gameCountdown {
     background-color: rgba(102, 192, 50, 0.699);
@@ -422,9 +421,9 @@ body {
     /* background-color: var(--brown-pastel) !important; */
     color: var(--brown-earth);
     /* border: solid 4px var(--brown-neutral); */
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    text-align: center;
+    text-align: left;
     border-radius: var(--radius);
     position: relative;
     overflow: hidden;
@@ -433,7 +432,24 @@ body {
     flex-wrap: nowrap;
     /* margin: 1em 0em; */
     padding: 1em;
+    
 }
+
+.info>.message{
+    font-size: .9em;
+    min-width: 80%;
+
+}
+.info img{
+    /* height: 100%; */
+    /* border: solid 1px red; */
+    padding: .2em;
+}
+.info>p,.info>img{
+    /* border: solid red; */
+}
+
+
 .info.can-start::before {
     content: '';
     display: none;
@@ -543,6 +559,9 @@ section{
 .input button{
     border: none;
 }
+#frmHost button {
+}
+
 .input button:disabled {
     opacity: .1;
     display: none;
