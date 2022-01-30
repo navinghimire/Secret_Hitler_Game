@@ -48,22 +48,21 @@
 html {
     background-image: linear-gradient(to top, var(--red-jewel) 0%,var(--blue-jewel) 100%);
 }
+.actionSection {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    position: relative;
+    height: auto;
+    flex-direction: column;
+}
+
+
 
 .maincontainer {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-
-.drawDiscard {
-    display: flex;
-    justify-content: space-around;
-    text-align: center;
-    position: relative;
-}
-.article:hover{
-    cursor: pointer;
 }
 .article {
     margin: 1em;
@@ -76,38 +75,31 @@ html {
     align-items: center;
     justify-content: center;
     font-size: .7em;
-    /* overflow: hidden; */
-    transition: all 300ms ease-in-out;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    transform: rotate(0deg);
     pointer-events: auto;
+
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transition: transform 1s;
+    -o-transform-style: preserve-3d;
+    -o-transition: transform 1s;
+    -moz-transform-style: preserve-3d;
+    -moz-transition: transform 1s;
+
+}
+.article.show {
+    transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+}
+
+.article:hover{
+    cursor: pointer;
 }
 .article h2{
     padding-top: .1em;
     font-size: .9rem;
-}
-.front,.back {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    border-radius: var(--radius);
-
-}
-
-.back {
-
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    /* opacity: 0; */
-    background: linear-gradient(to top, var(--brown-jewel), var(--brown-earth));
-    color: var(--brown-pastel);
-    z-index: 2;
-}
-.back>h1{
-    opacity: 0.3;
 }
 .front {
     justify-content: flex-start;
@@ -121,18 +113,47 @@ html {
     background-repeat: no-repeat;
     background-position: left 1em bottom 2.4em;
     z-index: 1;
-    backface-visibility: hidden !important; 
-    -webkit-backface-visibility: hidden !important;
-    transform: rotateY(180deg);
-}
 
+    transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+}
+.back {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, var(--brown-jewel), var(--brown-earth));
+    color: var(--brown-pastel);
+    z-index: 2;
+    backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+
+}
+.back>h1{
+    opacity: 0.3;
+}
+.front,.back {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    border-radius: var(--radius);
+
+}
 .liberal>.front {
     color: var(--blue-pastel);
-
+    
 }
 .fascist>.front {
     color: var(--red-pastel);
-
+    
 }
 
 .article.fascist {
@@ -149,11 +170,13 @@ html {
 }
 .container:hover .article{
     transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
 }
 
 .article>.front>img{
     opacity: .2;
 }
+
 
 
 .policies {
@@ -390,6 +413,12 @@ body {
     align-items: center;
     flex-direction: column;
     display: none;
+}
+
+.drawDiscard {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
 }
 .gameover {
     text-align: center;
@@ -657,6 +686,7 @@ form {
     border-radius: var(--radius);
 }
 #loginScreen button {
+    background-color: white;
     font-size: 1.2rem;
     height: 2em;
     border-radius: var(--radius);
@@ -724,10 +754,10 @@ form {
     z-index: 12;
 
     backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    position:absolute;
-    left:0;
-    right:0;
+    /* -webkit-backdrop-filter: blur(4px); */
+    /* position:absolute; */
+    /* left:0;
+    right:0; */
     padding: 1em;
     /* width: 100%; */
 }
@@ -1082,8 +1112,9 @@ span.role {
         grid-template-areas: 
             "players info"
             "players policy"
-            "players drawDiscard";
+            "players actionSection";
     }
+
     .players {
         grid-area: players;
         /* background-color: red; */
@@ -1112,8 +1143,8 @@ span.role {
         grid-area: info;
 
     }
-    .drawDiscard {
-        grid-area: drawDiscard;
+    .actionSection {
+        grid-area: actionSection;
      
         
     }
@@ -1122,13 +1153,15 @@ span.role {
 
     .gameScreen {
         grid-template-columns: auto 2fr 1fr !important;
-        grid-template-rows: minmax(5em, 10%) auto auto;
+        /* grid-template-rows: minmax(5em, 10%) 1fr 10fr; */
         /* height: 100vh; */
         grid-template-areas: 
-            "players info drawDiscard"
-            "players policy drawDiscard"
-            "players policy drawDiscard"
+            "players info actionSection"
+            "players policy actionSection"
+            "players policy actionSection"
     }
+  
+
     .players {
         grid-area: players;
         /* background-color: red; */
@@ -1154,8 +1187,8 @@ span.role {
         grid-area: info;
 
     }
-    .drawDiscard {
-        grid-area: drawDiscard;
+    .actionSection {
+        grid-area: actionSection;
         
     }
   }

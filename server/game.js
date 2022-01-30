@@ -215,6 +215,8 @@ class Game {
         return {
             activePlayers : this.activePlayers,
             inactivePlayers : this.inactivePlayers,
+            numActivePlayers: this.numActivePlayers,
+            numInactivePlayers: this.numInactivePlayers,
             chancellor : this.chancellor,
             president : this.president,
             chancellorElect: this.chancellorElect,

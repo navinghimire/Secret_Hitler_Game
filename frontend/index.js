@@ -52,7 +52,23 @@ socket.on('gamecode', code => {
     loginScreen.style.display = 'none';
 });
 
+socket.on('playerjoined', player => {
+    player = JSON.parse(player);
+    let playerElem = document.getElementById(player.id);
+    if (playerElem) {
+        gsap.from(playerElem, {duration: 1, scale: 0.1,opacity:0});
+    }
+    
+    displayInfo(`${player.name} has joined the game`);
+    setTimeout(() => {
+        if (playerId === gameState.host) {
+            displayInfo('gamecode');
+        } else {
+            displayInfo('Waiting for the host to start the game');
+        }
+    }, 3000);
 
+});
 socket.on('powers', powers => {
     powers = JSON.parse(powers);
     let fasSlot = document.querySelectorAll('.fascist .policies .article .front');
@@ -84,7 +100,7 @@ socket.on('powers', powers => {
 
 })
 socket.on('veto_verdict', verdict => {
-    let elem = document.querySelector('.drawDiscard>.vote');
+    let elem = document.querySelector('.actionSection>.vote');
     if (verdict === 'yes') {
         elem.remove();
     } else {
@@ -96,7 +112,7 @@ socket.on('veto_verdict', verdict => {
 })
 
 socket.on('veto',() => {
-        let body = document.querySelector('.drawDiscard');
+        let body = document.querySelector('.actionSection');
         const topDiv = document.createElement('div');
         topDiv.classList.add('vote');
         const divPrompt = document.createElement('div');
@@ -107,7 +123,7 @@ socket.on('veto',() => {
         const yesNoElem = document.createElement('div');
     
         yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
-        body.prepend(topDiv);
+        body.append(topDiv);
         topDiv.append(divPrompt);
         topDiv.append(yesNoElem);
     
@@ -128,11 +144,12 @@ socket.on('veto',() => {
 
 
 socket.on('vote_chancellor', () => {
+    displayInfo(`Vote your chancellor. There must be least ${Math.round(gameState.numActivePlayers/2)}/${gameState.numActivePlayers} votes for the election to pass`);
     if (gameState.activePlayers.map(player=>player.id).filter(playerid => playerid === playerId).length === 0) {
         return;
     }
     // displayInfo(`Do you accept ${gameState.chancellorElect.name} as chancellor?`);
-    let body = document.querySelector('.drawDiscard');
+    let body = document.querySelector('section.actionSection');
     // displayElem.innerHTML = '';
 
     // displayElem.textContent = '';
@@ -151,7 +168,7 @@ socket.on('vote_chancellor', () => {
     const yesNoElem = document.createElement('div');
 
     yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
-    body.prepend(topDiv);
+    body.append(topDiv);
     topDiv.append(divPrompt);
     topDiv.append(yesNoElem);
 
@@ -210,7 +227,7 @@ socket.on('president_choosen', () => {
             displayInfo('Pick your Chancellor wisely.');
         },5000);
     } else {
-        displayInfo(`${gameState.president.name} is the new Presidental Candidate. The President Candidate is now choosing a Chancellor Candidate.`);
+        displayInfo(`${gameState.president.name} is the new Presidental Candidate. Waiting for the president to choose a Chancellor Candidate.`);
     }
 })
 
@@ -305,59 +322,12 @@ socket.on('gamecountdown', () => {
 
 
 socket.on('state', state => {
-
-    // console.log(state);
     gameState = JSON.parse(state);
+
     renderPlayerElements();
-    // renderSecretRoles();
-    console.log(gameState);
-    if(!gameState.session) {
-        displayInfo('gamecode');
-    } 
-
-
-
 
 
     
-    
-    // render drawPile
-    let drawPile = document.querySelector('.drawPile>.pile');
-    let drawPileCards = gameState.numDrawPile>=3?3:gameState.numDiscardPile;
-    drawPile.innerHTML = '';
-
-
-    
-    // for(let i=0;i<drawPileCards;i++) {
-    //     let newCard = document.createElement('div');
-    //     newCard.classList.add('container');
-    //     newCard.classList.add('card'+i);
-    //     newCard.innerHTML = ` <div class="article liberal">
-    //                                 <div class="front">
-    //                                     <h1>Liberal</h1>
-    //                                     <h2>Article</h2>
-    //                                 </div>
-    //                                 <div class="back">
-    //                                     <h1>ARTICLE</h1>
-    //                                 </div>
-    //                             </div>`;
-    //     newCard.style.position = 'absolute';
-    //     newCard.style.left = i*1 +'em';
-    //     newCard.style.zIndex = (i+1)*5+'';
-    //     drawPile.append(newCard);
-    // }
-    
-    // render discardPile
-    let discardPile = document.querySelector('.discardPile>.pile');
-    let discardPileCards = gameState.numDiscardPile>=3?3:gameState.numDiscardPile;
-    discardPile.innerHTML = '';
-    for(let i=0;i<discardPileCards;i++) {
-        let newCardElem = document.createElement('h1');
-        newCardElem.style.right = `${(i+1)*2}rem`;
-        newCardElem.style.zIndex = `${(i+1)}`;
-        discardPile.append(newCardElem);
-    }
-
 
     if(gameState.numDrawPile != undefined) {
         let drawCount = document.querySelector('#drawCount')
@@ -390,8 +360,6 @@ socket.on('state', state => {
             elem.classList.add('passed');
         } 
     })
-//    alert(choosenPlayer);
-
 
 }) 
 socket.on('canstart', () => {libPolicyCount
@@ -419,7 +387,7 @@ function handleVeto(elem) {
 
 function discardPrompt(cards,session) {
 
-    let body = document.querySelector('.drawDiscard');
+    let body = document.querySelector('.actionSection');
     const topDiv = document.createElement('div');
     topDiv.classList.add('choose_card');
     topDiv.classList.add('vote');
@@ -445,23 +413,25 @@ function discardPrompt(cards,session) {
         let newCardBtn = document.createElement('div');
 
         newCardBtn.innerHTML = `<div class='container'><div class="article ${card}">
-                                    <div class="back">
-                                        <h1>ARTICLE</h1>
-                                    </div>
                                     <div class="front">
                                         <h1>${card==='fascist'?'Fascist':'Liberal'}</h1>
                                         <h2>Article</h2>
                                         <img src="./images/${card}_article_line.svg" alt="" srcset="">
                                     </div>
+                                    <div class="back">
+                                    <h1>ARTICLE</h1>
+                                </div>
                                 </div></div>`;
         // newCardBtn.classList.add(card);
         // newCardBtn.innerHTML = card;
         if (session !== 'top3') {
             newCardBtn.addEventListener('click', e => {
                 if (e.target) {
-                    // (e.target.parentElement).classList.add('selected');
-                    let isFascist = e.target.classList.contains('fascist');
-                    
+                    let articleToPass = e.target.parentElement.parentElement.nextElementSibling;
+                    if (!articleToPass) {
+                        articleToPass = e.target.parentElement.parentElement.previousElementSibling;
+                    }
+                    let isFascist = e.target.classList.contains('fascist')?true:false;
                     if (!isFascist) {
                         if (session === 'president') {
                             socket.emit('card_choosen', 'liberal');
@@ -477,29 +447,38 @@ function discardPrompt(cards,session) {
 
                         }
                     }
-                    // if (session === 'president') {
-                    //     gsap.to(e.target.parentElement,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
-                    // } else {
-                    //     let ind = isFascist?gameState.fasPolicyCount:gameState.libPolicyCount;
-                    //     let whereToElem = document.querySelectorAll(`.policy ${isFascist?'.fascist':'.liberal'}`).map(elem => elem.parentElement.parentElement)[ind];
-                    //     let fromElem = e.target.parentElement.parentElement.nextSibling;
+                    if (session === 'president') {
+                        gsap.to(e.target.parentElement,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
+                    } else {
+                        let passPolicy = articleToPass.querySelector('.liberal')?'liberal':'fascist';
+                        console.log(passPolicy);
+                        console.log(gameState.fasPolicyCount,gameState.libPolicyCount);
+                        let ind = (passPolicy==='fascist'?gameState.fasPolicyCount:gameState.libPolicyCount) || 0;
+                        let whereToElem = document.querySelectorAll(`.policy .${passPolicy} .container`)[ind];
+                        let fromElem = articleToPass;
    
-                    //     let x1 = whereToElem.getBoundingClientRect().left;
-                    //     let y1 = whereToElem.getBoundingClientRect().top;
-                    //     let x2 = fromElem.getBoundingClientRect().left;
-                    //     let y2 = fromElem.getBoundingClientRect().top;
-                    //     let xMove = x1-x2;
-                    //     let yMove = y1-y2;
-                    //     gsap.to(fromElem,{duration:4, x: xMove,y:yMove,scale:.3,height: whereToElem.height, width: whereToElem.width, ease:'expo.out', onComplete: removeElement,  onCompleteParams:[topDiv]});
-                    // }
-                    topDiv.remove();
+                        let x1 = whereToElem.getBoundingClientRect().left;
+                        let y1 = whereToElem.getBoundingClientRect().top;
+                        let x2 = fromElem.getBoundingClientRect().left;
+                        let y2 = fromElem.getBoundingClientRect().top;
+
+
+                        let xMove = x1-x2;
+                        let yMove = y1-y2;
+                        gsap.to(fromElem,{duration:2, x: xMove,y:yMove,transformOrigin: '0px 0px',scaleX: whereToElem.offsetWidth/fromElem.offsetWidth, scaleY: whereToElem.offsetHeight/fromElem.offsetHeight,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
+                        whereToElem.style.opacity = 0;
+                        setTimeout(() => {
+                            whereToElem.style.opacity = 1;
+                        },2000);
+                    }
+                    // topDiv.remove();
 
                 }
             });
         }
         cardsDrawn.append(newCardBtn);
     })
-    body.prepend(topDiv);
+    body.append(topDiv);
     topDiv.append(divPrompt);
     topDiv.append(cardsDrawn);
     let vetoDiv = document.createElement('div');
@@ -508,15 +487,8 @@ function discardPrompt(cards,session) {
 
 
     let cardsD = document.querySelectorAll('.maincontainer .article');
-    let cardLen = cardsD.length-1;
-    let timer = setInterval(() => {
-        let card = cardsD[cardLen];
-        card.style.transform = 'rotateY(180deg)';
-        if (cardLen <= 0) {
-            clearInterval(timer);
-        }
-        cardLen--;
-    },500);
+    gsap.fromTo(cardsD,{opacity:0},{duration:2, opacity: 1, rotationY: 180, stagger: 1,ease:'elastic.inOut'});
+
     gsap.from(topDiv,{duration:1, opacity:0, y:-10, ease:'back.out'});
 
 }
@@ -570,7 +542,7 @@ function displayInfo(message,type='info') {
         infoIcon.src = './images/powers/trophy.png';
         infoElem.appendChild(messageElem);
         infoElem.prepend(infoIcon);
-        gsap.fromTo(infoIcon, {duration: 1, opacity: .5, repeat: -1, rotate:20, yoyo: true},{duration: 1, opacity: 1, repeat: -1, rotate:-20})
+        gsap.fromTo(infoIcon, {duration: 1, repeat: -1, rotate:10, yoyo: true,ease: 'power1.inOut'},{duration: 1, repeat: -1, rotate:-10, yoyo:true, ease: 'power1.inOut'});
         gsap.from('.info>p',{duration: 1, opacity:0})
     }
    
@@ -781,7 +753,7 @@ socket.on(POWER_EXAMINE_TOP_3, cards => {
     cards = JSON.parse(cards);
     discardPrompt(cards, 'top3');
     
-    let elem = document.querySelector('.drawDiscard>.vote');
+    let elem = document.querySelector('.actionSection>.vote');
     setTimeout(() => {
         elem.remove();
     },5000)

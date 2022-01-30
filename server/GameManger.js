@@ -56,6 +56,7 @@ class GameManager {
         // console.log(`${alias} has joined the room ${roomId}
         let player = new Player(socket.id, alias, null);
         game.addPlayer(player);
+        
         socket.on('disconnect',(reason) => {
             game.removePlayer(player);
             this.emitGameState(roomId);
@@ -74,8 +75,8 @@ class GameManager {
         } else {
             this.io.to(game.host).emit('cannotstart');
         }
-        
         this.emitGameState(roomId);
+        this.io.in(roomId).emit('playerjoined', JSON.stringify(player));
     }
     handleStartGame(socket) {
         let roomId = this.clientRooms[socket.id];
