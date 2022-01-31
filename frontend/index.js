@@ -1,4 +1,7 @@
-const socket = io('http://10.0.0.138:3000');   
+window.onload = function() {
+    initialize();
+}
+const socket = io('http://10.0.0.138:3000');
 const frmHost = document.getElementById('frmHost');
 const inputAliasHost = document.getElementById('inputAliasHost');
 const inputAliasJoin = document.getElementById('inputAliasJoin');
@@ -9,7 +12,6 @@ const gameScreen = document.querySelector('.gameScreen');
 const allInputElem = document.querySelectorAll('input');
 const frmLogin = document.querySelectorAll('.frmLogin');
 
-// constants 
 const MAX_PLAYERS = 10;
 const MIN_PLAYERS = 5;
 const POWER_EXAMINE_TOP_3 = 'examine_top_3';
@@ -31,13 +33,8 @@ const SESSION_LEGISLATION_CHANCELLOR = 'legislation_chancellor';
 const SESSION_OVER = 'over';
 const VOTE_YES = 'yes';
 const VOTE_NO = 'no';
-window.onload = function() {
-    initialize();
-}
 
-// this is where we render players 
 let playersElem = document.querySelector('.players');
-// const constant = import('./utils');
 
 let playerId, gameCode;
 let secretRoles;
@@ -45,7 +42,7 @@ let gameState;
 let choosenPlayer;
 let gameCountdownElem = document.querySelector('.gameCountdown');
 gameScreen.style.display = 'none';
-socket.on('init',(id) => playerId = id);
+socket.on('init', (id) => playerId = id);
 socket.on('gamecode', code => {
     gameCode = code;
     gameScreen.style.display = 'grid';
@@ -56,9 +53,9 @@ socket.on('playerjoined', player => {
     player = JSON.parse(player);
     let playerElem = document.getElementById(player.id);
     if (playerElem) {
-        gsap.from(playerElem, {duration: 1, scale: 0.1,opacity:0});
+        gsap.from(playerElem, { duration: 1, scale: 0.1, opacity: 0 });
     }
-    
+
     displayInfo(`${player.name} has joined the game`);
     setTimeout(() => {
         if (playerId === gameState.host) {
@@ -73,9 +70,8 @@ socket.on('powers', powers => {
     powers = JSON.parse(powers);
     let fasSlot = document.querySelectorAll('.fascist .policies .article .front');
     let libSlot = document.querySelectorAll('.liberal .policies .article .front');
-    // let imageElem = document.createElement('img');
-    fasSlot.forEach((elem,id) => {
-        if (id+1 in powers) {
+    fasSlot.forEach((elem, id) => {
+        if (id + 1 in powers) {
             let imageElem = document.createElement('img');
             imageElem.classList.add('power');
             imageElem.src = `./images/powers/${powers[id+1]}.png`;
@@ -91,11 +87,11 @@ socket.on('powers', powers => {
     trophyElemFas.classList.add('power');
     trophyElemFas.src = `./images/powers/trophy.png`;
 
-    let fasFinal = fasSlot[gameState.totalFasPolicies-1];
-    let libFinal = libSlot[gameState.totalLibPolicies-1];
+    let fasFinal = fasSlot[gameState.totalFasPolicies - 1];
+    let libFinal = libSlot[gameState.totalLibPolicies - 1];
     fasFinal.appendChild(trophyElemFas);
     libFinal.appendChild(trophyElemLib);
-    
+
 
 
 })
@@ -107,52 +103,48 @@ socket.on('veto_verdict', verdict => {
         let infoElem = document.createElement('p');
         infoElem.textContent = 'The president refused to veto the bill. You must pass a policy';
         elem.appendChild(infoElem);
-        
+
     }
 })
 
-socket.on('veto',() => {
-        let body = document.querySelector('.actionSection');
-        const topDiv = document.createElement('div');
-        topDiv.classList.add('vote');
-        const divPrompt = document.createElement('div');
-        
-        divPrompt.innerHTML = `
+socket.on('veto', () => {
+    let body = document.querySelector('.actionSection');
+    const topDiv = document.createElement('div');
+    topDiv.classList.add('vote');
+    const divPrompt = document.createElement('div');
+
+    divPrompt.innerHTML = `
         <h2>The The chancellor wants to veto the bill.</h2>
         <h1>Do you agree?<h1>`;
-        const yesNoElem = document.createElement('div');
-    
-        yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
-        body.append(topDiv);
-        topDiv.append(divPrompt);
-        topDiv.append(yesNoElem);
-    
-        const btnYes = document.querySelector('.vote>div>button.yes');
-        const btnNo = document.querySelector('.vote>div>button.no')
-    
-        btnYes.addEventListener('click', () => {
-            socket.emit('veto_president','yes');
-            topDiv.remove();
-        
-        })
-        btnNo.addEventListener('click', () => {
-            socket.emit('veto_president','no');
-            topDiv.remove();
-        })
-    
+    const yesNoElem = document.createElement('div');
+
+    yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
+    body.append(topDiv);
+    topDiv.append(divPrompt);
+    topDiv.append(yesNoElem);
+
+    const btnYes = document.querySelector('.vote>div>button.yes');
+    const btnNo = document.querySelector('.vote>div>button.no')
+
+    btnYes.addEventListener('click', () => {
+        socket.emit('veto_president', 'yes');
+        topDiv.remove();
+
+    })
+    btnNo.addEventListener('click', () => {
+        socket.emit('veto_president', 'no');
+        topDiv.remove();
+    })
+
 })
 
 
 socket.on('vote_chancellor', () => {
     displayInfo(`Vote your chancellor. There must be least ${Math.round(gameState.numActivePlayers/2)}/${gameState.numActivePlayers} votes for the election to pass`);
-    if (gameState.activePlayers.map(player=>player.id).filter(playerid => playerid === playerId).length === 0) {
+    if (gameState.activePlayers.map(player => player.id).filter(playerid => playerid === playerId).length === 0) {
         return;
     }
-    // displayInfo(`Do you accept ${gameState.chancellorElect.name} as chancellor?`);
     let body = document.querySelector('section.actionSection');
-    // displayElem.innerHTML = '';
-
-    // displayElem.textContent = '';
     const topDiv = document.createElement('div');
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
@@ -176,16 +168,17 @@ socket.on('vote_chancellor', () => {
     const btnNo = document.querySelector('.vote>div>button.no')
 
     btnYes.addEventListener('click', () => {
-        socket.emit('vote','yes');
-        gsap.to(topDiv,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement, onCompleteParams:[topDiv]});
- 
+        socket.emit('vote', 'yes');
+        gsap.to(topDiv, { duration: 1, opacity: 0, y: 100, ease: 'elastic.inOut', onComplete: removeElement, onCompleteParams: [topDiv] });
+
     })
     btnNo.addEventListener('click', () => {
-        socket.emit('vote','no');
-        gsap.to(topDiv,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
+        socket.emit('vote', 'no');
+        gsap.to(topDiv, { duration: 1, opacity: 0, y: 100, ease: 'elastic.inOut', onComplete: removeElement, onCompleteParams: [topDiv] });
     })
-    gsap.from(topDiv,{duration:1, opacity:0, y:-10, ease:'back.out'});
+    gsap.from(topDiv, { duration: 1, opacity: 0, y: -10, ease: 'back.out' });
 })
+
 function removeElement(elem) {
     elem.remove();
 }
@@ -200,21 +193,21 @@ socket.on('policypassed', policy => {
 
 socket.on('election_concluded', () => {
     if (gameState.chancellor) {
-        let subj = gameState.chancellor.id === playerId?'You are the ':gameState.chancellor.name +' is our';
-        let msg = (gameState.chancellor.id === playerId)?'The election has passed. You are the new Chancellor.':`The election for the government has passed with simple majority. ${subj} new Chancellor`;
-        displayInfo(msg); 
+        let subj = gameState.chancellor.id === playerId ? 'You are the ' : gameState.chancellor.name + ' is our';
+        let msg = (gameState.chancellor.id === playerId) ? 'The election has passed. You are the new Chancellor.' : `The election for the government has passed with simple majority. ${subj} new Chancellor`;
+        displayInfo(msg);
     } else {
-        displayInfo(`The election has failed.`); 
+        displayInfo(`The election has failed.`);
     }
     let elems = document.querySelectorAll(`.player>h3`);
     elems.forEach(elem => {
-        elem.classList.remove('vote','yes','no');
+        elem.classList.remove('vote', 'yes', 'no');
         elem.innerHTML = '';
     })
-    
+
     let voteElem = document.querySelectorAll('.player h3.player_voted');
     voteElem.forEach(elem => {
-        elem.classList.remove('player_voted','yes','no');
+        elem.classList.remove('player_voted', 'yes', 'no');
         elem.innerHTML = '';
     })
 
@@ -225,7 +218,7 @@ socket.on('president_choosen', () => {
         displayInfo('You are our new Presidential Candidate.');
         setTimeout(() => {
             displayInfo('Pick your Chancellor wisely.');
-        },5000);
+        }, 5000);
     } else {
         displayInfo(`${gameState.president.name} is the new Presidental Candidate. Waiting for the president to choose a Chancellor Candidate.`);
     }
@@ -236,16 +229,17 @@ socket.on('choose_chancellor', eligiblePlayers => {
     eligiblePlayers = JSON.parse(eligiblePlayers);
     let emitCode = 'chancellor_choosen';
     pickOneFromPlayers(eligiblePlayers, emitCode);
-}) 
+})
+
 function pickOneFromPlayers(players, emitCode) {
     players.forEach(player => {
         let playerElem = document.getElementById(player.id);
         if (playerElem) {
             setTimeout(() => {
                 playerElem.classList.add('eligible');
-            },0)
-            console.log(emitCode,player.name);
-            playerElem.addEventListener('click',event => handleChoose(event,emitCode));
+            }, 0)
+            console.log(emitCode, player.name);
+            playerElem.addEventListener('click', event => handleChoose(event, emitCode));
         }
     })
 }
@@ -261,10 +255,10 @@ socket.on('gameover', winner => {
         h2Text = "Hiter was elected chancellor after 3rd fascist policies were passed.";
     } else if (winner['reason'] === 'fascist_pol') {
         h2Text = "Fascist passed all the fascist policies";
-    }else if (winner['reason'] === 'liberal_pol') {
+    } else if (winner['reason'] === 'liberal_pol') {
         h2Text = "Liberals passed all the liberal policies";
     }
-    
+
     gameCountdownElem.innerHTML = `<h1>${h1Text}</h1><h2>${h2Text}</h2>`;
     gameCountdownElem.classList.add('gameover');
     gameCountdownElem.classList.add(winner['team']);
@@ -273,7 +267,7 @@ socket.on('gameover', winner => {
 });
 
 socket.on('once', (code) => {
-    test(4,code);
+    test(4, code);
 })
 socket.on('card_discarded_president', () => {
     displayInfo('President has discarded a policy and passed the remaining two policies to the chancellor');
@@ -281,21 +275,21 @@ socket.on('card_discarded_president', () => {
 socket.on('card_discarded_chancellor', () => {
     displayInfo('Chancellor has discarded a policy and the remaining policy is being passed');
 })
-socket.on('voted',msg=> {
+socket.on('voted', msg => {
     msg = JSON.parse(msg);
     let player = msg['player'];
     let vote = msg['vote'];
     displayInfo(`${player.name} has voted ${vote.toUpperCase()}`);
 
     let playerVoted = document.getElementById(player.id);
-    if(playerVoted) {
+    if (playerVoted) {
         let voteElem = playerVoted.querySelector('h3');
         if (voteElem.classList.contains('player_voted')) return;
-        
-        voteElem.classList.add('animate');
-        setTimeout(() => voteElem.classList.remove('animate'),2000);
 
-        voteElem && (voteElem.textContent = (vote === 'yes')?'✔':'✘');
+        voteElem.classList.add('animate');
+        setTimeout(() => voteElem.classList.remove('animate'), 2000);
+
+        voteElem && (voteElem.textContent = (vote === 'yes') ? '✔' : '✘');
         voteElem && voteElem.classList.add('player_voted', vote);
     }
 
@@ -307,62 +301,59 @@ socket.on('gamecountdown', () => {
     gameCountdownElem.style.display = 'flex';
     gameCountdownElem.style.zIndex = '100';
     let timeElem = document.querySelector('.gameCountdown>h1');
-    let interval = setInterval(() =>{
+    let interval = setInterval(() => {
         timeElem.textContent = count;
         count--;
         if (count < -10) {
             clearInterval(interval);
         }
-    },10);
+    }, 10);
     let timeout = setTimeout(() => {
-        gameCountdownElem.style.display= 'none';
+        gameCountdownElem.style.display = 'none';
         clearTimeout(timeout);
-    },60);
+    }, 60);
 })
 
 
 socket.on('state', state => {
     gameState = JSON.parse(state);
-
     renderPlayerElements();
 
-
-    
-
-    if(gameState.numDrawPile != undefined) {
+    if (gameState.numDrawPile != undefined) {
         let drawCount = document.querySelector('#drawCount')
         drawCount.textContent = gameState.numDrawPile;
     }
-    
-    if(gameState.numDiscardPile != undefined) {
+
+    if (gameState.numDiscardPile != undefined) {
         let discardCount = document.querySelector('#discardCount');
         discardCount.textContent = gameState.numDiscardPile;
     }
 
 
     let totalLibElem = document.querySelector('.policy>.liberal>h1 span');
-    if(totalLibElem) {
+    if (totalLibElem) {
         totalLibElem.textContent = `${gameState.libPolicyCount}/${gameState.totalLibPolicies}`;
     }
     let totalFasElem = document.querySelector('.policy>.fascist>h1 span');
-    if(totalFasElem) {
+    if (totalFasElem) {
         totalFasElem.textContent = `${gameState.fasPolicyCount}/${gameState.totalFasPolicies}`;
     }
-    let fasSlot = document.querySelectorAll('.fascist .policies .article'); 
-    fasSlot.forEach((elem,id) => {
+    let fasSlot = document.querySelectorAll('.fascist .policies .article');
+    fasSlot.forEach((elem, id) => {
         if (id < gameState.fasPolicyCount) {
             elem.classList.add('passed');
-        } 
+        }
     })
-    let libSlot = document.querySelectorAll('.liberal .policies .article'); 
-    libSlot.forEach((elem,id) => {
+    let libSlot = document.querySelectorAll('.liberal .policies .article');
+    libSlot.forEach((elem, id) => {
         if (id < gameState.libPolicyCount) {
             elem.classList.add('passed');
-        } 
+        }
     })
 
-}) 
-socket.on('canstart', () => {libPolicyCount
+})
+socket.on('canstart', () => {
+    libPolicyCount
     canStart = true;
 })
 
@@ -371,11 +362,11 @@ socket.on('canstart', () => {libPolicyCount
 
 socket.on('discardone', msg => {
     msg = JSON.parse(msg);
-    discardPrompt(msg,'president');
+    discardPrompt(msg, 'president');
 });
 socket.on('discardonechancellor', msg => {
     msg = JSON.parse(msg);
-    discardPrompt(msg,'chancellor');
+    discardPrompt(msg, 'chancellor');
 })
 
 function handleVeto(elem) {
@@ -385,7 +376,7 @@ function handleVeto(elem) {
 }
 
 
-function discardPrompt(cards,session) {
+function discardPrompt(cards, session) {
 
     let body = document.querySelector('.actionSection');
     const topDiv = document.createElement('div');
@@ -393,7 +384,7 @@ function discardPrompt(cards,session) {
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
 
-    
+
     if (session === 'president') {
         divPrompt.innerHTML = `
         <h2>These are the cards you have drawn.</h2>
@@ -422,8 +413,6 @@ function discardPrompt(cards,session) {
                                     <h1>ARTICLE</h1>
                                 </div>
                                 </div></div>`;
-        // newCardBtn.classList.add(card);
-        // newCardBtn.innerHTML = card;
         if (session !== 'top3') {
             newCardBtn.addEventListener('click', e => {
                 if (e.target) {
@@ -431,13 +420,13 @@ function discardPrompt(cards,session) {
                     if (!articleToPass) {
                         articleToPass = e.target.parentElement.parentElement.previousElementSibling;
                     }
-                    let isFascist = e.target.classList.contains('fascist')?true:false;
+                    let isFascist = e.target.classList.contains('fascist') ? true : false;
                     if (!isFascist) {
                         if (session === 'president') {
                             socket.emit('card_choosen', 'liberal');
                         } else {
                             socket.emit('card_choosen_chancellor', 'liberal');
-                            
+
                         }
                     } else if (isFascist) {
                         if (session === 'president') {
@@ -448,30 +437,29 @@ function discardPrompt(cards,session) {
                         }
                     }
                     if (session === 'president') {
-                        gsap.to(e.target.parentElement,{duration:1, opacity:0, y: 100,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
+                        gsap.to(e.target.parentElement, { duration: 1, opacity: 0, y: 100, ease: 'elastic.inOut', onComplete: removeElement, onCompleteParams: [topDiv] });
                     } else {
-                        let passPolicy = articleToPass.querySelector('.liberal')?'liberal':'fascist';
+                        let passPolicy = articleToPass.querySelector('.liberal') ? 'liberal' : 'fascist';
                         console.log(passPolicy);
-                        console.log(gameState.fasPolicyCount,gameState.libPolicyCount);
-                        let ind = (passPolicy==='fascist'?gameState.fasPolicyCount:gameState.libPolicyCount) || 0;
+                        console.log(gameState.fasPolicyCount, gameState.libPolicyCount);
+                        let ind = (passPolicy === 'fascist' ? gameState.fasPolicyCount : gameState.libPolicyCount) || 0;
                         let whereToElem = document.querySelectorAll(`.policy .${passPolicy} .container`)[ind];
                         let fromElem = articleToPass;
-   
+
                         let x1 = whereToElem.getBoundingClientRect().left;
                         let y1 = whereToElem.getBoundingClientRect().top;
                         let x2 = fromElem.getBoundingClientRect().left;
                         let y2 = fromElem.getBoundingClientRect().top;
 
 
-                        let xMove = x1-x2;
-                        let yMove = y1-y2;
-                        gsap.to(fromElem,{duration:2, x: xMove,y:yMove,transformOrigin: '0px 0px',scaleX: whereToElem.offsetWidth/fromElem.offsetWidth, scaleY: whereToElem.offsetHeight/fromElem.offsetHeight,ease:'elastic.inOut', onComplete: removeElement,  onCompleteParams:[topDiv]});
+                        let xMove = x1 - x2;
+                        let yMove = y1 - y2;
+                        gsap.to(fromElem, { duration: 2, x: xMove, y: yMove, transformOrigin: '0px 0px', scaleX: whereToElem.offsetWidth / fromElem.offsetWidth, scaleY: whereToElem.offsetHeight / fromElem.offsetHeight, ease: 'elastic.inOut', onComplete: removeElement, onCompleteParams: [topDiv] });
                         whereToElem.style.opacity = 0;
                         setTimeout(() => {
                             whereToElem.style.opacity = 1;
-                        },2000);
+                        }, 2000);
                     }
-                    // topDiv.remove();
 
                 }
             });
@@ -487,32 +475,19 @@ function discardPrompt(cards,session) {
 
 
     let cardsD = document.querySelectorAll('.maincontainer .article');
-    gsap.fromTo(cardsD,{opacity:0},{duration:2, opacity: 1, rotationY: 180, stagger: 1,ease:'elastic.inOut'});
+    gsap.fromTo(cardsD, { opacity: 0 }, { duration: 2, opacity: 1, rotationY: 180, stagger: 1, ease: 'elastic.inOut' });
 
-    gsap.from(topDiv,{duration:1, opacity:0, y:-10, ease:'back.out'});
+    gsap.from(topDiv, { duration: 1, opacity: 0, y: -10, ease: 'back.out' });
 
 }
 
 
 function initialize() {
-    gsap.from('#loginScreen>section',{duration:2,opacity:0, x:-20, stagger:0.25, ease:'elastic'});
+    gsap.from('#loginScreen>section', { duration: 2, opacity: 0, x: -20, stagger: 0.25, ease: 'elastic' });
 }
 
 
-function renderGameCode(state) {
-
-    if(gameCode) {
-
-        // playersElem.innerHTML += `<div class='info ${canStart?'can-start':''}'>
-        // ${canStart?
-        // `<button onclick='startGame()'><svg width="23" height="26" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        //     <path d="M21.5 10.4019C23.5 11.5566 23.5 14.4434 21.5 15.5981L5 25.1244C3 26.2791 0.499999 24.8357 0.499999 22.5263L0.5 3.47372C0.5 1.16431 3 -0.279058 5 0.875643L21.5 10.4019Z" fill="#FEFAFA"/>
-        // </svg></button>`:''}
-        // </div>`;
-
-    }
-}
-function displayInfo(message,type='info') {
+function displayInfo(message, type = 'info') {
     let infoElem = document.querySelector('.info');
     if (!infoElem) {
         infoElem = document.createElement('div');
@@ -525,15 +500,15 @@ function displayInfo(message,type='info') {
                                 </div>`;
         let canStart = (playerId === gameState.host) && (!gameState.session);
         if (canStart) {
-            infoElem.innerHTML+= `<button onclick='startGame()'><svg width="23" height="26" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            infoElem.innerHTML += `<button onclick='startGame()'><svg width="23" height="26" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                  <path d="M21.5 10.4019C23.5 11.5566 23.5 14.4434 21.5 15.5981L5 25.1244C3 26.2791 0.499999 24.8357 0.499999 22.5263L0.5 3.47372C0.5 1.16431 3 -0.279058 5 0.875643L21.5 10.4019Z" fill="#FEFAFA"/>
                     </svg></button>`
             infoElem.classList.add('can-start');
-        } 
+        }
     } else {
         infoElem.classList.remove('can-start');
         infoElem.innerHTML = '';
-        
+
         let messageElem = document.createElement('p');
         messageElem.textContent = message;
         messageElem.classList.add('message');
@@ -542,37 +517,27 @@ function displayInfo(message,type='info') {
         infoIcon.src = './images/powers/trophy.png';
         infoElem.appendChild(messageElem);
         infoElem.prepend(infoIcon);
-        gsap.fromTo(infoIcon, {duration: 1, repeat: -1, rotate:10, yoyo: true,ease: 'power1.inOut'},{duration: 1, repeat: -1, rotate:-10, yoyo:true, ease: 'power1.inOut'});
-        gsap.from('.info>p',{duration: 1, opacity:0})
+        gsap.fromTo(infoIcon, { duration: 1, repeat: -1, rotate: 10, yoyo: true, ease: 'power1.inOut' }, { duration: 1, repeat: -1, rotate: -10, yoyo: true, ease: 'power1.inOut' });
+        gsap.from('.info>p', { duration: 1, opacity: 0 })
     }
-   
-    // playersElem.appendChild(infoElem);
 }
 
 function startGame() {
     socket.emit('startgame');
 
-    gsap.from('.policies>.container',{duration:2.2,x:-20,stagger:0.2,opacity:0,color:'red', ease:'elastic'});
+    gsap.from('.policies>.container', { duration: 2.2, x: -20, stagger: 0.2, opacity: 0, color: 'red', ease: 'elastic' });
 }
 
 function handleChoose(e, emitCode) {
-    // console.log(e);
-    // if(gameState.session != 'election_primary') return;
     if (!emitCode) return;
     console.log(e.target);
-    
-    if(e.target.id) {
+
+    if (e.target.id) {
         choosenPlayer = e.target.id;
         socket.emit(emitCode, choosenPlayer);
-        // choosenPlayer === null;
-        console.log('Emitting ',emitCode,' and ', choosenPlayer);    
+        console.log('Emitting ', emitCode, ' and ', choosenPlayer);
         gameState.activePlayers.forEach(player => {
             let elem = document.getElementById(player.id);
-            // if(e.target.id === player.id) {
-            //     elem.classList.toggle('choosen');
-            // } else {
-            //     elem.classList.remove('choosen');
-            // }
             elem.classList.remove('eligible');
             elem.replaceWith(elem.cloneNode(true));
         });
@@ -586,7 +551,7 @@ function renderPlayerElements() {
     active = gameState.activePlayers;
     inactive = gameState.inactivePlayers;
 
-    active.forEach((player,ind)=> {
+    active.forEach((player, ind) => {
         let playerElem = document.getElementById(player.id);
         if (!playerElem) {
             playerElem = document.querySelector('.players>div:not(.player,.info)')
@@ -615,26 +580,26 @@ function renderPlayerElements() {
             </div>
        `;
             playerElem.appendChild(imageDiv);
-            if(player.id === playerId) {
-    
+            if (player.id === playerId) {
+
                 playerElem.classList.add('player-self');
             }
-                    // update name
-        let nameElem = playerElem.querySelector('h2');
-        if(nameElem) {
-            nameElem.textContent = player.name;
-            playerElem.append(nameElem);
+
+            let nameElem = playerElem.querySelector('h2');
+            if (nameElem) {
+                nameElem.textContent = player.name;
+                playerElem.append(nameElem);
+            }
+
         }
 
-        }   
+        playerElem.classList.remove('president', 'chancellor', 'chancellor_elect');
 
-        playerElem.classList.remove('president','chancellor','chancellor_elect');
-
-        if(gameState.president) {
+        if (gameState.president) {
             if (player.id === gameState.president.id) {
                 playerElem.classList.add('president');
             }
-        } 
+        }
         if (gameState.chancellor) {
             if (player.id === gameState.chancellor.id) {
                 playerElem.classList.add('chancellor');
@@ -644,84 +609,60 @@ function renderPlayerElements() {
                 playerElem.classList.add('chancellor_elect');
             }
         }
-
-
-        
-        
         playersElem.prepend(playerElem);
 
-    }) 
-    
+    })
 
-    
+
+
     inactive.forEach(player => {
         let inactiveElem = document.getElementById(player.id);
         if (inactiveElem) {
             inactiveElem.classList.add('offline');
         }
     })
-
-
-    // let infoElemNew = document.querySelector('.info');
-    // if (!infoElemNew) {
-    //     let newElem = document.createElement('div');
-    //     newElem.classList = 'info';
-    //     let h2Elem = document.createElement('h2');
-    //     newElem.appendChild(h2Elem);
-    //     playersElem.appendChild(newElem);
-    // }
 }
 
 function renderSecretRoles(secretRoles) {
-    if(secretRoles) {
-        // console.log(secretRoles);
-        // Object.keys(secretRoles).forEach(playerId =>{
-        //     let player = document.getElementById(playerId);
-
-        //     if (player) {
-        //             player.classList.add(secretRoles[playerId]);
-        //     }
-        // })
+    if (secretRoles) {
         let roles = Object.keys(secretRoles);
         let n = roles.length;
-        let inv = setInterval(()=>{
-            let player = document.getElementById(roles[n-1]);
-            // player.style.animationDelay = n+'s';
-            if (player) {       
-                    player.classList.add(secretRoles[roles[n-1]]);
+        let inv = setInterval(() => {
+            let player = document.getElementById(roles[n - 1]);
+            if (player) {
+                player.classList.add(secretRoles[roles[n - 1]]);
             }
             n--;
             if (n < 0) {
                 clearInterval(inv);
             }
-        },100);
+        }, 100);
     }
 }
 
 
 
 
-socket.on('pick_' + POWER_EXAMINE_MEMBERSHIP,(players) => {
+socket.on('pick_' + POWER_EXAMINE_MEMBERSHIP, (players) => {
     displayInfo('Pick a player whose party membership you want to view.');
-    // alert('pick a players whose membership you want to view');
     eligiblePlayers = JSON.parse(players);
-    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_EXAMINE_MEMBERSHIP);
+    pickOneFromPlayers(eligiblePlayers, 'picked_' + POWER_EXAMINE_MEMBERSHIP);
 })
-socket.on('pick_' + POWER_KILL,(players) => {
+socket.on('pick_' + POWER_KILL, (players) => {
     displayInfo('Pick a player you want to eleminate.');
     eligiblePlayers = JSON.parse(players);
-    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_KILL);
+    pickOneFromPlayers(eligiblePlayers, 'picked_' + POWER_KILL);
 })
 
-socket.on('pick_' + POWER_KILL_VETO,(players) => {
+socket.on('pick_' + POWER_KILL_VETO, (players) => {
     displayInfo('Pick a player you want to eleminate. Will unlock veto');
     eligiblePlayers = JSON.parse(players);
-    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_KILL_VETO);
+    pickOneFromPlayers(eligiblePlayers, 'picked_' + POWER_KILL_VETO);
 })
-socket.on('pick_' + POWER_PICK_PRESIDENT,(players) => {
+socket.on('pick_' + POWER_PICK_PRESIDENT, (players) => {
     displayInfo('This is a Special Election for President. Pick a president. WISELY');
     eligiblePlayers = JSON.parse(players);
-    pickOneFromPlayers(eligiblePlayers, 'picked_'+POWER_PICK_PRESIDENT);
+    pickOneFromPlayers(eligiblePlayers, 'picked_' + POWER_PICK_PRESIDENT);
 })
 
 
@@ -736,7 +677,7 @@ socket.on(POWER_KILL, player => {
     player = JSON.parse(player);
     let playerElem = document.getElementById(player.id);
     playerElem.classList.add('eleminated');
-    playerElem.classList.remove('fascist','liberal','chancellor','offline');
+    playerElem.classList.remove('fascist', 'liberal', 'chancellor', 'offline');
     displayInfo(`${player.name} is eliminated from the game.`);
 })
 
@@ -745,18 +686,18 @@ socket.on(POWER_KILL_VETO, player => {
     player = JSON.parse(player);
     let playerElem = document.getElementById(player.id);
     playerElem.classList.add('eleminated');
-    playerElem.classList.remove('fascist','liberal','chancellor','offline');
+    playerElem.classList.remove('fascist', 'liberal', 'chancellor', 'offline');
     displayInfo(`${player.name} is eliminated from the game.`);
 })
 
 socket.on(POWER_EXAMINE_TOP_3, cards => {
     cards = JSON.parse(cards);
     discardPrompt(cards, 'top3');
-    
+
     let elem = document.querySelector('.actionSection>.vote');
     setTimeout(() => {
         elem.remove();
-    },5000)
+    }, 5000)
 })
 socket.on(POWER_PICK_PRESIDENT, player => {
     player = JSON.parse(player);
@@ -764,23 +705,24 @@ socket.on(POWER_PICK_PRESIDENT, player => {
 })
 
 
-socket.on('secretRoles',roles => {
+socket.on('secretRoles', roles => {
     secretRoles = JSON.parse(roles);
     renderSecretRoles(secretRoles);
 
 });
 
 let openWindows = [];
-let players = ['Aditya', 'Sonali','Ujjar','Sunada','Dhwani','Prasanna','Prakash','Shyam','Florian']
-function test(num,gameCode) {
+let players = ['Aditya', 'Sonali', 'Ujjar', 'Sunada', 'Dhwani', 'Prasanna', 'Prakash', 'Shyam', 'Florian']
+
+function test(num, gameCode) {
     let height = 844;
     let width = 390;
     window.focus();
-    window.moveTo(num*window,0);
+    window.moveTo(num * window, 0);
     for (let i = 0; i < num; i++) {
         let features = `resizable:no, height=${height}, width=${width}, left=${i*width+100}`;
         console.log(features);
-        addOne(players.pop(),gameCode,features)
+        addOne(players.pop(), gameCode, features)
     }
 }
 
@@ -790,44 +732,40 @@ function closeAll() {
         window.close();
     });
 }
-function addOne(player,gameCode,features) {
+
+function addOne(player, gameCode, features) {
     players.unshift(player);
     if (!player) {
         return;
     }
-    
 
-    let w = window.open('http://10.0.0.138:8080',player, features);
+
+    let w = window.open('http://10.0.0.138:8080', player, features);
     w.addEventListener('DOMContentLoaded', () => {
-        w.handleJoinGame(player,gameCode);
+        w.handleJoinGame(player, gameCode);
     }, false);
     openWindows.push(w);
 }
+
 function removeOne() {
     let window = openWindows.pop();
     window.close();
 }
-
-
-
-
-
-
 
 frmLogin.forEach(elem => {
     elem.addEventListener('submit', (e) => {
         e.preventDefault();
         let alias;
         let elemId = elem.id;
-        
+
         let inputField = document.querySelector(`#${elemId}>.alias`);
         let messageElem = document.querySelector(`#${elemId}>.validationMessage`);
         alias = inputField.value;
         // validate alias
-        if(alias.length < 3 || alias.length > 10) {
+        if (alias.length < 3 || alias.length > 10) {
             messageElem.textContent = "You must have a better name! (3-10 chars)";
-            messageElem.classList.add('d-block','center');
-            
+            messageElem.classList.add('d-block', 'center');
+
             inputField.value = '';
             return;
         }
@@ -835,15 +773,15 @@ frmLogin.forEach(elem => {
         let code = '';
         let codeInputs = document.querySelectorAll('.codeInput');
         codeInputs.forEach(elem => {
-            code+=elem.value;
+            code += elem.value;
         })
         if (elemId === 'frmJoin') {
-            if(code.length < 4) {
+            if (code.length < 4) {
                 messageElem.textContent = 'Game code invalid';
                 return
             }
         }
-        if(elemId==='frmHost') {
+        if (elemId === 'frmHost') {
 
             handleHostGame(alias);
         } else if (elemId === 'frmJoin') {
@@ -861,39 +799,36 @@ allInputElem.forEach(elem => {
 });
 
 function handleHostGame(alias) {
-  
+
     socket.emit('hostGame', JSON.stringify(alias));
 }
+
 function handleJoinGame(alias, code) {
     let gameConfig = {
         alias: alias,
         code: code,
     }
     socket.emit('joinGame', JSON.stringify(gameConfig));
-    
+
 }
 moveOnMax = function(field, nextFieldId) {
     if (!field) return;
     field.value = field.value.toUpperCase();
-    if(field.value.length===1) {
+    if (field.value.length === 1) {
         const elemToFocus = document.getElementById(nextFieldId);
         if (elemToFocus) {
             elemToFocus.focus();
             elemToFocus.select();
         }
     } else {
-        // alert(nextFieldId);
-        if(isNaN(nextFieldId)) {
+        if (isNaN(nextFieldId)) {
             document.getElementById(3).focus();
             document.getElementById(3).select();
         }
-        const elemToFocus = document.getElementById(nextFieldId-2);
+        const elemToFocus = document.getElementById(nextFieldId - 2);
         if (elemToFocus) {
             elemToFocus.focus();
-            elemToFocus.select(); 
+            elemToFocus.select();
         }
     }
-}
-function nextSession() {
-    socket.emit('nextSession');
 }
