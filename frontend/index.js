@@ -113,15 +113,20 @@ socket.on('veto', () => {
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
 
-    divPrompt.innerHTML = `
-        <h2>The The chancellor wants to veto the bill.</h2>
-        <h1>Do you agree?<h1>`;
-    const yesNoElem = document.createElement('div');
-
-    yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
-    body.append(topDiv);
+    let h2Elem = document.createElement('h2');
+    h2Elem.innerText = 'The chancellor wants to veto the bill.';
+    let h1Elem = document.createElement('h1');
+    h1Elem.innerText = 'Do you agree?';
     topDiv.append(divPrompt);
     topDiv.append(yesNoElem);
+
+    const yesNoElem = document.createElement('div');
+    yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
+
+    divPrompt.appendChild(h2Elem);
+    divPrompt.appendChild(h1Elem);
+
+    body.appendChild(topDiv);
 
     const btnYes = document.querySelector('.vote>div>button.yes');
     const btnNo = document.querySelector('.vote>div>button.no')
@@ -148,15 +153,19 @@ socket.on('vote_chancellor', () => {
     const topDiv = document.createElement('div');
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
+    let h2Elem = document.createElement('h2');
+    let h1Elem = document.createElement('h1');
+
     if (gameState.chancellorElect.id === playerId) {
-        divPrompt.innerHTML = `
-        <h2>The Presidential Candidate has choosen you as his Chancellor</h2>
-        <h1>Do you agree to be in the cabinet?<h1>`;
+        h2Elem.innerText = 'The Presidential Candidate has choosen you as his Chancellor';
+        h1Elem.innerText = 'Do you agree to be in the cabinet?';
     } else {
-        divPrompt.innerHTML = `
-        <h2>The Presidential Candidate has choosen <span>${gameState.chancellorElect.name}</span> as his Chancellor</h2>
-        <h1>Do you agree on this new government?<h1>`;
+        h2Elem.innerText = `The Presidential Candidate has choosen <span>${gameState.chancellorElect.name}</span> as his Chancellor`;
+        h1Elem.innerText = 'Do you agree on this new government?';
     }
+    divPrompt.appendChild(h2Elem);
+    divPrompt.appendChild(h1Elem);
+
     const yesNoElem = document.createElement('div');
 
     yesNoElem.innerHTML = `<button class='yes'>YES</button><button class='no'>NO</button>`;
@@ -247,6 +256,9 @@ function pickOneFromPlayers(players, emitCode) {
 
 socket.on('gameover', winner => {
     winner = JSON.parse(winner);
+    let h1Elem = document.createElement('h1');
+    let h2Elem = document.createElement('h2');
+
     let h1Text = (winner['team'] + ' won').toUpperCase();
     let h2Text;
     if (winner['reason'] === 'hitler_eliminated') {
@@ -258,8 +270,11 @@ socket.on('gameover', winner => {
     } else if (winner['reason'] === 'liberal_pol') {
         h2Text = "Liberals passed all the liberal policies";
     }
+    h1Elem.innerText = h1Text;
+    h2Elem.innerText = h2Text;
+    gameCountdownElem.appendChild(h2Elem);
+    gameCountdownElem.appendChild(h1Elem);
 
-    gameCountdownElem.innerHTML = `<h1>${h1Text}</h1><h2>${h2Text}</h2>`;
     gameCountdownElem.classList.add('gameover');
     gameCountdownElem.classList.add(winner['team']);
     gameCountdownElem.style.display = 'flex';
@@ -383,25 +398,26 @@ function discardPrompt(cards, session) {
     topDiv.classList.add('choose_card');
     topDiv.classList.add('vote');
     const divPrompt = document.createElement('div');
-
-
+    let h1Elem = document.createElement('h1');
+    let h2Elem = document.createElement('h2');
     if (session === 'president') {
-        divPrompt.innerHTML = `
-        <h2>These are the cards you have drawn.</h2>
-        <h1>Discard one, the remaining two will be passed to your chancellor.</h1>`;
+        h2Elem.innerText = 'These are the cards you have drawn.';
+        h1Elem.innerText = 'Discard one, the remaining two will be passed to your chancellor.';
     } else if (session === 'top3') {
-        divPrompt.innerHTML = `
-        <h2>These are top 3 cards in the draw pile.</h2>
-        <h1>Watch how the new cabinet votes. You can smell the foul play.</h1>`;
+        h2Elem.innerText = 'These are top 3 cards in the draw pile.';
+        h1Elem.innerText = 'Watch how the new cabinet votes. You can smell the foul play.';
     } else {
-        divPrompt.innerHTML = `<h2>President discarded one policy.</h2>
-        <h1>As a chancellor, discard one. The remaining policy will be implemented</h1>`;
+        h2Elem.innerText = 'President discarded one policy.';
+        h1Elem.innerText = 'As a chancellor, discard one. The remaining policy will be implemented';
     }
+    divPrompt.appendChild(h2Elem);
+    divPrompt.appendChild(h1Elem);
     const cardsDrawn = document.createElement('div');
     cardsDrawn.classList.add('maincontainer');
 
     cards.forEach(card => {
         let newCardBtn = document.createElement('div');
+
 
         newCardBtn.innerHTML = `<div class='container'><div class="article ${card}">
                                     <div class="front">
@@ -494,6 +510,7 @@ function displayInfo(message, type = 'info') {
         infoElem.classList.add('info')
     }
     if (message === 'gamecode') {
+
         infoElem.innerHTML = `<div class='info-code'>
                                 <p>Game code. Pass along!</p>
                                 <h1>${gameCode}</h1>

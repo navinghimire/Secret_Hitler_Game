@@ -58,14 +58,40 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: row;
+    height: 10em;
+    width: 100%;
+    /* overflow: hidden; */
+}
+
+.choose-card>div {
+    /* border: solid white; */
+}
+
+.maincontainer>div {
+    width: 30%;
+    height: 100%;
+}
+
+.maincontainer>div>.container {
+    height: 100%;
+    width: 100%;
+}
+
+.maincontainer>div>.container {
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    /* box-shadow: 2px 2px 2px black; */
 }
 
 .article {
+    /* overflow: hidden; */
+    height: 100%;
+    width: 100%;
     margin: 1em;
-    height: 150px;
-    width: 120px;
     position: relative;
-    background: linear-gradient(to top, var(--brown-jewel), var(--brown-earth));
+    /* background: linear-gradient(to top, var(--brown-jewel), var(--brown-earth)) !important; */
     border-radius: var(--radius);
     display: flex;
     align-items: center;
@@ -80,6 +106,7 @@ html {
     -o-transition: transform 1s;
     -moz-transform-style: preserve-3d;
     -moz-transition: transform 1s;
+    /* border: solid 1px white; */
 }
 
 .article.show {
@@ -100,8 +127,8 @@ html {
 
 .front {
     justify-content: flex-start;
-    width: 100%;
-    height: 100%;
+    width: inherit;
+    height: auto;
     padding: .8em;
     text-align: left;
     background-size: 80%;
@@ -116,6 +143,7 @@ html {
     -moz-backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     -o-backface-visibility: hidden;
+    overflow: hidden;
 }
 
 .back {
@@ -141,6 +169,7 @@ html {
     display: flex;
     flex-direction: column;
     position: absolute;
+    top: 0;
     border-radius: var(--radius);
 }
 
@@ -458,22 +487,6 @@ body {
     }
 }
 
-.info-code>p {
-    font-size: .8em;
-}
-
-.info-code {
-    display: flex;
-    flex-direction: column;
-    min-width: 50%;
-}
-
-.info-code>h1 {
-    color: var(--6);
-    /* padding-left: .2em; */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
 .info>button {
     border: none;
     height: 100%;
@@ -633,7 +646,7 @@ form {
 
 .gameScreen {
     display: grid;
-    grid-template-rows: auto auto 5em 5fr;
+    grid-template-rows: auto auto 5em auto;
     gap: var(--gap);
 }
 
@@ -1031,10 +1044,10 @@ span.role {}
     }
     .gameScreen {
         grid-template-columns: 1fr 9fr !important;
-        grid-template-rows: minmax(5em, 10%) auto auto;
+        grid-template-rows: minmax(5em, 10%) auto auto auto;
         /* align-items: start; */
         /* height: 100vh; */
-        grid-template-areas: "players info" "players policy" "players actionSection";
+        grid-template-areas: "players info" "players policy" "players drawDiscard" "players actionSection";
     }
     .players {
         grid-area: players;
@@ -1058,11 +1071,15 @@ span.role {}
     .policy {
         grid-area: policy;
     }
+    .drawDiscard {
+        grid-area: drawDiscard;
+    }
     .info {
         grid-area: info;
     }
     .actionSection {
         grid-area: actionSection;
+        justify-content: start;
     }
 }
 
