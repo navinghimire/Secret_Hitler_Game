@@ -1,24 +1,37 @@
 // set options for cors policy
 const { FASCIST, POWER_EXAMINE_MEMBERSHIP, POWER_EXAMINE_TOP_3, POWER_KILL, POWER_KILL_VETO, POWER_PICK_PRESIDENT } = require('./constants');
-
 require('./utils');
 const options = {
     cors: {
-        origin: "http://10.0.0.138:8080",
+        // origin: "http://10.0.0.138:3000",
         methods: ["GET", "POST"],
         transports: ['websocket', 'polling'],
         credentials: true
     },
     allowEIO3: true
 };
+const path = require('path');
+const express = require('express');
+const http = require('http');
+const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
+const server = http.createServer(app);
 const { Server } = require('socket.io');
+const io = new Server(server, options);
+const PORT = 3000 || process.env.PORT;
+
+
+// const { Server } = require('socket.io');
+
 const constants = require('./constants');
 const { Game } = require('./game');
+
+
 const { GameManager } = require('./GameManger');
 const { validateName } = require('./utils');
-io = new Server(options);
 const gameManager = new GameManager(io);
 io.on('connection', socket => {
+    console.log('connection to socket.io');
     socket.emit('init', socket.id);
     socket.on('hostGame', handleHostGame);
     socket.on('joinGame', handleJoinGame);
@@ -57,5 +70,6 @@ io.on('connection', socket => {
 });
 
 
-
-io.listen(3000);
+server.listen(PORT, () => {
+    console.log(`Express server running at PORT ${PORT}`);
+})
