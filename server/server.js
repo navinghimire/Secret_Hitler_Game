@@ -4,7 +4,7 @@ const { FASCIST, POWER_EXAMINE_MEMBERSHIP, POWER_EXAMINE_TOP_3, POWER_KILL, POWE
 require('./utils');
 const options = {
     cors: {
-        origin: "http://10.0.0.138:8080",
+        origin: "http://10.0.0.138:5500",
         methods: ["GET", "POST"],
         transports: ['websocket', 'polling'],
         credentials: true
@@ -58,4 +58,4 @@ io.on('connection', socket => {
 
 
 
-io.listen(3000);
+io.listen(3000, () => console.log('Listening...'));

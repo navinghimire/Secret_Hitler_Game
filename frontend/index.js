@@ -740,7 +740,7 @@ function addOne(player, gameCode, features) {
     }
 
 
-    let w = window.open('http://10.0.0.138:8080', player, features);
+    let w = window.open('http://10.0.0.138:5500/frontend/', player, features);
     w.addEventListener('DOMContentLoaded', () => {
         w.handleJoinGame(player, gameCode);
     }, false);
