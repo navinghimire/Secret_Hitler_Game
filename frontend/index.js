@@ -1,7 +1,16 @@
 window.onload = function() {
     initialize();
 }
-const socket = io('http://10.0.0.138:3000');
+
+
+const URL = 'http://10.0.0.138';
+const WS_PORT = 3000;
+const WS_PATH = [URL,WS_PORT].join(':')
+const BASE_PORT = 5500;
+const BASE_URL = [URL,BASE_PORT].join(':');
+
+const socket = io(WS_PATH);
+
 const frmHost = document.getElementById('frmHost');
 const inputAliasHost = document.getElementById('inputAliasHost');
 const inputAliasJoin = document.getElementById('inputAliasJoin');
@@ -41,10 +50,14 @@ let secretRoles;
 let gameState;
 let choosenPlayer;
 let gameCountdownElem = document.querySelector('.gameCountdown');
+
+
+
 gameScreen.style.display = 'none';
 socket.on('init', (id) => playerId = id);
 socket.on('gamecode', code => {
     gameCode = code;
+    // generatePolicyContainer()
     gameScreen.style.display = 'grid';
     loginScreen.style.display = 'none';
 });
@@ -91,9 +104,6 @@ socket.on('powers', powers => {
     let libFinal = libSlot[gameState.totalLibPolicies - 1];
     fasFinal.appendChild(trophyElemFas);
     libFinal.appendChild(trophyElemLib);
-
-
-
 })
 socket.on('veto_verdict', verdict => {
     let elem = document.querySelector('.actionSection>.vote');
@@ -544,9 +554,6 @@ function handleChoose(e, emitCode) {
     }
 }
 
-
-
-
 function renderPlayerElements() {
     active = gameState.activePlayers;
     inactive = gameState.inactivePlayers;
@@ -645,6 +652,8 @@ function renderSecretRoles(secretRoles) {
 
 socket.on('pick_' + POWER_EXAMINE_MEMBERSHIP, (players) => {
     displayInfo('Pick a player whose party membership you want to view.');
+    
+
     eligiblePlayers = JSON.parse(players);
     pickOneFromPlayers(eligiblePlayers, 'picked_' + POWER_EXAMINE_MEMBERSHIP);
 })
@@ -740,7 +749,7 @@ function addOne(player, gameCode, features) {
     }
 
 
-    let w = window.open('http://10.0.0.138:5500/frontend/', player, features);
+    let w = window.open(BASE_URL+'/frontend', player, features);
     w.addEventListener('DOMContentLoaded', () => {
         w.handleJoinGame(player, gameCode);
     }, false);

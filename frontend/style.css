@@ -42,7 +42,8 @@
 }
 
 html {
-    background-image: linear-gradient(to top, var(--red-jewel) 0%, var(--blue-jewel) 100%);
+    /* background-image: linear-gradient(to top, var(--red-jewel) 0%, var(--blue-jewel) 100%); */
+    background-color: var(--red-earth);
 }
 
 .actionSection {
@@ -408,6 +409,11 @@ body {
     font-size: 20px;
 }
 
+main {
+    position: relative;
+    height: 100vh;
+}
+
 .info {
     display: flex;
     color: var(--brown-earth);
@@ -415,7 +421,10 @@ body {
     align-items: center;
     text-align: left;
     border-radius: var(--radius);
-    position: relative;
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
+    left: 1em;
     overflow: hidden;
     display: flex;
     flex-direction: row;
@@ -448,6 +457,8 @@ body {
     color: var(--brown-earth);
     font-weight: 600;
 }
+
+
 
 @keyframes twinkle {
     from {
@@ -567,20 +578,21 @@ section {
     font-weight: 100;
     font-style: italic;
 }
+input {
+    height: 5rem;
+}
 
 .hline {}
 
-.code input {
-    width: 2em;
-    height: 2em;
+.codeInput {
+    width: 3rem;
     font-weight: 1000;
+    font-size: 10rem;
     transition: 0.5 ease;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-.code {
-    width: auto;
-}
+
 
 .code input:focus,
 .input input:focus {
@@ -611,24 +623,24 @@ form {
     flex-direction: column;
     height: 100vh;
 }
-
 #loginScreen>section:first-child,
 #loginScreen>section:last-child {
     width: 50%;
 }
-
 #loginScreen input {
     font-size: 1.2rem;
-    height: 4em;
-    margin: 1em 0em;
+    margin: .5em 0em;
     border-radius: var(--radius);
 }
-
 #loginScreen button {
     background-color: white;
     font-size: 1.2rem;
     height: 2em;
     border-radius: var(--radius);
+}
+.loginScreen {
+    display: flex;
+    flex-direction: column;
 }
 
 .gameScreen {
@@ -1058,9 +1070,7 @@ span.role {}
     .policy {
         grid-area: policy;
     }
-    .info {
-        grid-area: info;
-    }
+
     .actionSection {
         grid-area: actionSection;
     }
@@ -1083,9 +1093,7 @@ span.role {}
     .policy {
         grid-area: policy;
     }
-    .info {
-        grid-area: info;
-    }
+
     .actionSection {
         grid-area: actionSection;
     }
